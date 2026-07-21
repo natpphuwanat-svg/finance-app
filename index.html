@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Finance Pro v3.1</title>
+    <title>Finance App v3.2</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="manifest" href="manifest.json">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root { --lime: #bef264; --bg: #090b10; --card: #161b22; }
         * { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg); color: white; }
-        body.lock-scroll { overflow: hidden !important; height: 100vh; }
-        .glass { background: rgba(22, 27, 34, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); }
-        .currency { font-size: 0.6em; margin-right: 4px; font-weight: 300; opacity: 0.6; }
         
+        body { background-color: var(--bg); color: white; margin: 0; }
+        body.lock-scroll { overflow: hidden !important; height: 100vh; }
+
+        /* Fix Header Overlap */
+        header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(9, 11, 16, 0.8);
+            backdrop-filter: blur(20px);
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .glass { background: rgba(22, 27, 34, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); }
+        
+        /* New Currency Symbol Style */
+        .thb { font-size: 0.5em; font-weight: 300; margin-right: 6px; color: rgba(255,255,255,0.4); vertical-align: middle; }
+
         /* Modern Bottom Sheet */
         .sheet { position: fixed; inset: 0; z-index: 2000; visibility: hidden; pointer-events: none; }
         .sheet.active { visibility: visible; pointer-events: auto; }
@@ -34,92 +47,91 @@
         .sheet.active .sheet-content { transform: translateY(0); }
         .sheet-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 24px; }
 
-        /* Avatar Grid Fix */
-        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .av-item { width: 100%; aspect-ratio: 1/1; border-radius: 24px; border: 3px solid transparent; overflow: hidden; background: #1c222b; transition: 0.2s; position: relative; }
-        .av-item.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.15); box-shadow: 0 0 20px rgba(190, 242, 100, 0.2); }
+        .av-item.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); }
         .av-item img { width: 100%; height: 100%; object-fit: cover; }
         
-        .nav-fixed { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; border-radius: 36px; z-index: 1000; }
+        .nav-fixed { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; border-radius: 36px; z-index: 1000; padding-bottom: 0; }
     </style>
 </head>
-<body class="px-6 pb-32">
+<body class="pb-40">
 
-    <!-- Header Section -->
-    <header class="flex justify-between items-center py-8">
-        <div class="flex items-center gap-4" onclick="openSheet('profileSheet')">
-            <div class="relative">
-                <img id="headImg" src="" class="w-14 h-14 rounded-full object-cover ring-2 ring-white/5">
-                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-lime-400 rounded-full border-4 border-[#090b10] flex items-center justify-center">
-                    <i class="fa-solid fa-pencil text-[8px] text-black"></i>
+    <!-- Sticky Header -->
+    <header class="px-6 pb-4">
+        <div class="flex justify-between items-center py-4">
+            <div class="flex items-center gap-4" onclick="openSheet('profileSheet')">
+                <div class="relative">
+                    <img id="headImg" src="" class="w-12 h-12 rounded-full object-cover ring-2 ring-white/5">
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-lime-400 rounded-full border-[3px] border-[#090b10] flex items-center justify-center">
+                        <i class="fa-solid fa-pencil text-[6px] text-black"></i>
+                    </div>
+                </div>
+                <div>
+                    <p id="greeting" class="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none">Greeting</p>
+                    <h2 id="headName" class="text-lg font-bold tracking-tight mt-1">User</h2>
                 </div>
             </div>
-            <div>
-                <p id="greeting" class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Good Day</p>
-                <h2 id="headName" class="text-xl font-bold tracking-tight leading-none mt-1">User</h2>
-            </div>
+            <button class="w-10 h-10 glass rounded-full flex items-center justify-center text-gray-400"><i class="fa-regular fa-bell"></i></button>
         </div>
-        <button class="w-11 h-11 glass rounded-full flex items-center justify-center text-gray-400"><i class="fa-regular fa-bell"></i></button>
     </header>
 
-    <!-- Main Balance -->
-    <section class="mb-12">
-        <p class="text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em] opacity-80">Net Worth</p>
-        <div class="flex items-baseline">
-            <span class="currency">฿</span>
-            <h1 id="mainBal" class="text-5xl font-extrabold tracking-tighter">0.00</h1>
+    <main class="px-6 mt-6">
+        <!-- Main Balance -->
+        <section class="mb-12">
+            <p class="text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em] opacity-80">คงเหลือ BALANCE</p>
+            <div class="flex items-baseline">
+                <span class="thb">฿</span>
+                <h1 id="mainBal" class="text-5xl font-extrabold tracking-tighter">0.00</h1>
+            </div>
+        </section>
+
+        <!-- Entry Buttons -->
+        <div class="grid grid-cols-3 gap-3 mb-10">
+            <button onclick="prepTrans('Income')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3 active:scale-95 transition-transform">
+                <div class="w-11 h-11 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400"><i class="fa-solid fa-arrow-up"></i></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Income</span>
+            </button>
+            <button onclick="prepTrans('Expense')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3 active:scale-95 transition-transform">
+                <div class="w-11 h-11 rounded-full bg-red-400/10 flex items-center justify-center text-red-400"><i class="fa-solid fa-arrow-down"></i></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Expense</span>
+            </button>
+            <button onclick="prepTrans('Deduction')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3 active:scale-95 transition-transform">
+                <div class="w-11 h-11 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus"></i></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Deduct</span>
+            </button>
         </div>
-    </section>
 
-    <!-- Entry Buttons -->
-    <div class="grid grid-cols-3 gap-4 mb-10">
-        <button onclick="prepTrans('Income')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-            <div class="w-11 h-11 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400"><i class="fa-solid fa-arrow-up"></i></div>
-            <span class="text-[10px] font-bold uppercase tracking-widest">Income</span>
-        </button>
-        <button onclick="prepTrans('Expense')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-            <div class="w-11 h-11 rounded-full bg-red-400/10 flex items-center justify-center text-red-400"><i class="fa-solid fa-arrow-down"></i></div>
-            <span class="text-[10px] font-bold uppercase tracking-widest">Expense</span>
-        </button>
-        <button onclick="prepTrans('Deduction')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-            <div class="w-11 h-11 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus"></i></div>
-            <span class="text-[10px] font-bold uppercase tracking-widest">Deduct</span>
-        </button>
-    </div>
-
-    <!-- Period Filter -->
-    <div class="flex gap-3 mb-10">
-        <select id="mSel" onchange="fetchData()" class="flex-1 glass p-4 rounded-2xl font-bold appearance-none text-center text-sm outline-none"></select>
-        <select id="ySel" onchange="fetchData()" class="w-1/3 glass p-4 rounded-2xl font-bold appearance-none text-center text-sm outline-none"></select>
-    </div>
-
-    <!-- History List -->
-    <section>
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="font-bold text-lg tracking-tight">Activities</h3>
-            <span id="syncing" class="text-[9px] font-bold text-lime-400 uppercase tracking-widest hidden italic">Syncing...</span>
+        <!-- Period Filter -->
+        <div class="flex gap-3 mb-10">
+            <select id="mSel" onchange="fetchData()" class="flex-1 glass p-4 rounded-2xl font-bold appearance-none text-center text-sm outline-none"></select>
+            <select id="ySel" onchange="fetchData()" class="w-1/3 glass p-4 rounded-2xl font-bold appearance-none text-center text-sm outline-none"></select>
         </div>
-        <div id="hList" class="space-y-3"></div>
-    </section>
 
-    <!-- SHEET: Edit Profile (Avatar Fix) -->
+        <!-- History List -->
+        <section>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg tracking-tight">Activities</h3>
+                <span id="syncing" class="text-[9px] font-bold text-lime-400 uppercase tracking-widest hidden animate-pulse">Syncing...</span>
+            </div>
+            <div id="hList" class="space-y-3"></div>
+        </section>
+    </main>
+
+    <!-- SHEET: Edit Profile -->
     <div id="profileSheet" class="sheet">
         <div class="sheet-overlay" onclick="closeSheet('profileSheet')"></div>
         <div class="sheet-content">
             <div class="sheet-handle" onclick="closeSheet('profileSheet')"></div>
             <h3 class="text-xl font-extrabold mb-8 text-center tracking-tight">Personalize Profile</h3>
-            
             <div class="space-y-6">
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest">Display Name</label>
-                    <input type="text" id="pNameInput" class="w-full glass p-5 rounded-2xl font-bold mt-1 outline-none">
+                    <input type="text" id="pNameInput" class="w-full glass p-5 rounded-2xl font-bold mt-1 outline-none border-transparent focus:border-lime-400">
                 </div>
-                
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Avatar Style</label>
-                    <div id="avGrid" class="avatar-grid"></div>
+                    <div id="avGrid" class="avatar-grid grid grid-cols-3 gap-3"></div>
                 </div>
-
                 <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl shadow-lime-900/10">บันทึกข้อมูลส่วนตัว</button>
             </div>
         </div>
@@ -135,7 +147,7 @@
             <div class="space-y-5 mb-8">
                 <select id="entryCat" onchange="checkNewCat(this)" class="w-full glass p-5 rounded-2xl font-bold outline-none appearance-none"></select>
                 <div class="relative">
-                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-lime-400 opacity-50">฿</span>
+                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-xl font-bold text-lime-400 opacity-40">฿</span>
                     <input type="number" id="entryAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none">
                 </div>
             </div>
@@ -147,7 +159,7 @@
     <nav class="nav-fixed glass flex justify-around items-center px-4">
         <button class="text-lime-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house-chimney text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Home</span></button>
         <button class="text-gray-600 flex flex-col items-center gap-1 opacity-50"><i class="fa-solid fa-chart-line text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Stat</span></button>
-        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-50"><i class="fa-solid fa-wallet text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Card</span></button>
+        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-50"><i class="fa-solid fa-credit-card text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Card</span></button>
         <button onclick="openSheet('profileSheet')" class="text-gray-500 flex flex-col items-center gap-1"><i class="fa-solid fa-user-gear text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">User</span></button>
     </nav>
 
@@ -157,13 +169,12 @@
         let curAvatar = "";
         let mode = "";
 
-        // Preset Avatars: Modern Professional Set
         const PRESETS = [
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Justin&hair=shortCombover",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Oliver&hair=shortCombover",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Leo&hair=middleSvenson",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Max&hair=curlySvenson",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=George&hair=shortCombover"
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=Leo",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=Max",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=George"
         ];
 
         window.onload = () => {
@@ -175,9 +186,10 @@
 
         function initTime() {
             const h = new Date().getHours();
-            let g = "Good Evening";
-            if(h < 12) g = "Good Morning";
-            else if(h < 17) g = "Good Afternoon";
+            let g = "Good Night";
+            if(h >= 5 && h < 12) g = "Good Morning";
+            else if(h >= 12 && h < 17) g = "Good Afternoon";
+            else if(h >= 17 && h < 22) g = "Good Evening";
             document.getElementById('greeting').innerText = g;
         }
 
@@ -192,7 +204,6 @@
             yS.value = now.getFullYear();
         }
 
-        // --- PROFILE LOGIC ---
         function loadUser() {
             const n = localStorage.getItem("uName") || "Phuwanat";
             const i = localStorage.getItem("uImg") || PRESETS[0];
@@ -211,11 +222,9 @@
                     <img src="${url}">
                 </div>`).join('');
             
-            // Slot 6: Custom Upload (Camera/Preview)
-            html += `
-                <div class="av-item flex flex-col items-center justify-center ${curAvatar === customImg ? 'selected' : ''}" onclick="openUpload()">
-                    ${customImg ? `<img src="${customImg}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 mt-1 uppercase">Upload</span>`}
-                </div>`;
+            html += `<div class="av-item flex flex-col items-center justify-center bg-white/5 ${curAvatar === customImg ? 'selected' : ''}" onclick="openUpload()">
+                ${customImg ? `<img src="${customImg}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 mt-1 uppercase">Upload</span>`}
+            </div>`;
             grid.innerHTML = html;
         }
 
@@ -225,9 +234,8 @@
             if(input.files && input.files[0]) {
                 const r = new FileReader();
                 r.onload = (e) => {
-                    const dataUrl = e.target.result;
-                    localStorage.setItem("uCustom", dataUrl);
-                    curAvatar = dataUrl;
+                    localStorage.setItem("uCustom", e.target.result);
+                    curAvatar = e.target.result;
                     renderAvGrid();
                 };
                 r.readAsDataURL(input.files[0]);
@@ -241,7 +249,6 @@
             closeSheet('profileSheet');
         }
 
-        // --- DATA LOGIC ---
         async function fetchData() {
             try {
                 document.getElementById('syncing').classList.remove('hidden');
@@ -264,19 +271,16 @@
 
                 if(d.getMonth() === m && d.getFullYear() === y) {
                     const col = type === 'Income' ? 'text-lime-400' : (type === 'Expense' ? 'text-red-500' : 'text-orange-400');
-                    const sym = type === 'Income' ? '+' : (type === 'Expense' ? '-' : '');
-                    html += `
-                        <div class="glass p-5 rounded-[28px] flex justify-between items-center">
-                            <div><p class="font-bold text-sm tracking-tight">${name}</p><p class="text-[9px] opacity-30 font-bold uppercase tracking-widest">${d.toLocaleDateString('en-GB')}</p></div>
-                            <p class="font-bold text-lg ${col}"><span class="currency">฿</span>${sym}${a.toLocaleString()}</p>
-                        </div>`;
+                    html += `<div class="glass p-5 rounded-[28px] flex justify-between items-center">
+                        <div><p class="font-bold text-sm tracking-tight">${name}</p><p class="text-[9px] opacity-30 font-bold uppercase tracking-widest">${d.toLocaleDateString('en-GB')}</p></div>
+                        <p class="font-bold text-lg ${col}"><span class="thb">฿</span>${a.toLocaleString()}</p>
+                    </div>`;
                 }
             });
             document.getElementById('mainBal').innerText = bal.toLocaleString(undefined, {minimumFractionDigits: 2});
             document.getElementById('hList').innerHTML = html || `<div class="py-20 text-center opacity-20 text-sm italic">Empty for this month</div>`;
         }
 
-        // --- ENTRY LOGIC ---
         function prepTrans(t) {
             mode = t;
             const cats = {
@@ -290,7 +294,7 @@
             openSheet('entrySheet');
         }
 
-        function checkNewCat(s) { if(s.value === 'NEW') { const n = prompt("Custom Name:"); if(n) { const o = new Option(n, n); s.insertBefore(o, s.firstChild); s.value = n; } } }
+        function checkNewCat(s) { if(s.value === 'NEW') { const n = prompt("Category Name:"); if(n) { const o = new Option(n, n); s.insertBefore(o, s.firstChild); s.value = n; } } }
 
         async function sendEntry() {
             const n = document.getElementById('entryCat').value, a = document.getElementById('entryAmt').value;
@@ -305,15 +309,8 @@
             } finally { b.innerText = "Confirm Entry"; b.disabled = false; }
         }
 
-        // --- UI HELPERS ---
-        function openSheet(id) { 
-            document.getElementById(id).classList.add('active'); 
-            document.body.classList.add('lock-scroll');
-        }
-        function closeSheet(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            document.body.classList.remove('lock-scroll');
-        }
+        function openSheet(id) { document.getElementById(id).classList.add('active'); document.body.classList.add('lock-scroll'); }
+        function closeSheet(id) { document.getElementById(id).classList.remove('active'); document.body.classList.remove('lock-scroll'); }
     </script>
 </body>
 </html>
