@@ -11,48 +11,119 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0d1117; color: white; padding-top: env(safe-area-inset-top); font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .lime { background-color: #d9f99d; color: black; }
+        :root { --lime: #d9f99d; --bg: #0d1117; }
+        body { 
+            background-color: var(--bg); color: white; font-family: -apple-system, sans-serif;
+            padding-top: env(safe-area-inset-top); 
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .lime-card { background: var(--lime); color: black; border-radius: 35px; }
+        .action-btn { background: rgba(255,255,255,0.07); border-radius: 20px; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; }
+        .nav-active { background: var(--lime); color: black; }
     </style>
 </head>
-<body class="p-6">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-2xl font-bold">Hi, Sajibur!</h1>
-        <div class="w-10 h-10 glass flex items-center justify-center"><i class="fa-regular fa-bell"></i></div>
+<body class="px-6">
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mt-4 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full border-2 border-lime-300 overflow-hidden">
+                <img src="https://i.pravatar.cc/100" alt="profile">
+            </div>
+            <div>
+                <p class="text-gray-400 text-xs">Hi, Sajibur!</p>
+            </div>
+        </div>
+        <div class="w-10 h-10 glass rounded-full flex items-center justify-center relative">
+            <i class="fa-regular fa-bell"></i>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-lime-400 rounded-full border-2 border-[#0d1117]"></span>
+        </div>
     </div>
 
+    <!-- Balance Section -->
     <div class="mb-8">
-        <p class="text-gray-400">Total Balance</p>
-        <h2 class="text-4xl font-bold">$82,345.67</h2>
+        <p class="text-gray-400 text-sm mb-1">Wallet (USD)</p>
+        <div class="flex items-center gap-3">
+            <h1 class="text-4xl font-bold tracking-tight">$82,345.67</h1>
+            <span class="bg-lime-900/30 text-lime-400 text-[10px] font-bold px-2 py-1 rounded-full">+21.45%</span>
+        </div>
     </div>
 
-    <div class="lime p-6 rounded-[32px] mb-8 shadow-lg shadow-lime-900/20">
-        <p class="text-sm opacity-70">Current Card</p>
-        <h3 class="text-2xl font-bold mb-6">$60,890.67</h3>
-        <p class="font-mono tracking-widest text-sm">**** **** **** 1234</p>
+    <!-- Quick Actions (Modified for your categories) -->
+    <div class="grid grid-cols-4 gap-3 mb-10 text-gray-400">
+        <button onclick="openForm('Income')" class="action-btn border border-lime-400/30 text-lime-400">
+            <i class="fa-solid fa-arrow-up text-lg mb-2"></i>รายรับ
+        </button>
+        <button onclick="openForm('Expense')" class="action-btn">
+            <i class="fa-solid fa-arrow-down text-lg mb-2 text-red-400"></i>รายจ่าย
+        </button>
+        <button onclick="openForm('Deduction')" class="action-btn border border-orange-400/30 text-orange-400">
+            <i class="fa-solid fa-clock-rotate-left text-lg mb-2"></i>รายการหัก
+        </button>
+        <button class="action-btn"><i class="fa-solid fa-ellipsis text-lg mb-2"></i>อื่นๆ</button>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-        <button onclick="saveData('Income')" class="glass p-4 text-lime-200 border-lime-500/30 border">
-            <i class="fa-solid fa-plus mb-2"></i><br>Add Income
+    <!-- Credit Card UI -->
+    <div class="mb-10">
+        <h3 class="font-bold text-lg mb-4">My Cards</h3>
+        <div class="lime-card p-6 shadow-2xl shadow-lime-900/20 relative">
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <p class="text-xs opacity-60">Current Balance</p>
+                    <h2 class="text-3xl font-extrabold tracking-tight">$60,890.67</h2>
+                </div>
+                <i class="fa-solid fa-rss text-2xl opacity-60"></i>
+            </div>
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] font-bold opacity-60">SAJIBUR RAHMAN 08/24</p>
+                    <p class="text-sm font-mono tracking-[4px]">1234 1234 1234 1234</p>
+                </div>
+                <div class="flex gap-1">
+                    <div class="w-6 h-6 bg-red-500 rounded-full opacity-80"></div>
+                    <div class="w-6 h-6 bg-orange-400 rounded-full -ml-3 opacity-80"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="fixed bottom-8 left-6 right-6 glass h-16 rounded-[28px] flex justify-around items-center px-2 z-50">
+        <button class="nav-active px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-sm">
+            <i class="fa-solid fa-house"></i> Home
         </button>
-        <button onclick="saveData('Expense')" class="glass p-4 text-red-300">
-            <i class="fa-solid fa-minus mb-2"></i><br>Add Expense
-        </button>
+        <button class="text-gray-500 text-xl"><i class="fa-solid fa-chart-pie"></i></button>
+        <button class="text-gray-500 text-xl"><i class="fa-solid fa-credit-card"></i></button>
+        <button class="text-gray-500 text-xl"><i class="fa-solid fa-user"></i></button>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxCt0KccUD8CvRRJAfRUfX9Qnqk8C-Xs21Kw1wP9dDXeh_eo-8S4LFlwWT7deNf2sxcOw/exec";
-        async function saveData(type) {
-            const amt = prompt("ใส่จำนวนเงิน:");
-            if(!amt) return;
-            alert("กำลังบันทึก...");
-            await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({type: type, amount: amt, category: "General"})
-            });
-            alert("บันทึกเรียบร้อย!");
+        const API_URL = "ใส่_URL_แอปเว็บ_ตรงนี้";
+
+        async function openForm(type) {
+            let label = type === 'Income' ? 'รายรับ' : (type === 'Expense' ? 'รายจ่าย' : 'รายการหัก (สถิติ)');
+            const name = prompt(`ระบุชื่อรายการ ${label}: (เช่น เงินเดือน, ค่าที่พัก, มาสาย)`);
+            if(!name) return;
+            
+            const amount = prompt(`ระบุจำนวนเงินสำหรับ ${name}:`);
+            if(!amount || isNaN(amount)) return;
+
+            alert("กำลังบันทึกข้อมูล...");
+            try {
+                await fetch(API_URL, {
+                    method: "POST",
+                    mode: "no-cors", // ใช้ no-cors สำหรับ Google Apps Script
+                    body: JSON.stringify({
+                        type: type,
+                        name: name,
+                        amount: parseFloat(amount)
+                    })
+                });
+                alert("บันทึกสำเร็จลงใน Google Sheets!");
+            } catch (err) {
+                alert("เกิดข้อผิดพลาดในการบันทึก");
+            }
         }
     </script>
 </body>
