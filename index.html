@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
     <title>Finance Dashboard</title>
     
-    <!-- PWA Settings for iOS Icon -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
@@ -24,89 +23,69 @@
             --red: #EF4444;
             --orange: #F59E0B;
         }
-        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: white; padding-top: env(safe-area-inset-top); }
+        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background-color: var(--bg); color: white; padding-top: env(safe-area-inset-top); transition: opacity 0.3s; }
         .balance-val { font-size: 48px; letter-spacing: -2px; }
-        .card-shadow { box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .nav-float { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 48px); background: rgba(26,29,36,0.8); backdrop-filter: blur(20px); border-radius: 32px; border: 1px solid rgba(255,255,255,0.08); }
+        .nav-float { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 48px); background: rgba(26,29,36,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 32px; border: 1px solid rgba(255,255,255,0.08); z-index: 100; }
+        
+        /* สไตล์พรีเมียมสำหรับการ์ด */
+        .premium-card { background: var(--card); border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .record-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
     </style>
 </head>
-<body class="px-6 pb-32">
+<body class="px-6 pb-32 opacity-0" id="appBody">
 
     <!-- Header -->
     <header class="flex items-center mt-6 mb-10">
-        <img src="https://i.pravatar.cc/150?u=phuwanat" class="w-12 h-12 rounded-full border border-white/10 mr-4">
+        <img id="userAvatar" src="https://i.pravatar.cc/150?u=phuwanat" class="w-12 h-12 rounded-full border border-white/10 mr-4">
         <div>
             <p id="greeting" class="text-[11px] font-bold text-[#9CA3AF] uppercase tracking-widest">GOOD AFTERNOON</p>
             <h1 class="text-xl font-bold">Phuwanat</h1>
         </div>
     </header>
 
-    <!-- Month Nav -->
+    <!-- Month Navigation -->
     <div class="flex justify-center items-center gap-8 mb-8 text-lg font-semibold">
-        <button class="text-[#9CA3AF]"><i data-lucide="chevron-left" size="20"></i></button>
-        <span>July 2026</span>
-        <button class="text-[#9CA3AF]"><i data-lucide="chevron-right" size="20"></i></button>
+        <button onclick="changeMonth(-1)" class="text-[#9CA3AF]"><i data-lucide="chevron-left" size="20"></i></button>
+        <span id="currentMonthYear">July 2026</span>
+        <button onclick="changeMonth(1)" class="text-[#9CA3AF]"><i data-lucide="chevron-right" size="20"></i></button>
     </div>
 
     <!-- Balance Focus -->
     <div class="text-center mb-12">
-        <p class="text-[13px] font-semibold text-[#9CA3AF] tracking-[0.1em] mb-2">BALANCE</p>
-        <h2 class="balance-val font-bold">฿15,480</h2>
+        <p class="text-[13px] font-semibold text-[#9CA3AF] tracking-[0.1em] mb-2 uppercase">Balance</p>
+        <h2 id="totalBalance" class="balance-val font-bold">฿0</h2>
     </div>
 
     <!-- Summary Cards -->
     <div class="space-y-4 mb-12">
-        <div class="bg-[#1A1D24] p-6 rounded-[24px] flex items-center card-shadow">
-            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mr-4">
-                <i data-lucide="trending-up" class="text-[#22C55E]"></i>
-            </div>
+        <div class="premium-card flex items-center">
+            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mr-4"><i data-lucide="trending-up" class="text-[#22C55E]"></i></div>
             <div class="flex-1">
                 <p class="text-sm text-[#9CA3AF]">Income</p>
-                <p class="text-2xl font-bold">฿18,800</p>
+                <p id="sumIncome" class="text-2xl font-bold">฿0</p>
             </div>
         </div>
-        <div class="bg-[#1A1D24] p-6 rounded-[24px] flex items-center card-shadow">
-            <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mr-4">
-                <i data-lucide="trending-down" class="text-[#EF4444]"></i>
-            </div>
+        <div class="premium-card flex items-center">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mr-4"><i data-lucide="trending-down" class="text-[#EF4444]"></i></div>
             <div class="flex-1">
                 <p class="text-sm text-[#9CA3AF]">Expense</p>
-                <p class="text-2xl font-bold">฿3,000</p>
+                <p id="sumExpense" class="text-2xl font-bold">฿0</p>
             </div>
         </div>
-        <div class="bg-[#1A1D24] p-6 rounded-[24px] flex items-center card-shadow">
-            <div class="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mr-4">
-                <i data-lucide="minus-circle" class="text-[#F59E0B]"></i>
-            </div>
+        <div class="premium-card flex items-center">
+            <div class="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mr-4"><i data-lucide="minus-circle" class="text-[#F59E0B]"></i></div>
             <div class="flex-1">
                 <p class="text-sm text-[#9CA3AF]">Deduction</p>
-                <p class="text-2xl font-bold">฿320</p>
+                <p id="sumDeduction" class="text-2xl font-bold">฿0</p>
             </div>
         </div>
     </div>
 
-    <!-- Sections (Simplified) -->
-    <section class="mb-10">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold">Expense (8)</h3>
-            <span class="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">View All</span>
-        </div>
-        <div class="space-y-6">
-            <div class="flex justify-between items-center">
-                <span class="text-base">🍜 ค่าอาหาร</span>
-                <span class="text-base font-semibold">฿2,950</span>
-            </div>
-            <div class="flex justify-between items-center">
-                <span class="text-base">⛽ ค่าน้ำมัน</span>
-                <span class="text-base font-semibold">฿1,200</span>
-            </div>
-            <div class="flex justify-between items-center">
-                <span class="text-base">📺 Netflix</span>
-                <span class="text-base font-semibold">฿199</span>
-            </div>
-        </div>
-    </section>
+    <!-- Main Content Sections -->
+    <div id="sections-container" class="space-y-10">
+        <!-- ข้อมูลจะถูกฉีดเข้าที่นี่ด้วย JavaScript -->
+    </div>
 
     <!-- Bottom Nav -->
     <nav class="nav-float h-16 flex justify-around items-center px-4">
@@ -114,26 +93,116 @@
             <i data-lucide="home" size="20"></i>
             <span class="text-[10px] font-bold uppercase">Home</span>
         </div>
-        <div class="flex flex-col items-center gap-1 text-[#9CA3AF]">
+        <div class="flex flex-col items-center gap-1 text-[#9CA3AF] opacity-50">
             <i data-lucide="pie-chart" size="20"></i>
             <span class="text-[10px] font-bold uppercase">Statistics</span>
         </div>
-        <div class="flex flex-col items-center gap-1 text-[#9CA3AF]">
+        <div class="flex flex-col items-center gap-1 text-[#9CA3AF] opacity-50">
             <i data-lucide="user" size="20"></i>
             <span class="text-[10px] font-bold uppercase">Profile</span>
         </div>
     </nav>
 
     <script>
-        lucide.createIcons();
-        const hour = new Date().getHours();
-        const g = document.getElementById('greeting');
-        if(hour < 12) g.innerText = "GOOD MORNING";
-        else if(hour < 17) g.innerText = "GOOD AFTERNOON";
-        else g.innerText = "GOOD EVENING";
+        // --------------------------------------------------
+        // CONFIGURATION: วาง URL ของ Apps Script ที่นี่
+        // --------------------------------------------------
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
 
-        // ฟังก์ชันสำหรับดึงข้อมูลจาก Apps Script มาแสดงผล (ในอนาคต)
-        const CONST_API_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
+        let currentData = [];
+        let dateView = new Date(2026, 6, 1); // เริ่มที่ July 2026 ตามโจทย์
+
+        async function init() {
+            lucide.createIcons();
+            setGreeting();
+            updateMonthDisplay();
+            await fetchData();
+            document.getElementById('appBody').style.opacity = '1';
+        }
+
+        function setGreeting() {
+            const hour = new Date().getHours();
+            const g = document.getElementById('greeting');
+            if(hour < 12) g.innerText = "GOOD MORNING";
+            else if(hour < 17) g.innerText = "GOOD AFTERNOON";
+            else g.innerText = "GOOD EVENING";
+        }
+
+        function updateMonthDisplay() {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonthYear').innerText = `${months[dateView.getMonth()]} ${dateView.getFullYear()}`;
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                currentData = await response.json();
+                renderDashboard();
+            } catch (err) {
+                console.error("Fetch Error:", err);
+            }
+        }
+
+        function renderDashboard() {
+            const currentMonthYearStr = document.getElementById('currentMonthYear').innerText;
+            
+            // กรองข้อมูลเฉพาะเดือนที่เลือก
+            const filtered = currentData.filter(row => row[4] === currentMonthYearStr);
+            
+            let incomeTotal = 0, expenseTotal = 0, deductTotal = 0;
+            let incomeItems = [], expenseItems = [], deductItems = [];
+
+            filtered.forEach(row => {
+                const [date, type, name, amount] = row;
+                const val = parseFloat(amount);
+                if(type === 'Income') { incomeTotal += val; incomeItems.push({name, val}); }
+                if(type === 'Expense') { expenseTotal += val; expenseItems.push({name, val}); }
+                if(type === 'Deduction') { deductTotal += val; deductItems.push({name, val}); }
+            });
+
+            // อัปเดต Summary
+            document.getElementById('totalBalance').innerText = `฿${(incomeTotal - expenseTotal).toLocaleString()}`;
+            document.getElementById('sumIncome').innerText = `฿${incomeTotal.toLocaleString()}`;
+            document.getElementById('sumExpense').innerText = `฿${expenseTotal.toLocaleString()}`;
+            document.getElementById('sumDeduction').innerText = `฿${deductTotal.toLocaleString()}`;
+
+            // เรนเดอร์รายการแบบ Grouping (แสดงแค่ 3 รายการแรกตามโจทย์)
+            renderSection("Income", incomeItems);
+            renderSection("Expense", expenseItems);
+            renderSection("Deduction", deductItems);
+        }
+
+        function renderSection(title, items) {
+            const container = document.getElementById('sections-container');
+            if(items.length === 0) return;
+
+            let html = `
+                <section>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">${title} (${items.length})</h3>
+                        <span class="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">View All</span>
+                    </div>
+                    <div class="space-y-1">
+                        ${items.slice(0, 3).map(item => `
+                            <div class="record-row">
+                                <span class="text-base font-normal">${item.name}</span>
+                                <span class="text-base font-semibold">฿${item.val.toLocaleString()}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+            container.innerHTML += html;
+        }
+
+        function changeMonth(step) {
+            dateView.setMonth(dateView.getMonth() + step);
+            document.getElementById('sections-container').innerHTML = '';
+            updateMonthDisplay();
+            renderDashboard();
+        }
+
+        init();
     </script>
 </body>
 </html>
