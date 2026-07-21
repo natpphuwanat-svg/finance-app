@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Finance App</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0d1117; color: white; padding-top: env(safe-area-inset-top); font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
+        .lime { background-color: #d9f99d; color: black; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold">Hi, Sajibur!</h1>
+        <div class="w-10 h-10 glass flex items-center justify-center"><i class="fa-regular fa-bell"></i></div>
+    </div>
+
+    <div class="mb-8">
+        <p class="text-gray-400">Total Balance</p>
+        <h2 class="text-4xl font-bold">$82,345.67</h2>
+    </div>
+
+    <div class="lime p-6 rounded-[32px] mb-8 shadow-lg shadow-lime-900/20">
+        <p class="text-sm opacity-70">Current Card</p>
+        <h3 class="text-2xl font-bold mb-6">$60,890.67</h3>
+        <p class="font-mono tracking-widest text-sm">**** **** **** 1234</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <button onclick="saveData('Income')" class="glass p-4 text-lime-200 border-lime-500/30 border">
+            <i class="fa-solid fa-plus mb-2"></i><br>Add Income
+        </button>
+        <button onclick="saveData('Expense')" class="glass p-4 text-red-300">
+            <i class="fa-solid fa-minus mb-2"></i><br>Add Expense
+        </button>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxCt0KccUD8CvRRJAfRUfX9Qnqk8C-Xs21Kw1wP9dDXeh_eo-8S4LFlwWT7deNf2sxcOw/exec";
+        async function saveData(type) {
+            const amt = prompt("ใส่จำนวนเงิน:");
+            if(!amt) return;
+            alert("กำลังบันทึก...");
+            await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({type: type, amount: amt, category: "General"})
+            });
+            alert("บันทึกเรียบร้อย!");
+        }
+    </script>
+</body>
+</html>
