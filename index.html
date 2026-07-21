@@ -2,315 +2,138 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Finance App v3.2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <title>Finance Dashboard</title>
     
+    <!-- PWA Settings for iOS Icon -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        :root { --lime: #bef264; --bg: #090b10; --card: #161b22; }
-        * { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { background-color: var(--bg); color: white; margin: 0; }
-        body.lock-scroll { overflow: hidden !important; height: 100vh; }
-
-        /* Fix Header Overlap */
-        header {
-            position: sticky; top: 0; z-index: 50;
-            background: rgba(9, 11, 16, 0.8);
-            backdrop-filter: blur(20px);
-            padding-top: env(safe-area-inset-top);
+        :root {
+            --bg: #0E1014;
+            --card: #1A1D24;
+            --text-dim: #9CA3AF;
+            --green: #22C55E;
+            --red: #EF4444;
+            --orange: #F59E0B;
         }
-
-        .glass { background: rgba(22, 27, 34, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); }
-        
-        /* New Currency Symbol Style */
-        .thb { font-size: 0.5em; font-weight: 300; margin-right: 6px; color: rgba(255,255,255,0.4); vertical-align: middle; }
-
-        /* Modern Bottom Sheet */
-        .sheet { position: fixed; inset: 0; z-index: 2000; visibility: hidden; pointer-events: none; }
-        .sheet.active { visibility: visible; pointer-events: auto; }
-        .sheet-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); opacity: 0; transition: opacity 0.4s; }
-        .sheet.active .sheet-overlay { opacity: 1; }
-        .sheet-content {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: #11151c; border-top: 1px solid rgba(255,255,255,0.1);
-            border-radius: 32px 32px 0 0; transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
-            padding: 12px 24px calc(24px + env(safe-area-inset-bottom));
-        }
-        .sheet.active .sheet-content { transform: translateY(0); }
-        .sheet-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 24px; }
-
-        .av-item { width: 100%; aspect-ratio: 1/1; border-radius: 24px; border: 3px solid transparent; overflow: hidden; background: #1c222b; transition: 0.2s; position: relative; }
-        .av-item.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); }
-        .av-item img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .nav-fixed { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; border-radius: 36px; z-index: 1000; padding-bottom: 0; }
+        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: white; padding-top: env(safe-area-inset-top); }
+        .balance-val { font-size: 48px; letter-spacing: -2px; }
+        .card-shadow { box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .nav-float { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 48px); background: rgba(26,29,36,0.8); backdrop-filter: blur(20px); border-radius: 32px; border: 1px solid rgba(255,255,255,0.08); }
     </style>
 </head>
-<body class="pb-40">
+<body class="px-6 pb-32">
 
-    <!-- Sticky Header -->
-    <header class="px-6 pb-4">
-        <div class="flex justify-between items-center py-4">
-            <div class="flex items-center gap-4" onclick="openSheet('profileSheet')">
-                <div class="relative">
-                    <img id="headImg" src="" class="w-12 h-12 rounded-full object-cover ring-2 ring-white/5">
-                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-lime-400 rounded-full border-[3px] border-[#090b10] flex items-center justify-center">
-                        <i class="fa-solid fa-pencil text-[6px] text-black"></i>
-                    </div>
-                </div>
-                <div>
-                    <p id="greeting" class="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none">Greeting</p>
-                    <h2 id="headName" class="text-lg font-bold tracking-tight mt-1">User</h2>
-                </div>
-            </div>
-            <button class="w-10 h-10 glass rounded-full flex items-center justify-center text-gray-400"><i class="fa-regular fa-bell"></i></button>
+    <!-- Header -->
+    <header class="flex items-center mt-6 mb-10">
+        <img src="https://i.pravatar.cc/150?u=phuwanat" class="w-12 h-12 rounded-full border border-white/10 mr-4">
+        <div>
+            <p id="greeting" class="text-[11px] font-bold text-[#9CA3AF] uppercase tracking-widest">GOOD AFTERNOON</p>
+            <h1 class="text-xl font-bold">Phuwanat</h1>
         </div>
     </header>
 
-    <main class="px-6 mt-6">
-        <!-- Main Balance -->
-        <section class="mb-12">
-            <p class="text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em] opacity-80">คงเหลือ BALANCE</p>
-            <div class="flex items-baseline">
-                <span class="thb">฿</span>
-                <h1 id="mainBal" class="text-5xl font-extrabold tracking-tighter">0.00</h1>
+    <!-- Month Nav -->
+    <div class="flex justify-center items-center gap-8 mb-8 text-lg font-semibold">
+        <button class="text-[#9CA3AF]"><i data-lucide="chevron-left" size="20"></i></button>
+        <span>July 2026</span>
+        <button class="text-[#9CA3AF]"><i data-lucide="chevron-right" size="20"></i></button>
+    </div>
+
+    <!-- Balance Focus -->
+    <div class="text-center mb-12">
+        <p class="text-[13px] font-semibold text-[#9CA3AF] tracking-[0.1em] mb-2">BALANCE</p>
+        <h2 class="balance-val font-bold">฿15,480</h2>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="space-y-4 mb-12">
+        <div class="bg-[#1A1D24] p-6 rounded-[24px] flex items-center card-shadow">
+            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mr-4">
+                <i data-lucide="trending-up" class="text-[#22C55E]"></i>
             </div>
-        </section>
-
-        <!-- Entry Buttons -->
-        <div class="grid grid-cols-3 gap-3 mb-10">
-            <button onclick="prepTrans('Income')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3 active:scale-95 transition-transform">
-                <div class="w-11 h-11 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400"><i class="fa-solid fa-arrow-up"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Income</span>
-            </button>
-            <button onclick="prepTrans('Expense')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3 active:scale-95 transition-transform">
-                <div class="w-11 h-11 rounded-full bg-red-400/10 flex items-center justify-center text-red-400"><i class="fa-solid fa-arrow-down"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Expense</span>
-            </button>
-            <button onclick="prepTrans('Deduction')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3 active:scale-95 transition-transform">
-                <div class="w-11 h-11 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Deduct</span>
-            </button>
-        </div>
-
-        <!-- Period Filter -->
-        <div class="flex gap-3 mb-10">
-            <select id="mSel" onchange="fetchData()" class="flex-1 glass p-4 rounded-2xl font-bold appearance-none text-center text-sm outline-none"></select>
-            <select id="ySel" onchange="fetchData()" class="w-1/3 glass p-4 rounded-2xl font-bold appearance-none text-center text-sm outline-none"></select>
-        </div>
-
-        <!-- History List -->
-        <section>
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-lg tracking-tight">Activities</h3>
-                <span id="syncing" class="text-[9px] font-bold text-lime-400 uppercase tracking-widest hidden animate-pulse">Syncing...</span>
+            <div class="flex-1">
+                <p class="text-sm text-[#9CA3AF]">Income</p>
+                <p class="text-2xl font-bold">฿18,800</p>
             </div>
-            <div id="hList" class="space-y-3"></div>
-        </section>
-    </main>
-
-    <!-- SHEET: Edit Profile -->
-    <div id="profileSheet" class="sheet">
-        <div class="sheet-overlay" onclick="closeSheet('profileSheet')"></div>
-        <div class="sheet-content">
-            <div class="sheet-handle" onclick="closeSheet('profileSheet')"></div>
-            <h3 class="text-xl font-extrabold mb-8 text-center tracking-tight">Personalize Profile</h3>
-            <div class="space-y-6">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest">Display Name</label>
-                    <input type="text" id="pNameInput" class="w-full glass p-5 rounded-2xl font-bold mt-1 outline-none border-transparent focus:border-lime-400">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Avatar Style</label>
-                    <div id="avGrid" class="avatar-grid grid grid-cols-3 gap-3"></div>
-                </div>
-                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl shadow-lime-900/10">บันทึกข้อมูลส่วนตัว</button>
+        </div>
+        <div class="bg-[#1A1D24] p-6 rounded-[24px] flex items-center card-shadow">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mr-4">
+                <i data-lucide="trending-down" class="text-[#EF4444]"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm text-[#9CA3AF]">Expense</p>
+                <p class="text-2xl font-bold">฿3,000</p>
+            </div>
+        </div>
+        <div class="bg-[#1A1D24] p-6 rounded-[24px] flex items-center card-shadow">
+            <div class="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mr-4">
+                <i data-lucide="minus-circle" class="text-[#F59E0B]"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm text-[#9CA3AF]">Deduction</p>
+                <p class="text-2xl font-bold">฿320</p>
             </div>
         </div>
     </div>
-    <input type="file" id="imgUpload" class="hidden" accept="image/*" onchange="onFileChosen(this)">
 
-    <!-- SHEET: Entry Form -->
-    <div id="entrySheet" class="sheet">
-        <div class="sheet-overlay" onclick="closeSheet('entrySheet')"></div>
-        <div class="sheet-content">
-            <div class="sheet-handle" onclick="closeSheet('entrySheet')"></div>
-            <h3 id="entryTitle" class="text-xl font-extrabold mb-8 text-center uppercase tracking-widest">Entry</h3>
-            <div class="space-y-5 mb-8">
-                <select id="entryCat" onchange="checkNewCat(this)" class="w-full glass p-5 rounded-2xl font-bold outline-none appearance-none"></select>
-                <div class="relative">
-                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-xl font-bold text-lime-400 opacity-40">฿</span>
-                    <input type="number" id="entryAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none">
-                </div>
-            </div>
-            <button onclick="sendEntry()" id="btnSave" class="w-full bg-white text-black py-5 rounded-2xl font-extrabold text-lg">Confirm Entry</button>
+    <!-- Sections (Simplified) -->
+    <section class="mb-10">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-semibold">Expense (8)</h3>
+            <span class="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">View All</span>
         </div>
-    </div>
+        <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <span class="text-base">🍜 ค่าอาหาร</span>
+                <span class="text-base font-semibold">฿2,950</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-base">⛽ ค่าน้ำมัน</span>
+                <span class="text-base font-semibold">฿1,200</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-base">📺 Netflix</span>
+                <span class="text-base font-semibold">฿199</span>
+            </div>
+        </div>
+    </section>
 
-    <!-- Navigation -->
-    <nav class="nav-fixed glass flex justify-around items-center px-4">
-        <button class="text-lime-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house-chimney text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Home</span></button>
-        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-50"><i class="fa-solid fa-chart-line text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Stat</span></button>
-        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-50"><i class="fa-solid fa-credit-card text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Card</span></button>
-        <button onclick="openSheet('profileSheet')" class="text-gray-500 flex flex-col items-center gap-1"><i class="fa-solid fa-user-gear text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">User</span></button>
+    <!-- Bottom Nav -->
+    <nav class="nav-float h-16 flex justify-around items-center px-4">
+        <div class="flex flex-col items-center gap-1 text-white">
+            <i data-lucide="home" size="20"></i>
+            <span class="text-[10px] font-bold uppercase">Home</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-[#9CA3AF]">
+            <i data-lucide="pie-chart" size="20"></i>
+            <span class="text-[10px] font-bold uppercase">Statistics</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-[#9CA3AF]">
+            <i data-lucide="user" size="20"></i>
+            <span class="text-[10px] font-bold uppercase">Profile</span>
+        </div>
     </nav>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
-        let store = [];
-        let curAvatar = "";
-        let mode = "";
+        lucide.createIcons();
+        const hour = new Date().getHours();
+        const g = document.getElementById('greeting');
+        if(hour < 12) g.innerText = "GOOD MORNING";
+        else if(hour < 17) g.innerText = "GOOD AFTERNOON";
+        else g.innerText = "GOOD EVENING";
 
-        const PRESETS = [
-            "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-            "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver",
-            "https://api.dicebear.com/7.x/avataaars/svg?seed=Leo",
-            "https://api.dicebear.com/7.x/avataaars/svg?seed=Max",
-            "https://api.dicebear.com/7.x/avataaars/svg?seed=George"
-        ];
-
-        window.onload = () => {
-            initTime();
-            setupOptions();
-            loadUser();
-            fetchData();
-        };
-
-        function initTime() {
-            const h = new Date().getHours();
-            let g = "Good Night";
-            if(h >= 5 && h < 12) g = "Good Morning";
-            else if(h >= 12 && h < 17) g = "Good Afternoon";
-            else if(h >= 17 && h < 22) g = "Good Evening";
-            document.getElementById('greeting').innerText = g;
-        }
-
-        function setupOptions() {
-            const mS = document.getElementById('mSel');
-            const yS = document.getElementById('ySel');
-            const ms = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-            ms.forEach((m, i) => mS.add(new Option(m, i)));
-            for(let y=2025; y<=2035; y++) yS.add(new Option(y, y));
-            const now = new Date();
-            mS.value = now.getMonth();
-            yS.value = now.getFullYear();
-        }
-
-        function loadUser() {
-            const n = localStorage.getItem("uName") || "Phuwanat";
-            const i = localStorage.getItem("uImg") || PRESETS[0];
-            document.getElementById('headName').innerText = n;
-            document.getElementById('headImg').src = i;
-            document.getElementById('pNameInput').value = n;
-            curAvatar = i;
-            renderAvGrid();
-        }
-
-        function renderAvGrid() {
-            const grid = document.getElementById('avGrid');
-            const customImg = localStorage.getItem("uCustom");
-            let html = PRESETS.map(url => `
-                <div class="av-item ${curAvatar === url ? 'selected' : ''}" onclick="pickAv('${url}')">
-                    <img src="${url}">
-                </div>`).join('');
-            
-            html += `<div class="av-item flex flex-col items-center justify-center bg-white/5 ${curAvatar === customImg ? 'selected' : ''}" onclick="openUpload()">
-                ${customImg ? `<img src="${customImg}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 mt-1 uppercase">Upload</span>`}
-            </div>`;
-            grid.innerHTML = html;
-        }
-
-        function pickAv(u) { curAvatar = u; renderAvGrid(); }
-        function openUpload() { document.getElementById('imgUpload').click(); }
-        function onFileChosen(input) {
-            if(input.files && input.files[0]) {
-                const r = new FileReader();
-                r.onload = (e) => {
-                    localStorage.setItem("uCustom", e.target.result);
-                    curAvatar = e.target.result;
-                    renderAvGrid();
-                };
-                r.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function saveProfile() {
-            localStorage.setItem("uName", document.getElementById('pNameInput').value);
-            localStorage.setItem("uImg", curAvatar);
-            loadUser();
-            closeSheet('profileSheet');
-        }
-
-        async function fetchData() {
-            try {
-                document.getElementById('syncing').classList.remove('hidden');
-                const res = await fetch(API_URL);
-                store = await res.json();
-                updateUI();
-            } finally { document.getElementById('syncing').classList.add('hidden'); }
-        }
-
-        function updateUI() {
-            const m = parseInt(document.getElementById('mSel').value);
-            const y = parseInt(document.getElementById('ySel').value);
-            let bal = 0, html = "";
-
-            store.slice(1).reverse().forEach(row => {
-                const [date, type, name, amount] = row;
-                const d = new Date(date), a = parseFloat(amount);
-                if(type === 'Income') bal += a;
-                if(type === 'Expense') bal -= a;
-
-                if(d.getMonth() === m && d.getFullYear() === y) {
-                    const col = type === 'Income' ? 'text-lime-400' : (type === 'Expense' ? 'text-red-500' : 'text-orange-400');
-                    html += `<div class="glass p-5 rounded-[28px] flex justify-between items-center">
-                        <div><p class="font-bold text-sm tracking-tight">${name}</p><p class="text-[9px] opacity-30 font-bold uppercase tracking-widest">${d.toLocaleDateString('en-GB')}</p></div>
-                        <p class="font-bold text-lg ${col}"><span class="thb">฿</span>${a.toLocaleString()}</p>
-                    </div>`;
-                }
-            });
-            document.getElementById('mainBal').innerText = bal.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('hList').innerHTML = html || `<div class="py-20 text-center opacity-20 text-sm italic">Empty for this month</div>`;
-        }
-
-        function prepTrans(t) {
-            mode = t;
-            const cats = {
-                Income: ["Salary", "Bonus", "Family", "Other"],
-                Expense: ["Food", "Transport", "Rent", "3BB Internet", "AIS", "Share", "Spay later", "Tpay later", "SEasy"],
-                Deduction: ["Late for work", "Discipline", "Other"]
-            };
-            const sel = document.getElementById('entryCat');
-            sel.innerHTML = cats[t].map(c => `<option value="${c}">${c}</option>`).join('') + `<option value="NEW">+ Custom...</option>`;
-            document.getElementById('entryTitle').innerText = t;
-            openSheet('entrySheet');
-        }
-
-        function checkNewCat(s) { if(s.value === 'NEW') { const n = prompt("Category Name:"); if(n) { const o = new Option(n, n); s.insertBefore(o, s.firstChild); s.value = n; } } }
-
-        async function sendEntry() {
-            const n = document.getElementById('entryCat').value, a = document.getElementById('entryAmt').value;
-            if(!a) return;
-            const b = document.getElementById('btnSave');
-            b.innerText = "Syncing..."; b.disabled = true;
-            try {
-                await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({type: mode, name: n, amount: a}) });
-                document.getElementById('entryAmt').value = "";
-                closeSheet('entrySheet');
-                fetchData();
-            } finally { b.innerText = "Confirm Entry"; b.disabled = false; }
-        }
-
-        function openSheet(id) { document.getElementById(id).classList.add('active'); document.body.classList.add('lock-scroll'); }
-        function closeSheet(id) { document.getElementById(id).classList.remove('active'); document.body.classList.remove('lock-scroll'); }
+        // ฟังก์ชันสำหรับดึงข้อมูลจาก Apps Script มาแสดงผล (ในอนาคต)
+        const CONST_API_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
     </script>
 </body>
 </html>
