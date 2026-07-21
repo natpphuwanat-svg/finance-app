@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Finance App</title>
+    <title>My Finance App</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
@@ -14,83 +14,90 @@
         :root { --lime: #d9f99d; --bg: #0d1117; }
         body { 
             background-color: var(--bg); color: white; font-family: -apple-system, sans-serif;
-            padding-top: env(safe-area-inset-top); 
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: 120px; /* เว้นที่ให้ Navbar */
         }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .lime-card { background: var(--lime); color: black; border-radius: 35px; }
-        .action-btn { background: rgba(255,255,255,0.07); border-radius: 20px; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; }
-        .nav-active { background: var(--lime); color: black; }
+        /* Navbar Style like Apple Music */
+        .bottom-nav { 
+            position: fixed; bottom: 30px; left: 20px; right: 20px; 
+            height: 70px; border-radius: 35px; z-index: 1000;
+            display: flex; justify-content: space-around; align-items: center;
+        }
+        .modal { 
+            position: fixed; bottom: -100%; left: 0; right: 0; 
+            background: #1a1f26; border-top-left-radius: 30px; border-top-right-radius: 30px;
+            transition: 0.4s ease-out; z-index: 2000; padding: 30px 20px env(safe-area-inset-bottom);
+        }
+        .modal.active { bottom: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1999; }
+        .overlay.active { display: block; }
     </style>
 </head>
 <body class="px-6">
 
-    <!-- Header Section -->
-    <div class="flex justify-between items-center mt-4 mb-8">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full border-2 border-lime-300 overflow-hidden">
-                <img src="https://i.pravatar.cc/100" alt="profile">
+    <!-- Profile Header -->
+    <div class="flex justify-between items-center mt-6 mb-8">
+        <div class="flex items-center gap-4">
+            <div class="relative w-14 h-14" onclick="document.getElementById('uploadImg').click()">
+                <img id="profileDisplay" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-2 border-lime-400 object-cover">
+                <input type="file" id="uploadImg" class="hidden" accept="image/*" onchange="updateProfileImg(this)">
             </div>
             <div>
-                <p class="text-gray-400 text-xs">Hi, Sajibur!</p>
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    Hi, <span id="userNameDisplay" onclick="changeName()">Sajibur</span>
+                    <i class="fa-solid fa-pen text-[10px] opacity-40"></i>
+                </h2>
             </div>
         </div>
-        <div class="w-10 h-10 glass rounded-full flex items-center justify-center relative">
-            <i class="fa-regular fa-bell"></i>
-            <span class="absolute top-2 right-2 w-2 h-2 bg-lime-400 rounded-full border-2 border-[#0d1117]"></span>
-        </div>
+        <div class="w-11 h-11 glass rounded-full flex items-center justify-center"><i class="fa-regular fa-bell"></i></div>
     </div>
 
-    <!-- Balance Section -->
-    <div class="mb-8">
-        <p class="text-gray-400 text-sm mb-1">Wallet (USD)</p>
-        <div class="flex items-center gap-3">
-            <h1 class="text-4xl font-bold tracking-tight">$82,345.67</h1>
-            <span class="bg-lime-900/30 text-lime-400 text-[10px] font-bold px-2 py-1 rounded-full">+21.45%</span>
-        </div>
-    </div>
-
-    <!-- Quick Actions (Modified for your categories) -->
-    <div class="grid grid-cols-4 gap-3 mb-10 text-gray-400">
-        <button onclick="openForm('Income')" class="action-btn border border-lime-400/30 text-lime-400">
-            <i class="fa-solid fa-arrow-up text-lg mb-2"></i>รายรับ
-        </button>
-        <button onclick="openForm('Expense')" class="action-btn">
-            <i class="fa-solid fa-arrow-down text-lg mb-2 text-red-400"></i>รายจ่าย
-        </button>
-        <button onclick="openForm('Deduction')" class="action-btn border border-orange-400/30 text-orange-400">
-            <i class="fa-solid fa-clock-rotate-left text-lg mb-2"></i>รายการหัก
-        </button>
-        <button class="action-btn"><i class="fa-solid fa-ellipsis text-lg mb-2"></i>อื่นๆ</button>
-    </div>
-
-    <!-- Credit Card UI -->
+    <!-- Real-time Wallet Balance -->
     <div class="mb-10">
-        <h3 class="font-bold text-lg mb-4">My Cards</h3>
-        <div class="lime-card p-6 shadow-2xl shadow-lime-900/20 relative">
-            <div class="flex justify-between items-start mb-10">
-                <div>
-                    <p class="text-xs opacity-60">Current Balance</p>
-                    <h2 class="text-3xl font-extrabold tracking-tight">$60,890.67</h2>
-                </div>
-                <i class="fa-solid fa-rss text-2xl opacity-60"></i>
-            </div>
-            <div class="flex justify-between items-end">
-                <div>
-                    <p class="text-[9px] font-bold opacity-60">SAJIBUR RAHMAN 08/24</p>
-                    <p class="text-sm font-mono tracking-[4px]">1234 1234 1234 1234</p>
-                </div>
-                <div class="flex gap-1">
-                    <div class="w-6 h-6 bg-red-500 rounded-full opacity-80"></div>
-                    <div class="w-6 h-6 bg-orange-400 rounded-full -ml-3 opacity-80"></div>
-                </div>
-            </div>
+        <p class="text-gray-400 text-sm mb-1">ยอดเงินคงเหลือ (Wallet)</p>
+        <h1 class="text-5xl font-bold tracking-tighter">฿<span id="balanceDisplay">0.00</span></h1>
+    </div>
+
+    <!-- Actions Buttons -->
+    <div class="grid grid-cols-3 gap-3 mb-10 text-gray-300">
+        <button onclick="showModal('Income')" class="glass py-6 rounded-3xl flex flex-col items-center gap-2 border-lime-400/20 border">
+            <i class="fa-solid fa-arrow-up text-lime-400 text-xl"></i><span>รายรับ</span>
+        </button>
+        <button onclick="showModal('Expense')" class="glass py-6 rounded-3xl flex flex-col items-center gap-2 border-red-400/20 border">
+            <i class="fa-solid fa-arrow-down text-red-400 text-xl"></i><span>รายจ่าย</span>
+        </button>
+        <button onclick="showModal('Deduction')" class="glass py-6 rounded-3xl flex flex-col items-center gap-2 border-orange-400/20 border">
+            <i class="fa-solid fa-clock-rotate-left text-orange-400 text-xl"></i><span>รายการหัก</span>
+        </button>
+    </div>
+
+    <!-- Recent History (Issue 4) -->
+    <div class="mb-10">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg">ประวัติรายการ</h3>
+            <button onclick="fetchData()" class="text-xs text-lime-400">รีเฟรช</button>
+        </div>
+        <div id="historyList" class="flex flex-col gap-3">
+            <p class="text-gray-500 text-sm text-center py-4 italic">กำลังโหลดข้อมูล...</p>
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
-    <div class="fixed bottom-8 left-6 right-6 glass h-16 rounded-[28px] flex justify-around items-center px-2 z-50">
-        <button class="nav-active px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-sm">
+    <!-- Modal Form (Issue 3 - Style 1457) -->
+    <div class="overlay" id="overlay" onclick="closeModal()"></div>
+    <div class="modal" id="modal">
+        <h3 id="modalTitle" class="text-2xl font-bold mb-6 text-center">บันทึกรายการ</h3>
+        <select id="itemSelect" class="w-full bg-gray-800 p-4 rounded-xl mb-4 border-none text-white appearance-none" onchange="checkNewItem(this)">
+            <!-- Options will be dynamic -->
+        </select>
+        <input type="number" id="itemAmount" placeholder="0.00" class="w-full bg-gray-800 p-4 rounded-xl mb-6 text-2xl font-bold text-lime-400 text-center">
+        <button onclick="saveTransaction()" class="w-full lime-card py-4 font-bold text-lg shadow-lg">บันทึกข้อมูล</button>
+    </div>
+
+    <!-- Fixed Bottom Nav (Issue 5) -->
+    <div class="bottom-nav glass shadow-2xl">
+        <button class="bg-lime-400 text-black px-6 py-2 rounded-full flex items-center gap-2 font-bold">
             <i class="fa-solid fa-house"></i> Home
         </button>
         <button class="text-gray-500 text-xl"><i class="fa-solid fa-chart-pie"></i></button>
@@ -100,31 +107,124 @@
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
+        let currentType = "";
+        const CATEGORIES = {
+            Income: ["เงินเดือน", "โบนัส", "รับจากที่บ้าน", "อื่นๆ"],
+            Expense: ["แม่", "3BB", "AIS", "แชร์", "Spay later", "Tpay later", "SEasy", "อื่นๆ"],
+            Deduction: ["มาสาย", "ลากิจ", "วินัย", "อื่นๆ"]
+        };
 
-        async function openForm(type) {
-            let label = type === 'Income' ? 'รายรับ' : (type === 'Expense' ? 'รายจ่าย' : 'รายการหัก (สถิติ)');
-            const name = prompt(`ระบุชื่อรายการ ${label}: (เช่น เงินเดือน, ค่าที่พัก, มาสาย)`);
-            if(!name) return;
+        // --- Profile Management ---
+        function changeName() {
+            const name = prompt("ระบุชื่อของคุณ:");
+            if (name) {
+                localStorage.setItem("user_name", name);
+                document.getElementById("userNameDisplay").innerText = name;
+            }
+        }
+
+        function updateProfileImg(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    localStorage.setItem("user_img", e.target.result);
+                    document.getElementById("profileDisplay").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // --- Data & Calculation ---
+        async function fetchData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                processHistory(data);
+            } catch (err) { console.error("Load failed", err); }
+        }
+
+        function processHistory(rows) {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let html = "";
+
+            // ข้ามแถวที่ 1 (Header)
+            for (let i = 1; i < rows.length; i++) {
+                const [date, type, name, amount] = rows[i];
+                if (type === 'Income') totalIncome += parseFloat(amount);
+                if (type === 'Expense') totalExpense += parseFloat(amount);
+
+                // สร้างรายการแสดงผล
+                const color = type === 'Income' ? 'text-lime-400' : (type === 'Expense' ? 'text-red-400' : 'text-orange-400');
+                const symbol = type === 'Income' ? '+' : (type === 'Expense' ? '-' : 'หัก');
+                html += `
+                    <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${name}</p>
+                            <p class="text-[10px] text-gray-500">${new Date(date).toLocaleDateString('th-TH')}</p>
+                        </div>
+                        <p class="font-bold ${color}">${symbol} ${parseFloat(amount).toLocaleString()} ฿</p>
+                    </div>`;
+            }
+
+            document.getElementById("balanceDisplay").innerText = (totalIncome - totalExpense).toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById("historyList").innerHTML = html || '<p class="text-center text-gray-500 text-sm">ยังไม่มีรายการ</p>';
+        }
+
+        // --- Modal UI ---
+        function showModal(type) {
+            currentType = type;
+            document.getElementById("modalTitle").innerText = "บันทึก" + (type==='Income'?'รายรับ':(type==='Expense'?'รายจ่าย':'รายการหัก'));
+            const select = document.getElementById("itemSelect");
+            select.innerHTML = CATEGORIES[type].map(c => `<option value="${c}">${c}</option>`).join('') + `<option value="NEW">+ เพิ่มรายการใหม่...</option>`;
             
-            const amount = prompt(`ระบุจำนวนเงินสำหรับ ${name}:`);
-            if(!amount || isNaN(amount)) return;
+            document.getElementById("modal").classList.add("active");
+            document.getElementById("overlay").classList.add("active");
+        }
 
-            alert("กำลังบันทึกข้อมูล...");
+        function closeModal() {
+            document.getElementById("modal").classList.remove("active");
+            document.getElementById("overlay").classList.remove("active");
+        }
+
+        function checkNewItem(sel) {
+            if (sel.value === "NEW") {
+                const custom = prompt("ระบุชื่อรายการใหม่:");
+                if (custom) {
+                    const opt = document.createElement("option");
+                    opt.value = custom; opt.text = custom;
+                    sel.insertBefore(opt, sel.firstChild);
+                    sel.value = custom;
+                }
+            }
+        }
+
+        async function saveTransaction() {
+            const name = document.getElementById("itemSelect").value;
+            const amount = document.getElementById("itemAmount").value;
+            if (!amount || amount <= 0) return alert("กรุณาใส่จำนวนเงิน");
+
+            closeModal();
+            // บันทึกชั่วคราวเพื่อให้ดูไว
+            const currentBal = parseFloat(document.getElementById("balanceDisplay").innerText.replace(/,/g, ''));
+            
             try {
                 await fetch(API_URL, {
                     method: "POST",
-                    mode: "no-cors", // ใช้ no-cors สำหรับ Google Apps Script
-                    body: JSON.stringify({
-                        type: type,
-                        name: name,
-                        amount: parseFloat(amount)
-                    })
+                    mode: "no-cors",
+                    body: JSON.stringify({ type: currentType, name: name, amount: amount })
                 });
-                alert("บันทึกสำเร็จลงใน Google Sheets!");
-            } catch (err) {
-                alert("เกิดข้อผิดพลาดในการบันทึก");
-            }
+                document.getElementById("itemAmount").value = "";
+                fetchData(); // อัปเดตยอดจริง
+            } catch (e) { alert("บันทึกไม่สำเร็จ"); }
         }
+
+        // Init
+        window.onload = () => {
+            fetchData();
+            if(localStorage.getItem("user_name")) document.getElementById("userNameDisplay").innerText = localStorage.getItem("user_name");
+            if(localStorage.getItem("user_img")) document.getElementById("profileDisplay").src = localStorage.getItem("user_img");
+        };
     </script>
 </body>
 </html>
