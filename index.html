@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Finance Dashboard</title>
+    <title>Finance Dashboard Pro</title>
     
-    <!-- ✅ แก้บั๊กไอคอน: บรรทัดนี้ต้องตรงกับชื่อไฟล์ใน GitHub (เช่น icon.png) -->
+    <!-- ✅ แก้บั๊กไอคอน: ต้องชื่อ icon.png ใน GitHub เท่านั้น -->
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,15 +14,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- ✅ Library สำหรับการ Crop รูป -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <style>
         :root { --lime: #bef264; --bg: #090b10; --card: #161b22; }
         * { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        body { background-color: var(--bg); color: white; margin: 0; }
+        body { background-color: var(--bg); color: white; margin: 0; overflow-x: hidden; }
         body.lock-scroll { overflow: hidden !important; height: 100vh; position: fixed; width: 100%; }
 
-        /* ✅ แก้บั๊กการตัดรูป (Image Cropping) */
         img { object-fit: cover; object-position: center; }
 
         header {
@@ -50,15 +53,22 @@
         .sheet.active .sheet-content { transform: translateY(0); }
         .sheet-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.15); border-radius: 10px; margin: 0 auto 24px; }
 
+        /* Avatar Grid */
         .av-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .av-item { width: 100%; aspect-ratio: 1/1; border-radius: 20px; border: 2.5px solid transparent; overflow: hidden; background: #1c222b; transition: 0.3s; cursor: pointer; }
         .av-item.selected { border-color: var(--lime); transform: scale(1.05); box-shadow: 0 10px 25px rgba(190, 242, 100, 0.15); }
+
+        /* ✅ Cropper Modal Style */
+        #cropModal { position: fixed; inset: 0; background: #000; z-index: 3000; display: none; flex-direction: column; }
+        #cropModal.active { display: flex; }
+        .crop-container { flex: 1; position: relative; width: 100%; overflow: hidden; }
         
         .nav-fixed { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; border-radius: 36px; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
     </style>
 </head>
 <body class="pb-40">
 
+    <!-- Header Section -->
     <header class="px-6 pb-4">
         <div class="flex justify-between items-center py-4">
             <div class="flex items-center gap-4" onclick="openSheet('profileSheet')">
@@ -80,7 +90,7 @@
     <main class="px-6 mt-6">
         <div class="flex justify-center items-center gap-10 mb-10 text-gray-600">
             <button onclick="changeDate(-1)"><i class="fa-solid fa-chevron-left text-sm"></i></button>
-            <div id="monthDisplay" class="text-lg font-bold tracking-tight text-white">Month Year</div>
+            <div id="monthDisplay" class="text-lg font-bold tracking-tight text-white uppercase tracking-widest">July 2026</div>
             <button onclick="changeDate(1)"><i class="fa-solid fa-chevron-right text-sm"></i></button>
         </div>
 
@@ -94,16 +104,16 @@
 
         <div class="grid grid-cols-3 gap-3 mb-12">
             <button onclick="prepTrans('Income')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400"><i class="fa-solid fa-plus"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Income</span>
+                <div class="w-11 h-11 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400"><i class="fa-solid fa-arrow-up"></i></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Income</span>
             </button>
             <button onclick="prepTrans('Expense')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500"><i class="fa-solid fa-minus"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Expense</span>
+                <div class="w-11 h-11 rounded-full bg-red-400/10 flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down"></i></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Expense</span>
             </button>
             <button onclick="prepTrans('Deduction')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500"><i class="fa-solid fa-calculator"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Deduct</span>
+                <div class="w-11 h-11 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-calculator"></i></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-nowrap">Deduct</span>
             </button>
         </div>
 
@@ -121,23 +131,37 @@
         <div class="sheet-overlay" onclick="closeSheet('profileSheet')"></div>
         <div class="sheet-content">
             <div class="sheet-handle" onclick="closeSheet('profileSheet')"></div>
-            <h3 class="text-xl font-bold mb-8 text-center tracking-tight">Personalize Profile</h3>
+            <h3 class="text-xl font-bold mb-8 text-center tracking-tight uppercase tracking-widest">Personalize</h3>
             <div class="space-y-6">
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest">Username</label>
-                    <input type="text" id="pName" class="w-full glass p-5 rounded-2xl font-bold mt-2 outline-none text-xl">
+                    <input type="text" id="pName" class="w-full glass p-5 rounded-2xl font-bold mt-2 outline-none text-xl border-transparent focus:border-lime-400">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Inter Avatar</label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Style</label>
                     <div id="avGrid" class="av-grid"></div>
                 </div>
-                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl active:scale-95 transition-transform">บันทึกข้อมูล</button>
+                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 active:scale-95 transition-transform">บันทึกข้อมูลส่วนตัว</button>
             </div>
         </div>
     </div>
+
+    <!-- ✅ Cropper UI Modal -->
+    <div id="cropModal">
+        <div class="p-6 pt-12 flex justify-between items-center">
+            <button onclick="closeCrop()" class="text-gray-400">Cancel</button>
+            <h3 class="font-bold">Adjust Image</h3>
+            <button onclick="applyCrop()" class="text-lime-400 font-bold">Done</button>
+        </div>
+        <div class="crop-container">
+            <img id="cropImage">
+        </div>
+    </div>
+
+    <!-- Input สำหรับเลือกไฟล์ (ซ่อนไว้) -->
     <input type="file" id="fUpload" class="hidden" accept="image/*" onchange="onFile(this)">
 
-    <!-- SHEET: Entry Form -->
+    <!-- SHEET: Transaction -->
     <div id="entrySheet" class="sheet">
         <div class="sheet-overlay" onclick="closeSheet('entrySheet')"></div>
         <div class="sheet-content">
@@ -164,8 +188,8 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
         let store = [], curAv = "", mode = "", vDate = new Date();
+        let cropper = null;
 
-        // 8 Modern Minimalist Presets (4M, 4F) - Notion Style
         const PRESETS = [
             "https://api.dicebear.com/7.x/notionists/svg?seed=Oliver&backgroundColor=b6e3f4",
             "https://api.dicebear.com/7.x/notionists/svg?seed=Justin&backgroundColor=ffdfbf",
@@ -200,7 +224,7 @@
 
         function changeDate(s) { vDate.setMonth(vDate.getMonth() + s); updateDate(); renderUI(); }
 
-        // --- PROFILE ---
+        // --- PROFILE LOGIC ---
         function loadProfile() {
             const n = localStorage.getItem("n_") || "Phuwanat";
             const i = localStorage.getItem("i_") || PRESETS[0];
@@ -223,12 +247,40 @@
 
         function pickAv(u) { curAv = u; renderAvGrid(); }
         function triggerUp() { document.getElementById('fUpload').click(); }
+
+        // ✅ ฟังก์ชันเมื่อเลือกไฟล์รูปภาพ
         function onFile(input) {
             if(input.files && input.files[0]) {
-                const r = new FileReader();
-                r.onload = (e) => { localStorage.setItem("c_", e.target.result); curAv = e.target.result; renderAvGrid(); };
-                r.readAsDataURL(input.files[0]);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById('cropImage');
+                    img.src = e.target.result;
+                    document.getElementById('cropModal').classList.add('active');
+                    if(cropper) cropper.destroy();
+                    cropper = new Cropper(img, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        background: false
+                    });
+                };
+                reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        function applyCrop() {
+            const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            localStorage.setItem("c_", dataUrl);
+            curAv = dataUrl;
+            renderAvGrid();
+            closeCrop();
+        }
+
+        function closeCrop() {
+            document.getElementById('cropModal').classList.remove('active');
+            document.getElementById('fUpload').value = "";
         }
 
         function saveProfile() {
@@ -238,7 +290,7 @@
             closeSheet('profileSheet');
         }
 
-        // --- DATA ---
+        // --- DATA LOGIC ---
         async function fetchData() {
             try {
                 document.getElementById('sync').classList.remove('hidden');
@@ -258,7 +310,7 @@
                 if(type === 'Expense') bal -= a;
                 if(d.getMonth() === m && d.getFullYear() === y) {
                     const col = type === 'Income' ? 'text-lime-400' : (type === 'Expense' ? 'text-red-500' : 'text-orange-400');
-                    html += `<div class="glass p-5 rounded-[28px] flex justify-between items-center">
+                    html += `<div class="glass p-5 rounded-[28px] flex justify-between items-center animate-fadeIn">
                         <div><p class="font-bold text-sm tracking-tight">${name}</p><p class="text-[9px] opacity-30 font-bold uppercase tracking-widest">${d.toLocaleDateString('en-GB')}</p></div>
                         <p class="font-bold text-lg ${col} tabular-nums"><span class="thb">฿</span>${a.toLocaleString()}</p>
                     </div>`;
