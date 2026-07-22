@@ -234,7 +234,7 @@
     <script>
         // ************************************************************
         // วาง URL ของคุณตรงนี้
-        const SCRIPT_URL = "วาง_URL_ที่นี่"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2RMPvidn8wwyZChTJH18Divz9wrnC1I1Uxhtr08X3e-CQ-PxW2kS8cJR93q-oNL4I1w/exec"; 
         // ************************************************************
 
         const masterCategories = {
@@ -272,7 +272,7 @@
         // --- ระบบ FETCH อัจฉริยะ (CACHE FIRST) ---
 
         async function fetchData() {
-            if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxs-m0SDEWwt2D8oc-7rCuS_0h5bKS4NlEPhVwm9888P9OHuHG02WQw0eY34m6etGFqaA/exec") return;
+            if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
             
             // 1. ลองโหลดจาก LocalStorage ก่อน (Instant Load)
             const cachedData = localStorage.getItem('finance_cache');
