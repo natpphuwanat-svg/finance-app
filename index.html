@@ -20,35 +20,26 @@
         .bg-lime-brand { background-color: #A3E635; }
         .bg-lime-brand-opacity { background-color: rgba(163, 230, 53, 0.15); }
         
-        /* Modal Animation */
         #modalOverlay { transition: opacity 0.3s ease; }
         #entryModal { transition: transform 0.3s ease-out; transform: translateY(100%); }
         #entryModal.active { transform: translateY(0); }
         
         input, select { background-color: #2c2c2e !important; border: none !important; outline: none !important; color: white !important; }
-        
-        /* Loading Spinner */
         .loader { border: 2px solid #f3f3f3; border-top: 2px solid #A3E635; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-5 pb-32">
+<body class="p-5 pb-24">
 
-    <!-- ส่วนหัวทักทาย -->
-    <div class="flex justify-between items-center mb-8 mt-4">
-        <div>
-            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD MORNING</p>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Phuwanat</h1>
-      <!-- Header (No Notification Bell) -->
+    <!-- Header (แก้ไขแล้ว: มีอันเดียว และไม่มีกระดิ่ง) -->
     <div class="flex justify-between items-center mb-8 mt-4">
         <div>
             <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD AFTERNOON</p>
             <h1 class="text-2xl font-bold text-white tracking-tight">Phuwanat</h1>
         </div>
-        <!-- ลบ div ของปุ่มกระดิ่งออกแล้ว -->
     </div>
 
-    <!-- ส่วนเลือกเดือน -->
+    <!-- Month Navigation -->
     <div class="flex justify-center items-center gap-6 mb-6">
         <button onclick="changeMonth(-1)" class="p-2 text-gray-500"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="relative flex items-center gap-2">
@@ -59,7 +50,7 @@
         <button onclick="changeMonth(1)" class="p-2 text-gray-500"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- การ์ดแสดงยอดเงิน -->
+    <!-- Balance Card -->
     <div class="ios-card p-6 mb-6 shadow-2xl border border-white/5">
         <div class="text-center mb-10 mt-4">
             <p class="text-gray-400 text-[10px] tracking-widest mb-3 uppercase font-bold">Balance</p>
@@ -93,7 +84,7 @@
         </div>
     </div>
 
-    <!-- รายการล่าสุด -->
+    <!-- รายการล่าสุด (Entries) -->
     <div class="ios-card p-5">
         <div class="flex justify-between items-center mb-5 px-1">
             <h3 class="font-black tracking-widest text-[10px] text-gray-500 uppercase">Entries</h3>
@@ -105,8 +96,7 @@
         <button onclick="openModal()" class="w-full mt-10 py-4 bg-lime-brand text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase transition-transform active:scale-95 text-xs">+ Add Entry</button>
     </div>
 
-    <!-- เมนูแถบล่าง -->
-    <!-- Bottom Navigation (Compact Version) -->
+    <!-- Bottom Navigation (Compact Version: เล็กกะทัดรัด) -->
     <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-2 pb-5 flex justify-between z-40">
         <div class="text-center text-lime-brand">
             <i class="fa-solid fa-house-chimney text-lg"></i>
@@ -146,7 +136,6 @@
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Category</label>
                     <select id="inputCategory" class="w-full h-16 rounded-2xl px-5 mt-2 font-bold text-lg appearance-none">
-                        <!-- Filled by JS -->
                     </select>
                 </div>
                 <div>
@@ -160,8 +149,8 @@
 
     <script>
         // ************************************************************
-        // แก้ไขบรรทัดนี้: วาง URL ที่ได้จาก Google Apps Script ของคุณ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvh_QrMI4cAdz1G904yCGe-UjYROCj6UWwADY8LHaxnnFSeUvTI31iPe4P1eB3SNnQRw/exec"; 
+        // แก้ไขบรรทัดนี้: วาง URL ของคุณตรงนี้
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTg2UdPub76gCVxLzGqfsMAfoWnMGZ535yAmPqgjOX9b8-yi9OOD_pWRApCZRXcWRl5Q/exec"; 
         // ************************************************************
 
         const masterCategories = {
@@ -172,14 +161,12 @@
 
         let entries = [];
 
-        // อัปเดตคำทักทาย
         function updateGreeting() {
             const h = new Date().getHours();
             let g = h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : h < 21 ? "GOOD EVENING" : "GOOD NIGHT";
             document.getElementById('greetingText').innerText = g;
         }
 
-        // เรียงพยัญชนะ (0-9 > A-Z > ก-ฮ)
         function sortArray(arr) {
             return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
         }
@@ -193,7 +180,6 @@
             });
         }
 
-        // ดึงข้อมูลจาก Google Sheets
         async function fetchData() {
             if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
             try {
@@ -202,12 +188,11 @@
                 entries = data.reverse();
                 renderData();
             } catch (e) {
-                console.error("Fetch Error:", e);
-                document.getElementById('entryList').innerHTML = `<p class="text-center text-red-500 py-4 text-xs">Error loading data. Check URL.</p>`;
+                console.error(e);
+                document.getElementById('entryList').innerHTML = `<p class="text-center text-red-500 py-4 text-xs">Error loading data.</p>`;
             }
         }
 
-        // บันทึกข้อมูลไป Google Sheets
         async function saveEntry() {
             const type = document.getElementById('inputType').value;
             const category = document.getElementById('inputCategory').value;
@@ -215,8 +200,6 @@
             const btn = document.getElementById('saveBtn');
 
             if (!amount || amount <= 0) return alert("Please enter amount");
-            if (SCRIPT_URL === "วาง_URL_ที่นี่") return alert("Please set SCRIPT_URL first!");
-
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Saving...`;
 
@@ -226,10 +209,8 @@
                     mode: 'no-cors',
                     body: JSON.stringify({ type, category, amount })
                 });
-
                 closeModal();
                 document.getElementById('inputAmount').value = "";
-                // รอสักครู่แล้วโหลดใหม่
                 setTimeout(fetchData, 1000);
             } catch (e) {
                 alert("Save failed!");
@@ -254,6 +235,8 @@
                 const isExp = item.type === 'Expense';
                 const color = isInc ? 'text-lime-brand' : isExp ? 'text-red-500' : 'text-orange-400';
                 const bg = isInc ? 'bg-lime-brand' : isExp ? 'bg-red-500' : 'bg-orange-500';
+                
+                // แก้ไขไอคอนในลิสต์ให้ตรงกับด้านบน (Income = fa-arrow-up)
                 const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
 
                 list.innerHTML += `
@@ -281,7 +264,6 @@
             document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
         }
 
-        // ระบบ Modal & Month (เหมือนเดิม)
         function openModal() {
             populateCategories();
             document.getElementById('modalOverlay').classList.remove('hidden');
