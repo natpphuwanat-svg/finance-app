@@ -39,11 +39,13 @@
         <div>
             <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD MORNING</p>
             <h1 class="text-2xl font-bold text-white tracking-tight">Phuwanat</h1>
+      <!-- Header (No Notification Bell) -->
+    <div class="flex justify-between items-center mb-8 mt-4">
+        <div>
+            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD AFTERNOON</p>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Phuwanat</h1>
         </div>
-        <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center relative">
-            <i class="fa-regular fa-bell"></i>
-            <span class="absolute top-2 right-2 w-2 h-2 bg-lime-brand rounded-full border-2 border-black"></span>
-        </div>
+        <!-- ลบ div ของปุ่มกระดิ่งออกแล้ว -->
     </div>
 
     <!-- ส่วนเลือกเดือน -->
@@ -252,7 +254,7 @@
                 const isExp = item.type === 'Expense';
                 const color = isInc ? 'text-lime-brand' : isExp ? 'text-red-500' : 'text-orange-400';
                 const bg = isInc ? 'bg-lime-brand' : isExp ? 'bg-red-500' : 'bg-orange-500';
-                const icon = isInc ? 'fa-briefcase' : isExp ? 'fa-arrow-down' : 'fa-minus';
+                const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
 
                 list.innerHTML += `
                     <div class="flex justify-between items-center">
