@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -22,14 +22,7 @@
             overflow-x: hidden; 
         }
         .ios-card { background-color: #1c1c1e; border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
-        
-        /* ปรับความทึบ Bottom Bar (Point 3) */
-        .nav-blur { 
-            background: rgba(18, 18, 18, 0.94); 
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px);
-        }
-        
+        .nav-blur { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); }
         #monthPicker { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
         
         .text-system { color: #A3E635; }
@@ -52,11 +45,7 @@
         .hide-divider::before { opacity: 0; }
 
         .is-syncing { opacity: 0.7; }
-
-        @keyframes spin-soft {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
 
         .filter-active { 
@@ -77,20 +66,16 @@
 
         .alert-modal-content { width: 85%; margin: auto auto 40px auto; background: #2c2c2e; border-radius: 24px; transform: translateY(100%); padding: 24px; text-align: center; }
         .modal-overlay.active .alert-modal-content { transform: translateY(0); }
-
-        /* Animation for Nav Icons (Point 4) */
-        .nav-item { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .nav-item:active { transform: scale(1.15); }
     </style>
 </head>
-<body class="p-5 pb-32 text-white"> <!-- เพิ่ม pb เพื่อไม่ให้คอนเทนต์จมหายไปในเมนูที่สูงขึ้น -->
+<body class="p-5 pb-28 text-white">
 
-    <!-- Header -->
+    <!-- Header (Profile Section) -->
     <div class="flex justify-between items-center mb-8 mt-4 px-1">
         <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
-            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-semibold text-system">HELLO</p>
+            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-semibold text-system">LOADING...</p>
             <div class="flex items-center gap-2">
-                <h1 id="userNameDisplay" class="text-2xl font-bold tracking-tight">User</h1>
+                <h1 id="userNameDisplay" class="text-2xl font-bold tracking-tight text-white">User</h1>
                 <i class="fa-solid fa-chevron-right text-gray-600 text-xs mt-1"></i>
             </div>
         </div>
@@ -110,28 +95,31 @@
         <button onclick="changeMonth(1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- Balance Card -->
+    <!-- Balance Summary -->
     <div id="balanceCard" class="ios-card shadow-2xl border border-white/5 overflow-hidden">
         <div class="text-center py-8">
             <p class="text-gray-400 text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
             <h2 id="totalBalance" class="text-5xl font-black tracking-tighter">฿0</h2>
         </div>
+        
         <div class="px-2 pb-2">
-            <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl cursor-pointer border border-transparent">
+            <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
                 </div>
                 <span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
             </div>
-            <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl cursor-pointer border border-transparent">
+
+            <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
                 </div>
                 <span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
             </div>
-            <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl cursor-pointer border border-transparent">
+
+            <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
@@ -153,46 +141,47 @@
         <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Bottom Navigation (Point 1, 2, 3, 5, 6) -->
-    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-2 pb-9 flex justify-center gap-14 z-40">
-        <div class="nav-item text-center text-system">
-            <i class="fa-solid fa-house-chimney text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-medium uppercase tracking-tighter">Home</p>
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-10 pt-3 pb-[26px] flex justify-between z-40">
+        <div class="text-center text-system transition-transform duration-200 active:scale-110">
+            <i class="fa-solid fa-house-chimney text-2xl"></i>
+            <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p>
         </div>
-        <div class="nav-item text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-chart-pie text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-medium uppercase tracking-tighter">STATISTICS</p>
+        <div class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110">
+            <i class="fa-solid fa-chart-pie text-2xl"></i>
+            <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p>
         </div>
-        <div class="nav-item text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-gear text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-medium uppercase tracking-tighter">SETTINGS</p>
+        <div class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110">
+            <i class="fa-solid fa-gear text-2xl"></i>
+            <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p>
         </div>
     </div>
 
-    <!-- Modals (เหมือนเดิม) -->
+    <!-- [Modal] Edit Profile -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3>
-                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-6">
+            <div class="space-y-6 text-left">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">User Name</label>
-                    <input type="text" id="inputUserName" maxlength="20" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl bg-gray-800">
+                    <input type="text" id="inputUserName" maxlength="20" placeholder="Enter your name" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl bg-gray-800 border-none outline-none">
                 </div>
-                <button onclick="saveProfile()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em]">SAVE</button>
+                <button onclick="saveProfile()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
             </div>
         </div>
     </div>
 
+    <!-- [Modal] New Entry -->
     <div id="entryModal" class="modal-overlay">
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">New Entry</h3>
-                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-6">
+            <div class="space-y-6 text-left">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Type</label>
                     <select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800">
@@ -209,11 +198,12 @@
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
                     <input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400">
                 </div>
-                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em]">SAVE</button>
+                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
             </div>
         </div>
     </div>
 
+    <!-- [Modal] Discard Confirmation -->
     <div id="discardModal" class="modal-overlay" style="align-items: center; background: rgba(0,0,0,0.8);">
         <div class="alert-modal-content">
             <h3 class="text-xl font-bold">Discard changes?</h3>
@@ -225,6 +215,7 @@
         </div>
     </div>
 
+    <!-- [Modal] View All -->
     <div id="viewAllModal" class="modal-overlay">
         <div class="modal-content h-[85vh] flex flex-col">
             <div class="flex justify-between items-center mb-6 px-1">
@@ -232,7 +223,7 @@
                     <h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3>
                     <p class="text-[9px] text-gray-500 font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p>
                 </div>
-                <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div>
         </div>
@@ -240,7 +231,7 @@
 
     <script>
         // ************************************************************
-        // วาง URL ของคุณตรงนี้
+        // URL ของ Google Apps Script
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2RMPvidn8wwyZChTJH18Divz9wrnC1I1Uxhtr08X3e-CQ-PxW2kS8cJR93q-oNL4I1w/exec"; 
         // ************************************************************
 
@@ -257,10 +248,11 @@
 
         function updateGreeting() {
             const h = new Date().getHours();
-            let g = h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : h < 21 ? "GOOD EVENING" : "GOOD NIGHT";
+            let g = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : h < 21 ? "GOOD EVENING" : "GOOD NIGHT";
             document.getElementById('greetingText').innerText = g;
         }
 
+        // --- ระบบ Profile ---
         function loadUserProfile() {
             const savedName = localStorage.getItem('userName') || 'Phuwanat';
             document.getElementById('userNameDisplay').innerText = savedName;
@@ -268,6 +260,7 @@
         }
 
         function openProfileModal() { toggleModal('profileModal', true); }
+
         function saveProfile() {
             const newName = document.getElementById('inputUserName').value.trim();
             if (newName === "") return alert("Please enter a name");
@@ -276,6 +269,7 @@
             toggleModal('profileModal', false);
         }
 
+        // --- ระบบข้อมูล ---
         async function fetchData() {
             if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
             const cachedData = localStorage.getItem('finance_cache');
@@ -340,7 +334,7 @@
                 title.innerText = `${currentFilter.toUpperCase()} ENTRIES`;
             } else { title.innerText = `ENTRIES`; }
             const homeList = displayData.slice(0, 4);
-            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>` : "";
+            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic italic">No records found</p>` : "";
             homeList.forEach(item => list.innerHTML += createItemHTML(item));
         }
 
@@ -361,6 +355,13 @@
             `;
         }
 
+        function sortArray(arr) { return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' })); }
+        function populateCategories() {
+            const type = document.getElementById('inputType').value;
+            const select = document.getElementById('inputCategory');
+            select.innerHTML = "";
+            sortArray(masterCategories[type]).forEach(cat => { select.innerHTML += `<option value="${cat}">${cat}</option>`; });
+        }
         function markAsDirty() { isModified = true; }
         function openAddEntryModal() {
             isModified = false; document.getElementById('inputAmount').value = "";
@@ -385,7 +386,8 @@
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type, category, amount }) });
                 isModified = false; toggleModal('entryModal', false); 
                 entries.push({ date: new Date().toISOString(), type, category, amount });
-                renderData(); setTimeout(fetchData, 1500);
+                renderData();
+                setTimeout(fetchData, 1500);
             } catch (e) { alert("Failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
