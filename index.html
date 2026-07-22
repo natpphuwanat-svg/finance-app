@@ -12,7 +12,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -35,7 +35,8 @@
         }
 
         .glass { background: rgba(22, 27, 34, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); }
-        .thb { font-size: 0.5em; font-weight: 300; margin-right: 6px; color: rgba(255,255,255,0.4); vertical-align: middle; }
+        .thb { font-family: system-ui, sans-serif; font-size: 1em; font-weight: inherit; margin-right: 0.05em; display: inline-block; vertical-align: baseline; }
+        .num-style { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 
         .sheet { position: fixed; inset: 0; z-index: 2000; visibility: hidden; pointer-events: none; }
         .sheet.active { visibility: visible; pointer-events: auto; }
@@ -53,7 +54,16 @@
 
         .grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .grid-btn { width: 100%; aspect-ratio: 1/1; border-radius: 20px; border: 2.5px solid transparent; background: #1c222b; transition: 0.25s; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #555; font-size: 14px; overflow: hidden; }
-        .grid-btn.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); color: var(--lime); box-shadow: 0 10px 20px rgba(190, 242, 100, 0.15); }
+        .grid-btn.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); color: var(--lime); }
+
+        .summary-card { background: #11141b; border-radius: 28px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        .summary-row { display: flex; align-items: center; padding: 18px 20px; cursor: pointer; }
+        .row-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0 20px; }
+
+        #tCat {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.4)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 20px center; background-size: 16px; padding-right: 50px;
+        }
 
         #cropModal { position: fixed; inset: 0; background: #000; z-index: 3000; display: none; flex-direction: column; }
         #cropModal.active { display: flex; }
@@ -69,7 +79,7 @@
             <div class="flex items-center gap-4" onclick="openSheet('profileSheet')">
                 <div class="relative">
                     <img id="headImg" src="" class="w-12 h-12 rounded-2xl shadow-lg bg-[#1c222b]">
-                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-lime-400 rounded-lg border-[3.5px] border-[#090b10] flex items-center justify-center">
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-lime-400 rounded-lg border-[3px] border-[#090b10] flex items-center justify-center">
                         <i class="fa-solid fa-pencil text-[7px] text-black"></i>
                     </div>
                 </div>
@@ -84,32 +94,56 @@
 
     <main class="px-6 mt-6">
         <div class="flex justify-center items-center gap-10 mb-10 text-gray-600">
-            <button onclick="stepDate(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <button onclick="stepDate(-1)"><i class="fa-solid fa-chevron-left text-sm"></i></button>
             <div id="monthDisplay" onclick="openJumpPicker()" class="text-lg font-bold tracking-tight text-white uppercase tracking-widest cursor-pointer active:opacity-50">JULY 2026</div>
-            <button onclick="stepDate(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            <button onclick="stepDate(1)"><i class="fa-solid fa-chevron-right text-sm"></i></button>
         </div>
 
-        <section class="text-center mb-12">
-            <p class="text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em] opacity-80 font-semibold">คงเหลือ BALANCE</p>
-            <div class="flex justify-center items-baseline">
-                <span class="thb">฿</span>
-                <h1 id="mainBal" class="text-5xl font-extrabold tracking-tighter tabular-nums">0.00</h1>
+        <section class="text-center mb-10">
+            <p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">BALANCE</p>
+            <div class="flex justify-center items-baseline mt-2">
+                <h1 class="text-6xl font-extrabold num-style tracking-tighter">
+                    <span class="thb text-white">฿</span><span id="mainBal">0</span>
+                </h1>
             </div>
         </section>
 
-        <div class="grid grid-cols-3 gap-3 mb-12">
-            <button onclick="prepEntry('Income')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-                <div class="w-11 h-11 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400"><i class="fa-solid fa-arrow-up"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Income</span>
-            </button>
-            <button onclick="prepEntry('Expense')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-                <div class="w-11 h-11 rounded-full bg-red-400/10 flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Expense</span>
-            </button>
-            <button onclick="prepEntry('Deduction')" class="glass p-6 rounded-[32px] flex flex-col items-center gap-3">
-                <div class="w-11 h-11 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-calculator"></i></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-nowrap">Deduct</span>
-            </button>
+        <div class="summary-card mb-12">
+            <div class="summary-row" onclick="prepTrans('Income')">
+                <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 mr-4"><i class="fa-solid fa-arrow-up"></i></div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold leading-tight">Income</p>
+                    <p class="text-[10px] text-gray-500 font-medium" id="countIncome">0 items</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="font-bold text-green-500 num-style"><span class="thb">฿</span><span id="sumIncome">0</span></p>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                </div>
+            </div>
+            <div class="row-divider"></div>
+            <div class="summary-row" onclick="prepTrans('Expense')">
+                <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-600 mr-4"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold leading-tight">Expense</p>
+                    <p class="text-[10px] text-gray-500 font-medium" id="countExpense">0 items</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="font-bold text-red-500 num-style"><span class="thb">฿</span><span id="sumExpense">0</span></p>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                </div>
+            </div>
+            <div class="row-divider"></div>
+            <div class="summary-row" onclick="prepTrans('Deduction')">
+                <div class="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 mr-4"><i class="fa-solid fa-minus"></i></div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold leading-tight">Deduction</p>
+                    <p class="text-[10px] text-gray-500 font-medium" id="countDeduct">0 items</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="font-bold text-orange-500 num-style"><span class="thb">฿</span><span id="sumDeduct">0</span></p>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                </div>
+            </div>
         </div>
 
         <section>
@@ -127,7 +161,7 @@
             <div class="sheet-handle" onclick="closeSheet('jumpSheet')"></div>
             <div class="flex justify-between items-center mb-8 px-2">
                 <button onclick="adjustJumpYear(-1)" class="w-12 h-12 glass rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-chevron-left"></i></button>
-                <h3 id="jumpYear" class="text-4xl font-black tracking-tighter">2026</h3>
+                <h3 id="jumpYear" class="text-4xl font-black num-style tracking-tighter">2026</h3>
                 <button onclick="adjustJumpYear(1)" class="w-12 h-12 glass rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
             <div id="jumpMonthGrid" class="grid-layout mb-8"></div>
@@ -146,10 +180,10 @@
                     <input type="text" id="pName" class="w-full glass p-5 rounded-2xl font-bold mt-2 outline-none text-xl border-transparent focus:border-lime-400">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select 2D Style (4M/4F)</label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Style (4M/4F)</label>
                     <div id="avGrid" class="grid-layout"></div>
                 </div>
-                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl active:scale-95 transition-transform">บันทึกข้อมูลส่วนตัว</button>
+                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl">บันทึกข้อมูลส่วนตัว</button>
             </div>
         </div>
     </div>
@@ -162,7 +196,6 @@
         </div>
         <div class="crop-area"><img id="cropImg"></div>
     </div>
-
     <input type="file" id="fInput" class="hidden" accept="image/*" onchange="onFileSelected(this)">
 
     <div id="entrySheet" class="sheet">
@@ -173,23 +206,25 @@
             <div class="space-y-5 mb-8">
                 <select id="tCat" onchange="checkNewCat(this)" class="w-full glass p-5 rounded-2xl font-bold outline-none appearance-none text-center"></select>
                 <div class="relative">
-                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-xl font-bold text-lime-400 opacity-40">฿</span>
-                    <input type="number" id="tAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none">
+                    <span class="thb absolute left-6 top-1/2 -translate-y-1/2 text-xl font-bold text-lime-400 opacity-40">฿</span>
+                    <input type="number" id="tAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none num-style">
                 </div>
             </div>
-            <button onclick="sendTransaction()" id="btnSave" class="w-full bg-white text-black py-5 rounded-2xl font-extrabold text-lg uppercase">Confirm Transaction</button>
+            <button onclick="sendTransaction()" id="btnSave" class="w-full bg-white text-black py-5 rounded-2xl font-extrabold text-lg uppercase active:opacity-50 transition-all">Confirm</button>
         </div>
     </div>
 
     <nav class="nav-fixed glass flex justify-around items-center px-4">
         <button class="text-lime-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house-chimney text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Home</span></button>
-        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-40"><i class="fa-solid fa-chart-line text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Stat</span></button>
-        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-40"><i class="fa-solid fa-credit-card text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">Card</span></button>
-        <button onclick="openSheet('profileSheet')" class="text-gray-500 flex flex-col items-center gap-1"><i class="fa-solid fa-user-gear text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest">User</span></button>
+        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-40"><i class="fa-solid fa-chart-line text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest text-nowrap">Stat</span></button>
+        <button class="text-gray-600 flex flex-col items-center gap-1 opacity-40"><i class="fa-solid fa-credit-card text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest text-nowrap">Card</span></button>
+        <button onclick="openSheet('profileSheet')" class="text-gray-500 flex flex-col items-center gap-1"><i class="fa-solid fa-user-gear text-xl"></i><span class="text-[8px] font-bold uppercase tracking-widest text-nowrap">User</span></button>
     </nav>
 
     <script>
+        // ✅ [สำคัญ] วาง URL แอปเว็บของท่านที่นี่
         const API_URL = "https://script.google.com/macros/s/AKfycbwRR4D7I2Ck2b09mSgjsfZw1JmpNQDOdB3r518WkslXqSPTYoCOLH20g3LeMlIGvGHW/exec";
+        
         let store = [], currentAv = "", mode = "", vDate = new Date();
         let cropper = null;
         let jumpYear = vDate.getFullYear();
@@ -205,12 +240,7 @@
             "https://api.dicebear.com/7.x/notionists/svg?seed=Maria&backgroundColor=d1d4f9"
         ];
 
-        window.onload = () => {
-            initGreet();
-            updateDateUI();
-            loadProfile();
-            fetchData();
-        };
+        window.onload = () => { initGreet(); updateDateUI(); loadProfile(); fetchData(); };
 
         function initGreet() {
             const h = new Date().getHours();
@@ -228,52 +258,31 @@
 
         function stepDate(s) { vDate.setMonth(vDate.getMonth() + s); updateDateUI(); renderUI(); }
 
-        function openJumpPicker() {
-            jumpYear = vDate.getFullYear();
-            renderJumpGrid();
-            openSheet('jumpSheet');
-        }
-
-        function adjustJumpYear(s) {
+        function openJumpPicker() { jumpYear = vDate.getFullYear(); renderJumpGrid(); openSheet('jumpSheet'); }
+        function adjustJumpYear(s) { 
             const realCurrentYear = new Date().getFullYear();
             const minYear = 2025;
             const maxYear = Math.max(2537, realCurrentYear + 1);
-            const next = jumpYear + s;
-            if(next >= minYear && next <= maxYear) {
-                jumpYear = next;
-                document.getElementById('jumpYear').innerText = jumpYear;
-                renderJumpGrid();
-            }
+            const next = jumpYear + s; 
+            if(next >= minYear && next <= maxYear) { jumpYear = next; document.getElementById('jumpYear').innerText = jumpYear; renderJumpGrid(); } 
         }
 
         function renderJumpGrid() {
             const grid = document.getElementById('jumpMonthGrid');
             const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            grid.innerHTML = months.map((m, i) => `
-                <div class="grid-btn ${vDate.getMonth() === i && vDate.getFullYear() === jumpYear ? 'selected' : ''}" 
-                     onclick="applyJump(this, ${i})">${m}</div>
-            `).join('');
+            grid.innerHTML = months.map((m, i) => `<div class="grid-btn ${vDate.getMonth() === i && vDate.getFullYear() === jumpYear ? 'selected' : ''}" onclick="applyJump(this, ${i})">${m}</div>`).join('');
         }
 
-        // ✅ แก้บั๊ก: แสดงกรอบเดือนที่เลือกก่อนปิดแผ่นป้าย
         function applyJump(el, idx) {
             const allBtns = document.querySelectorAll('#jumpMonthGrid .grid-btn');
             allBtns.forEach(btn => btn.classList.remove('selected'));
             el.classList.add('selected');
-
-            setTimeout(() => {
-                vDate.setFullYear(jumpYear);
-                vDate.setMonth(idx);
-                updateDateUI();
-                renderUI();
-                closeSheet('jumpSheet');
-            }, 450);
+            setTimeout(() => { vDate.setFullYear(jumpYear); vDate.setMonth(idx); updateDateUI(); renderUI(); closeSheet('jumpSheet'); }, 450);
         }
 
-        // --- PROFILE LOGIC (FIXED) ---
         function loadProfile() {
-            const n = localStorage.getItem("f_uName") || "Phuwanat";
-            const i = localStorage.getItem("f_uImg") || PRESETS[0];
+            const n = localStorage.getItem("f_uN") || "Phuwanat";
+            const i = localStorage.getItem("f_uI") || PRESETS[0];
             document.getElementById('headName').innerText = n;
             document.getElementById('headImg').src = i;
             document.getElementById('pName').value = n;
@@ -283,17 +292,16 @@
 
         function renderAvGrid() {
             const g = document.getElementById('avGrid');
-            const custom = localStorage.getItem("f_uCustom");
+            const custom = localStorage.getItem("f_uC");
             let h = PRESETS.map(u => `<div class="grid-btn ${currentAv === u ? 'selected' : ''}" onclick="pickAv('${u}')"><img src="${u}"></div>`).join('');
             h += `<div class="grid-btn flex flex-col items-center justify-center bg-white/5 ${currentAv === custom ? 'selected' : ''}" onclick="triggerInput()">
-                ${custom ? `<img src="${custom}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 uppercase mt-1">Upload</span>`}
+                ${custom ? `<img src="${custom}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 mt-1 uppercase">Upload</span>`}
             </div>`;
             g.innerHTML = h;
         }
 
         function pickAv(u) { currentAv = u; renderAvGrid(); }
         function triggerInput() { document.getElementById('fInput').click(); }
-
         function onFileSelected(input) {
             if(input.files && input.files[0]) {
                 const r = new FileReader();
@@ -307,26 +315,10 @@
                 r.readAsDataURL(input.files[0]);
             }
         }
-
-        function finishCrop() {
-            const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-            const base64 = canvas.toDataURL('image/jpeg', 0.8);
-            localStorage.setItem("f_uCustom", base64);
-            currentAv = base64;
-            renderAvGrid();
-            closeCrop();
-        }
-
+        function finishCrop() { const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 }); const b64 = canvas.toDataURL('image/jpeg', 0.8); localStorage.setItem("f_uC", b64); currentAv = b64; renderAvGrid(); closeCrop(); }
         function closeCrop() { document.getElementById('cropModal').classList.remove('active'); document.getElementById('fInput').value = ""; }
+        function saveProfile() { localStorage.setItem("f_uN", document.getElementById('pName').value); localStorage.setItem("f_uI", currentAv); loadProfile(); closeSheet('profileSheet'); }
 
-        function saveProfile() {
-            localStorage.setItem("f_uName", document.getElementById('pName').value);
-            localStorage.setItem("f_uImg", currentAv);
-            loadProfile();
-            closeSheet('profileSheet');
-        }
-
-        // --- DATA LOGIC ---
         async function fetchData() {
             try {
                 document.getElementById('sync').classList.remove('hidden');
@@ -338,50 +330,76 @@
 
         function renderUI() {
             const m = vDate.getMonth(), y = vDate.getFullYear();
-            let bal = 0, html = "";
+            let iTot = 0, eTot = 0, dTot = 0, iCnt = 0, eCnt = 0, dCnt = 0, html = "";
             store.slice(1).reverse().forEach(row => {
                 const [date, type, name, amount] = row;
                 const d = new Date(date), a = parseFloat(amount);
-                if(type === 'Income') bal += a;
-                if(type === 'Expense') bal -= a;
                 if(d.getMonth() === m && d.getFullYear() === y) {
+                    if(type === 'Income') { iTot += a; iCnt++; }
+                    if(type === 'Expense') { eTot += a; eCnt++; }
+                    if(type === 'Deduction') { dTot += a; dCnt++; }
                     const col = type === 'Income' ? 'text-lime-400' : (type === 'Expense' ? 'text-red-500' : 'text-orange-400');
-                    html += `<div class="glass p-5 rounded-[28px] flex justify-between items-center">
+                    html += `<div class="glass p-5 rounded-[28px] flex justify-between items-center animate-fadeIn">
                         <div><p class="font-bold text-sm tracking-tight">${name}</p><p class="text-[9px] opacity-30 font-bold uppercase tracking-widest">${d.toLocaleDateString('en-GB')}</p></div>
-                        <p class="font-bold text-lg ${col} tabular-nums"><span class="thb">฿</span>${a.toLocaleString()}</p>
+                        <p class="font-bold text-lg ${col} num-style"><span class="thb">฿</span>${a.toLocaleString()}</p>
                     </div>`;
                 }
             });
-            document.getElementById('mainBal').innerText = bal.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('mainBal').innerText = (iTot - eTot).toLocaleString();
+            document.getElementById('sumIncome').innerText = iTot.toLocaleString();
+            document.getElementById('sumExpense').innerText = eTot.toLocaleString();
+            document.getElementById('sumDeduct').innerText = dTot.toLocaleString();
+            document.getElementById('countIncome').innerText = `${iCnt} items`;
+            document.getElementById('countExpense').innerText = `${eCnt} items`;
+            document.getElementById('countDeduct').innerText = `${dCnt} items`;
             document.getElementById('hList').innerHTML = html || `<div class="py-20 text-center opacity-20 text-sm italic">Empty for this month</div>`;
         }
 
-        function prepEntry(t) {
+        // ✅ [แก้ไข] ฟังก์ชันเปิดหน้าต่างบันทึก และล้างค่าเงิน
+        function prepTrans(t) {
             mode = t;
-            const cats = {
-                Income: ["Salary", "Bonus", "Family", "Other"],
-                Expense: ["Food", "Transport", "Rent", "3BB Internet", "AIS", "Share", "Spay later", "Tpay later", "SEasy"],
-                Deduction: ["Late for work", "Discipline", "Other"]
-            };
+            const cats = { Income: ["Salary", "Bonus", "Family", "Other"], Expense: ["Food", "Transport", "Rent", "3BB Internet", "AIS", "Share", "Spay later", "Tpay later", "SEasy"], Deduction: ["Late for work", "Discipline", "Other"] };
             const sel = document.getElementById('tCat');
             sel.innerHTML = cats[t].map(c => `<option value="${c}">${c}</option>`).join('') + `<option value="NEW">+ Custom...</option>`;
-            document.getElementById('tTitle').innerText = t;
+            
+            const title = document.getElementById('tTitle');
+            title.innerText = t;
+            title.className = `text-xl font-extrabold mb-8 text-center uppercase tracking-widest ${t==='Income'?'text-green-500':(t==='Expense'?'text-red-500':'text-orange-500')}`;
+            
+            document.getElementById('tAmt').value = ""; // ล้างค่าเงินเสมอ
             openSheet('entrySheet');
         }
 
         function checkNewCat(s) { if(s.value === 'NEW') { const n = prompt("Category Name:"); if(n) { const o = new Option(n, n); s.insertBefore(o, s.firstChild); s.value = n; } } }
-
+        
+        // ✅ [แก้ไข] ฟังก์ชันส่งข้อมูลไปยัง Google Sheets
         async function sendTransaction() {
-            const n = document.getElementById('tCat').value, a = document.getElementById('tAmt').value;
-            if(!a) return;
+            const n = document.getElementById('tCat').value;
+            const a = document.getElementById('tAmt').value;
+            
+            if(!a || a <= 0) return alert("Please enter a valid amount");
+
             const b = document.getElementById('btnSave');
-            b.innerText = "Syncing..."; b.disabled = true;
-            try {
-                await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({type: mode, name: n, amount: a}) });
-                document.getElementById('tAmt').value = "";
-                closeSheet('entrySheet');
-                fetchData();
-            } finally { b.innerText = "Confirm Entry"; b.disabled = false; }
+            b.innerText = "Syncing..."; 
+            b.disabled = true;
+
+            try { 
+                await fetch(API_URL, { 
+                    method: "POST", 
+                    mode: "no-cors", 
+                    body: JSON.stringify({type: mode, name: n, amount: a}) 
+                }); 
+                
+                document.getElementById('tAmt').value = ""; 
+                closeSheet('entrySheet'); 
+                fetchData(); // รีโหลดข้อมูลทันที
+            } catch(e) { 
+                console.error("Save failed", e);
+                alert("บันทึกไม่สำเร็จ กรุณาเช็คอินเทอร์เน็ต");
+            } finally { 
+                b.innerText = "Confirm"; 
+                b.disabled = false; 
+            }
         }
 
         function openSheet(id) { document.getElementById(id).classList.add('active'); document.body.classList.add('lock-scroll'); }
