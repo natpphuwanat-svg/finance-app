@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finance Tracker</title>
-    <!-- สำหรับ iPhone Icon -->
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,97 +11,284 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: white; font-family: -apple-system, sans-serif; }
+        body { background-color: #000; color: white; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         .ios-card { background-color: #1c1c1e; border-radius: 24px; }
         .nav-blur { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); }
+        #monthPicker { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
+        
+        .text-lime-brand { color: #A3E635; }
+        .bg-lime-brand { background-color: #A3E635; }
+        .bg-lime-brand-opacity { background-color: rgba(163, 230, 53, 0.15); }
+        
+        /* Modal Animation */
+        #modalOverlay { transition: opacity 0.3s ease; }
+        #entryModal { transition: transform 0.3s ease-out; transform: translateY(100%); }
+        #entryModal.active { transform: translateY(0); }
+        
+        input, select { background-color: #2c2c2e !important; border: none !important; outline: none !important; color: white !important; }
+        
+        /* Loading Spinner */
+        .loader { border: 2px solid #f3f3f3; border-top: 2px solid #A3E635; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-5 pb-24">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+<body class="p-5 pb-32">
+
+    <!-- ส่วนหัวทักทาย -->
+    <div class="flex justify-between items-center mb-8 mt-4">
         <div>
-            <p class="text-gray-500 text-xs uppercase tracking-widest">Good Morning</p>
-            <h1 class="text-2xl font-bold text-white">Phuwanat</h1>
+            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD MORNING</p>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Phuwanat</h1>
         </div>
         <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center relative">
             <i class="fa-regular fa-bell"></i>
-            <span class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full border-2 border-black"></span>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-lime-brand rounded-full border-2 border-black"></span>
         </div>
     </div>
 
-    <!-- Month -->
-    <div class="flex justify-center items-center gap-4 mb-6">
-        <i class="fa-solid fa-chevron-left text-gray-600"></i>
-        <span class="text-lg font-medium">July 2026 <i class="fa-solid fa-chevron-down text-xs ml-1"></i></span>
-        <i class="fa-solid fa-chevron-right text-gray-600"></i>
+    <!-- ส่วนเลือกเดือน -->
+    <div class="flex justify-center items-center gap-6 mb-6">
+        <button onclick="changeMonth(-1)" class="p-2 text-gray-500"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="relative flex items-center gap-2">
+            <span id="displayMonth" class="text-lg font-semibold min-w-[120px] text-center">July 2026</span>
+            <i class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
+            <input type="month" id="monthPicker" onchange="selectMonth(this.value)">
+        </div>
+        <button onclick="changeMonth(1)" class="p-2 text-gray-500"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- Balance Card -->
-    <div class="ios-card p-8 mb-6 text-center shadow-2xl">
-        <p class="text-gray-400 text-xs tracking-widest mb-2">BALANCE</p>
-        <h2 class="text-5xl font-semibold mb-8">฿15,480</h2>
+    <!-- การ์ดแสดงยอดเงิน -->
+    <div class="ios-card p-6 mb-6 shadow-2xl border border-white/5">
+        <div class="text-center mb-10 mt-4">
+            <p class="text-gray-400 text-[10px] tracking-widest mb-3 uppercase font-bold">Balance</p>
+            <h2 id="totalBalance" class="text-5xl font-bold tracking-tighter text-white">฿0</h2>
+        </div>
         
         <div class="space-y-5">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center text-green-500"><i class="fa-solid fa-arrow-up"></i></div>
-                    <div class="text-left"><p class="font-medium">Income</p><p class="text-xs text-gray-500">3 items</p></div>
+                    <div class="w-10 h-10 bg-lime-brand-opacity rounded-full flex items-center justify-center text-lime-brand"><i class="fa-solid fa-arrow-up text-sm"></i></div>
+                    <div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" class="text-[9px] text-gray-500 uppercase tracking-tighter">0 items</p></div>
                 </div>
-                <span class="text-green-500 font-bold">฿18,800 <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i></span>
+                <span id="valIncome" class="text-lime-brand font-black text-lg tracking-tight">฿0</span>
             </div>
-            <div class="flex justify-between items-center border-t border-gray-800 pt-4">
+
+            <div class="flex justify-between items-center border-t border-gray-800/50 pt-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down"></i></div>
-                    <div class="text-left"><p class="font-medium">Expense</p><p class="text-xs text-gray-500">12 items</p></div>
+                    <div class="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down text-sm"></i></div>
+                    <div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" class="text-[9px] text-gray-500 uppercase tracking-tighter">0 items</p></div>
                 </div>
-                <span class="text-red-500 font-bold">฿3,000 <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i></span>
+                <span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-gray-800/50 pt-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus text-xs"></i></div>
+                    <div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" class="text-[9px] text-gray-500 uppercase tracking-tighter">0 items</p></div>
+                </div>
+                <span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0</span>
             </div>
         </div>
     </div>
 
-    <!-- Entries -->
+    <!-- รายการล่าสุด -->
     <div class="ios-card p-5">
-        <div class="flex justify-between items-center mb-5">
-            <h3 class="font-bold tracking-tight">ENTRIES</h3>
-            <button class="text-green-500 text-sm font-medium">View All</button>
+        <div class="flex justify-between items-center mb-5 px-1">
+            <h3 class="font-black tracking-widest text-[10px] text-gray-500 uppercase">Entries</h3>
+            <button class="text-lime-brand text-[10px] font-black uppercase tracking-widest">View All</button>
         </div>
-        <div id="list" class="space-y-6 text-sm">
-            <!-- ตัวอย่างรายการ -->
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-green-600 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-briefcase"></i></div>
-                    <div><p class="font-medium">เงินเดือน</p><span class="text-[10px] bg-green-900/50 text-green-400 px-2 py-0.5 rounded-full uppercase">Income</span></div>
-                </div>
-                <span class="font-bold">฿18,000</span>
-            </div>
+        <div id="entryList" class="space-y-6">
+            <div id="loadingEntries" class="text-center py-8 text-gray-500 text-sm italic">Loading data...</div>
         </div>
-        <button onclick="addData()" class="w-full mt-8 py-2 text-green-500 font-medium">+ Add Entry</button>
+        <button onclick="openModal()" class="w-full mt-10 py-4 bg-lime-brand text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase transition-transform active:scale-95 text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Nav -->
-    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-gray-800 px-8 py-4 flex justify-between">
-        <div class="text-center text-green-500"><i class="fa-solid fa-house-chimney text-xl"></i><p class="text-[10px] mt-1">HOME</p></div>
-        <div class="text-center text-gray-500"><i class="fa-solid fa-chart-simple text-xl"></i><p class="text-[10px] mt-1">SUMMARY</p></div>
-        <div class="text-center text-gray-500"><i class="fa-solid fa-box-archive text-xl"></i><p class="text-[10px] mt-1">ARCHIVE</p></div>
-        <div class="text-center text-gray-500"><i class="fa-solid fa-user text-xl"></i><p class="text-[10px] mt-1">PROFILE</p></div>
+    <!-- เมนูแถบล่าง -->
+    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-5 pb-10 flex justify-between z-40">
+        <div class="text-center text-lime-brand"><i class="fa-solid fa-house-chimney text-xl"></i><p class="text-[9px] mt-2 font-black uppercase tracking-tighter">Home</p></div>
+        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-chart-simple text-xl"></i><p class="text-[9px] mt-2 font-black uppercase tracking-tighter">Summary</p></div>
+        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-box-archive text-xl"></i><p class="text-[9px] mt-2 font-black uppercase tracking-tighter">Archive</p></div>
+        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-user text-xl"></i><p class="text-[9px] mt-2 font-black uppercase tracking-tighter">Profile</p></div>
+    </div>
+
+    <!-- Modal เพิ่มข้อมูล -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/90 z-50 hidden opacity-0 flex items-end">
+        <div id="entryModal" class="w-full bg-[#1c1c1e] rounded-t-[40px] p-8 pb-14 shadow-2xl border-t border-white/10">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-xl font-black tracking-tight">New Entry</h3>
+                <button onclick="closeModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Transaction Type</label>
+                    <select id="inputType" onchange="populateCategories()" class="w-full h-16 rounded-2xl px-5 mt-2 font-bold text-lg appearance-none">
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                        <option value="Deduction">Deduction</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Category</label>
+                    <select id="inputCategory" class="w-full h-16 rounded-2xl px-5 mt-2 font-bold text-lg appearance-none">
+                        <!-- Filled by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
+                    <input type="number" id="inputAmount" placeholder="0.00" class="w-full h-16 rounded-2xl px-5 mt-2 font-black text-2xl placeholder:text-gray-700">
+                </div>
+                <button id="saveBtn" onclick="saveEntry()" class="w-full h-16 bg-lime-brand text-black rounded-2xl font-black text-lg mt-6 shadow-2xl shadow-lime-500/20 uppercase tracking-[0.2em] transition-all active:scale-[0.98]">Save Record</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyqz10pEv9EqwO7rHn1DCgAylcpJr3M-ZUEtGfbKYm-TzOvMmMtytLC_JjhkSTBaslF9A/exec";
+        // ************************************************************
+        // แก้ไขบรรทัดนี้: วาง URL ที่ได้จาก Google Apps Script ของคุณ
+        const SCRIPT_URL = "https://script.google.com/macros/library/d/1ozsrs5WBmf9iL6eW2rhm0efwORtPn9LY0lnEzsgJYMkhlzipC0rwWH7t/12"; 
+        // ************************************************************
 
-        async function addData() {
-            const amount = prompt("ระบุจำนวนเงิน:");
-            if(!amount) return;
+        const masterCategories = {
+            Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"],
+            Expense: ["3BB", "แชร์", "แม่", "ศรีสวัสดิ์", "สยามชัย", "AIS", "SEasy", "Spay later", "Tpay later"],
+            Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"]
+        };
 
-            const data = { type: "Income", category: "Extra", amount: amount };
-            
-            // ส่งข้อมูลไปที่ Google Sheets ผ่าน GAS
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(data)
-            }).then(() => alert("บันทึกสำเร็จ!"));
+        let entries = [];
+
+        // อัปเดตคำทักทาย
+        function updateGreeting() {
+            const h = new Date().getHours();
+            let g = h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : h < 21 ? "GOOD EVENING" : "GOOD NIGHT";
+            document.getElementById('greetingText').innerText = g;
         }
+
+        // เรียงพยัญชนะ (0-9 > A-Z > ก-ฮ)
+        function sortArray(arr) {
+            return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
+        }
+
+        function populateCategories() {
+            const type = document.getElementById('inputType').value;
+            const select = document.getElementById('inputCategory');
+            select.innerHTML = "";
+            sortArray(masterCategories[type]).forEach(cat => {
+                select.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+        }
+
+        // ดึงข้อมูลจาก Google Sheets
+        async function fetchData() {
+            if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                entries = data.reverse();
+                renderData();
+            } catch (e) {
+                console.error("Fetch Error:", e);
+                document.getElementById('entryList').innerHTML = `<p class="text-center text-red-500 py-4 text-xs">Error loading data. Check URL.</p>`;
+            }
+        }
+
+        // บันทึกข้อมูลไป Google Sheets
+        async function saveEntry() {
+            const type = document.getElementById('inputType').value;
+            const category = document.getElementById('inputCategory').value;
+            const amount = parseFloat(document.getElementById('inputAmount').value);
+            const btn = document.getElementById('saveBtn');
+
+            if (!amount || amount <= 0) return alert("Please enter amount");
+            if (SCRIPT_URL === "วาง_URL_ที่นี่") return alert("Please set SCRIPT_URL first!");
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loader"></span> Saving...`;
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ type, category, amount })
+                });
+
+                closeModal();
+                document.getElementById('inputAmount').value = "";
+                // รอสักครู่แล้วโหลดใหม่
+                setTimeout(fetchData, 1000);
+            } catch (e) {
+                alert("Save failed!");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save Record";
+            }
+        }
+
+        function renderData() {
+            const list = document.getElementById('entryList');
+            let totals = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
+            
+            list.innerHTML = "";
+            if(entries.length === 0) list.innerHTML = `<p class="text-center text-gray-600 py-8 text-sm italic">No entries yet</p>`;
+
+            entries.forEach(item => {
+                totals[item.type] += Number(item.amount);
+                totals[`c${item.type.slice(0,3)}`]++;
+
+                const isInc = item.type === 'Income';
+                const isExp = item.type === 'Expense';
+                const color = isInc ? 'text-lime-brand' : isExp ? 'text-red-500' : 'text-orange-400';
+                const bg = isInc ? 'bg-lime-brand' : isExp ? 'bg-red-500' : 'bg-orange-500';
+                const icon = isInc ? 'fa-briefcase' : isExp ? 'fa-arrow-down' : 'fa-minus';
+
+                list.innerHTML += `
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 ${bg} rounded-[18px] flex items-center justify-center shadow-lg">
+                                <i class="fa-solid ${icon} ${isInc ? 'text-black' : 'text-white'} text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-[15px] font-bold tracking-tight">${item.category}</p>
+                                <span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span>
+                            </div>
+                        </div>
+                        <span class="font-black text-[16px] ${color}">฿${Number(item.amount).toLocaleString()}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('valIncome').innerText = `฿${totals.Income.toLocaleString()}`;
+            document.getElementById('valExpense').innerText = `฿${totals.Expense.toLocaleString()}`;
+            document.getElementById('valDeduction').innerText = `฿${totals.Deduction.toLocaleString()}`;
+            document.getElementById('countIncome').innerText = `${totals.cInc} items`;
+            document.getElementById('countExpense').innerText = `${totals.cExp} items`;
+            document.getElementById('countDeduction').innerText = `${totals.cDed} items`;
+            document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
+        }
+
+        // ระบบ Modal & Month (เหมือนเดิม)
+        function openModal() {
+            populateCategories();
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('modalOverlay').style.opacity = '1'; document.getElementById('entryModal').classList.add('active'); }, 10);
+        }
+        function closeModal() {
+            document.getElementById('modalOverlay').style.opacity = '0';
+            document.getElementById('entryModal').classList.remove('active');
+            setTimeout(() => document.getElementById('modalOverlay').classList.add('hidden'), 300);
+        }
+        let currentViewDate = new Date();
+        function updateMonthDisplay() {
+            document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+        function changeMonth(s) { currentViewDate.setMonth(currentViewDate.getMonth() + s); updateMonthDisplay(); }
+        function selectMonth(v) { if(v) { currentViewDate = new Date(v + "-01"); updateMonthDisplay(); } }
+
+        window.onload = () => {
+            updateGreeting();
+            updateMonthDisplay();
+            fetchData();
+        };
     </script>
 </body>
 </html>
