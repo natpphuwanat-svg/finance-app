@@ -20,30 +20,55 @@
     <style>
         :root { --lime: #bef264; --bg: #090b10; --card: #161b22; }
         * { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
         body { background-color: var(--bg); color: white; margin: 0; overflow-x: hidden; }
         body.lock-scroll { overflow: hidden !important; height: 100vh; position: fixed; width: 100%; }
+
         img { object-fit: cover; object-position: center; }
-        header { position: sticky; top: 0; z-index: 100; background: rgba(9, 11, 16, 0.85); backdrop-filter: blur(25px); padding-top: env(safe-area-inset-top); border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(9, 11, 16, 0.85);
+            backdrop-filter: blur(25px);
+            padding-top: env(safe-area-inset-top);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
         .glass { background: rgba(22, 27, 34, 0.75); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); }
         .thb { font-family: system-ui, sans-serif; font-size: 1em; font-weight: inherit; margin-right: 0.05em; display: inline-block; vertical-align: baseline; }
         .num-style { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
         .sheet { position: fixed; inset: 0; z-index: 2000; visibility: hidden; pointer-events: none; }
         .sheet.active { visibility: visible; pointer-events: auto; }
         .sheet-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); opacity: 0; transition: opacity 0.4s; }
         .sheet.active .sheet-overlay { opacity: 1; }
-        .sheet-content { position: absolute; bottom: 0; left: 0; right: 0; background: #11151c; border-top: 1px solid rgba(255,255,255,0.1); border-radius: 32px 32px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.3, 1.2, 0.5, 1); padding: 12px 24px calc(24px + env(safe-area-inset-bottom)); }
+        .sheet-content {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: #11151c; border-top: 1px solid rgba(255,255,255,0.1);
+            border-radius: 32px 32px 0 0; transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.3, 1.2, 0.5, 1);
+            padding: 12px 24px calc(24px + env(safe-area-inset-bottom));
+        }
         .sheet.active .sheet-content { transform: translateY(0); }
         .sheet-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.15); border-radius: 10px; margin: 0 auto 24px; cursor: pointer; }
+
         .grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .grid-btn { width: 100%; aspect-ratio: 1/1; border-radius: 20px; border: 2.5px solid transparent; background: #1c222b; transition: 0.25s; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #555; font-size: 14px; overflow: hidden; }
         .grid-btn.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); color: var(--lime); box-shadow: 0 10px 20px rgba(190, 242, 100, 0.15); }
+
         .summary-card { background: #11141b; border-radius: 28px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
         .summary-row { display: flex; align-items: center; padding: 18px 20px; cursor: pointer; }
         .row-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0 20px; }
-        #tCat { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.4)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; background-size: 16px; padding-right: 50px; }
+
+        #tCat {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.4)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 20px center; background-size: 16px; padding-right: 50px;
+        }
+
         #cropModal { position: fixed; inset: 0; background: #000; z-index: 3000; display: none; flex-direction: column; }
         #cropModal.active { display: flex; }
         .crop-area { flex: 1; position: relative; width: 100%; }
+        
         .nav-fixed { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; border-radius: 36px; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
     </style>
 </head>
@@ -54,14 +79,16 @@
             <div class="flex items-center gap-4" onclick="openSheet('profileSheet')">
                 <div class="relative">
                     <img id="headImg" src="" class="w-12 h-12 rounded-2xl shadow-lg bg-[#1c222b]">
-                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-lime-400 rounded-lg border-[3px] border-[#090b10] flex items-center justify-center"><i class="fa-solid fa-pencil text-[7px] text-black"></i></div>
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-lime-400 rounded-lg border-[3px] border-[#090b10] flex items-center justify-center">
+                        <i class="fa-solid fa-pencil text-[7px] text-black"></i>
+                    </div>
                 </div>
                 <div>
                     <p id="greeting" class="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] leading-none">Greeting</p>
                     <h2 id="headName" class="text-lg font-bold tracking-tight mt-1 leading-none">User</h2>
                 </div>
             </div>
-            <button class="w-10 h-10 glass rounded-2xl flex items-center justify-center text-gray-400"><i class="fa-regular fa-bell"></i></button>
+            <button class="w-10 h-10 glass rounded-2xl flex items-center justify-center text-gray-500"><i class="fa-regular fa-bell"></i></button>
         </div>
     </header>
 
@@ -84,30 +111,50 @@
         <div class="summary-card mb-12">
             <div class="summary-row" onclick="prepTrans('Income')">
                 <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 mr-4"><i class="fa-solid fa-arrow-up"></i></div>
-                <div class="flex-1"><p class="text-sm font-bold leading-tight">Income</p><p class="text-[10px] text-gray-500 font-medium" id="countIncome">0 items</p></div>
-                <div class="flex items-center gap-3"><p class="font-bold text-green-500 num-style"><span class="thb">฿</span><span id="sumIncome">0</span></p><i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i></div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold leading-tight">Income</p>
+                    <p class="text-[10px] text-gray-500 font-medium" id="countIncome">0 items</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="font-bold text-green-500 num-style"><span class="thb">฿</span><span id="sumIncome">0</span></p>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                </div>
             </div>
             <div class="row-divider"></div>
             <div class="summary-row" onclick="prepTrans('Expense')">
                 <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-600 mr-4"><i class="fa-solid fa-arrow-down"></i></div>
-                <div class="flex-1"><p class="text-sm font-bold leading-tight">Expense</p><p class="text-[10px] text-gray-500 font-medium" id="countExpense">0 items</p></div>
-                <div class="flex items-center gap-3"><p class="font-bold text-red-500 num-style"><span class="thb">฿</span><span id="sumExpense">0</span></p><i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i></div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold leading-tight">Expense</p>
+                    <p class="text-[10px] text-gray-500 font-medium" id="countExpense">0 items</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="font-bold text-red-500 num-style"><span class="thb">฿</span><span id="sumExpense">0</span></p>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                </div>
             </div>
             <div class="row-divider"></div>
             <div class="summary-row" onclick="prepTrans('Deduction')">
                 <div class="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 mr-4"><i class="fa-solid fa-minus"></i></div>
-                <div class="flex-1"><p class="text-sm font-bold leading-tight">Deduction</p><p class="text-[10px] text-gray-500 font-medium" id="countDeduct">0 items</p></div>
-                <div class="flex items-center gap-3"><p class="font-bold text-orange-500 num-style"><span class="thb">฿</span><span id="sumDeduct">0</span></p><i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i></div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold leading-tight">Deduction</p>
+                    <p class="text-[10px] text-gray-500 font-medium" id="countDeduct">0 items</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="font-bold text-orange-500 num-style"><span class="thb">฿</span><span id="sumDeduct">0</span></p>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                </div>
             </div>
         </div>
 
         <section>
-            <div class="flex justify-between items-center mb-5 px-1"><h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">MONTHLY RECORDS</h3><span class="text-xs font-bold text-lime-400">View All</span></div>
+            <div class="flex justify-between items-center mb-5 px-1">
+                <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">MONTHLY RECORDS</h3>
+                <span class="text-xs font-bold text-lime-400">View All</span>
+            </div>
             <div id="hList" class="flex flex-col"></div>
         </section>
     </main>
 
-    <!-- Sheets (Picker, Profile, Crop, Entry) -->
     <div id="jumpSheet" class="sheet">
         <div class="sheet-overlay" onclick="closeSheet('jumpSheet')"></div>
         <div class="sheet-content">
@@ -128,14 +175,27 @@
             <div class="sheet-handle" onclick="closeSheet('profileSheet')"></div>
             <h3 class="text-xl font-bold mb-8 text-center tracking-tight uppercase tracking-widest">Personalize</h3>
             <div class="space-y-6">
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest">Profile Name</label><input type="text" id="pName" class="w-full glass p-5 rounded-2xl font-bold mt-2 outline-none text-xl border-transparent focus:border-lime-400"></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Style (4M/4F)</label><div id="avGrid" class="grid-layout"></div></div>
-                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl">บันทึกข้อมูลส่วนตัว</button>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest">Profile Name</label>
+                    <input type="text" id="pName" class="w-full glass p-5 rounded-2xl font-bold mt-2 outline-none text-xl border-transparent focus:border-lime-400">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-2 tracking-widest mb-4 block">Select Style (4M/4F)</label>
+                    <div id="avGrid" class="grid-layout"></div>
+                </div>
+                <button onclick="saveProfile()" class="w-full bg-lime-400 text-black py-5 rounded-2xl font-extrabold text-lg mt-4 shadow-xl active:scale-95 transition-transform">บันทึกข้อมูลส่วนตัว</button>
             </div>
         </div>
     </div>
 
-    <div id="cropModal"><div class="p-6 pt-12 flex justify-between items-center bg-black/50 backdrop-blur"><button onclick="closeCrop()" class="text-gray-400 font-bold">Cancel</button><h3 class="font-bold uppercase tracking-widest text-sm">Crop Face</h3><button onclick="finishCrop()" class="text-lime-400 font-bold">Done</button></div><div class="crop-area"><img id="cropImg"></div></div>
+    <div id="cropModal">
+        <div class="p-6 pt-12 flex justify-between items-center bg-black/50 backdrop-blur">
+            <button onclick="closeCrop()" class="text-gray-400 font-bold">Cancel</button>
+            <h3 class="font-bold uppercase tracking-widest text-sm">Crop Face</h3>
+            <button onclick="finishCrop()" class="text-lime-400 font-bold">Done</button>
+        </div>
+        <div class="crop-area"><img id="cropImg"></div>
+    </div>
     <input type="file" id="fInput" class="hidden" accept="image/*" onchange="onFileSelected(this)">
 
     <div id="entrySheet" class="sheet">
@@ -145,7 +205,10 @@
             <h3 id="tTitle" class="text-xl font-extrabold mb-8 text-center uppercase tracking-widest text-green-500">Entry</h3>
             <div class="space-y-5 mb-8">
                 <select id="tCat" onchange="checkNewCat(this)" class="w-full glass p-5 rounded-2xl font-bold outline-none appearance-none text-center"></select>
-                <div class="relative"><span class="thb absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-light text-lime-400">฿</span><input type="number" id="tAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none num-style"></div>
+                <div class="relative">
+                    <span class="thb absolute left-6 top-1/2 -translate-y-1/2 text-xl font-bold text-lime-400 opacity-40">฿</span>
+                    <input type="number" id="tAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none num-style">
+                </div>
             </div>
             <button onclick="sendTransaction()" id="btnSave" class="w-full bg-white text-black py-5 rounded-2xl font-extrabold text-lg uppercase">Confirm</button>
         </div>
@@ -160,16 +223,21 @@
 
     <script>
         // ✅ [สำคัญ] วาง URL แอปเว็บของท่านที่นี่
-        const API_URL = "https://script.google.com/macros/s/AKfycbyeh8O946pHBkb8MswJ0THbKmopl9DTe8Go1R5wU0iZ9NFayD40wm6kkcj-Qe2SN1nmUQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbz0lvJmD41GYcgjwGYBtV5O4xuwOZqcsByhvrsL83D5TF8oX8qjGFMgvtWBb3y5b76GLQ/exec";
         
         let store = [], currentAv = "", mode = "", vDate = new Date();
-        let cropper = null, jumpYear = vDate.getFullYear();
+        let cropper = null;
+        let jumpYear = vDate.getFullYear();
 
         const PRESETS = [
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Oliver&backgroundColor=b6e3f4", "https://api.dicebear.com/7.x/notionists/svg?seed=Justin&backgroundColor=ffdfbf",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=d1d4f9", "https://api.dicebear.com/7.x/notionists/svg?seed=George&backgroundColor=ffd5dc",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=c0aede", "https://api.dicebear.com/7.x/notionists/svg?seed=Cali&backgroundColor=ffdfbf",
-            "https://api.dicebear.com/7.x/notionists/svg?seed=Jade&backgroundColor=b6e3f4", "https://api.dicebear.com/7.x/notionists/svg?seed=Maria&backgroundColor=d1d4f9"
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Oliver&backgroundColor=b6e3f4",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Justin&backgroundColor=ffdfbf",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=d1d4f9",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=George&backgroundColor=ffd5dc",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=c0aede",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Cali&backgroundColor=ffdfbf",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Jade&backgroundColor=b6e3f4",
+            "https://api.dicebear.com/7.x/notionists/svg?seed=Maria&backgroundColor=d1d4f9"
         ];
 
         window.onload = () => { initGreet(); updateDateUI(); loadProfile(); fetchData(); };
@@ -181,11 +249,39 @@
         function renderJumpGrid() { const grid = document.getElementById('jumpMonthGrid'); const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; grid.innerHTML = months.map((m, i) => `<div class="grid-btn ${vDate.getMonth() === i && vDate.getFullYear() === jumpYear ? 'selected' : ''}" onclick="applyJump(this, ${i})">${m}</div>`).join(''); }
         function applyJump(el, idx) { const allBtns = document.querySelectorAll('#jumpMonthGrid .grid-btn'); allBtns.forEach(btn => btn.classList.remove('selected')); el.classList.add('selected'); setTimeout(() => { vDate.setFullYear(jumpYear); vDate.setMonth(idx); updateDateUI(); renderUI(); closeSheet('jumpSheet'); }, 450); }
 
-        function loadProfile() { const n = localStorage.getItem("f_uN") || "Phuwanat"; const i = localStorage.getItem("f_uI") || PRESETS[0]; document.getElementById('headName').innerText = n; document.getElementById('headImg').src = i; document.getElementById('pName').value = n; currentAv = i; renderAvGrid(); }
-        function renderAvGrid() { const g = document.getElementById('avGrid'); const custom = localStorage.getItem("f_uC"); let h = PRESETS.map(u => `<div class="grid-btn ${currentAv === u ? 'selected' : ''}" onclick="pickAv('${u}')"><img src="${u}"></div>`).join(''); h += `<div class="grid-btn flex flex-col items-center justify-center bg-white/5 ${currentAv === custom ? 'selected' : ''}" onclick="triggerInput()">${custom ? `<img src="${custom}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 uppercase mt-1">Upload</span>`}</div>`; g.innerHTML = h; }
+        function loadProfile() {
+            const n = localStorage.getItem("f_uN") || "Phuwanat";
+            const i = localStorage.getItem("f_uI") || PRESETS[0];
+            document.getElementById('headName').innerText = n;
+            document.getElementById('headImg').src = i;
+            document.getElementById('pName').value = n;
+            currentAv = i;
+            renderAvGrid();
+        }
+        function renderAvGrid() {
+            const g = document.getElementById('avGrid');
+            const custom = localStorage.getItem("f_uC");
+            let h = PRESETS.map(u => `<div class="grid-btn ${currentAv === u ? 'selected' : ''}" onclick="pickAv('${u}')"><img src="${u}"></div>`).join('');
+            h += `<div class="grid-btn flex flex-col items-center justify-center bg-white/5 ${currentAv === custom ? 'selected' : ''}" onclick="triggerInput()">
+                ${custom ? `<img src="${custom}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 uppercase mt-1">Upload</span>`}
+            </div>`;
+            g.innerHTML = h;
+        }
         function pickAv(u) { currentAv = u; renderAvGrid(); }
         function triggerInput() { document.getElementById('fInput').click(); }
-        function onFileSelected(input) { if(input.files && input.files[0]) { const r = new FileReader(); r.onload = (e) => { const img = document.getElementById('cropImg'); img.src = e.target.result; document.getElementById('cropModal').classList.add('active'); if(cropper) cropper.destroy(); cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1, dragMode: 'move', background: false }); }; r.readAsDataURL(input.files[0]); } }
+        function onFileSelected(input) {
+            if(input.files && input.files[0]) {
+                const r = new FileReader();
+                r.onload = (e) => {
+                    const img = document.getElementById('cropImg');
+                    img.src = e.target.result;
+                    document.getElementById('cropModal').classList.add('active');
+                    if(cropper) cropper.destroy();
+                    cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1, dragMode: 'move', background: false });
+                };
+                r.readAsDataURL(input.files[0]);
+            }
+        }
         function finishCrop() { const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 }); const b64 = canvas.toDataURL('image/jpeg', 0.8); localStorage.setItem("f_uC", b64); currentAv = b64; renderAvGrid(); closeCrop(); }
         function closeCrop() { document.getElementById('cropModal').classList.remove('active'); document.getElementById('fInput').value = ""; }
         function saveProfile() { localStorage.setItem("f_uN", document.getElementById('pName').value); localStorage.setItem("f_uI", currentAv); loadProfile(); closeSheet('profileSheet'); }
@@ -195,52 +291,55 @@
                 document.getElementById('sync').classList.remove('hidden');
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                if(data && Array.isArray(data)) { store = data; renderUI(); }
-            } catch(e) { console.error(e); }
+                if(data && Array.isArray(data)) {
+                    store = data;
+                    renderUI();
+                }
+            } catch(e) { console.error("Load failed", e); }
             finally { document.getElementById('sync').classList.add('hidden'); }
         }
 
-        // ✅ FINAL FIX RENDERING: จัดการวันที่แบบครอบคลุม
+        // ✅ FINAL ROBUST RENDERING ENGINE
         function renderUI() {
             const targetM = vDate.getMonth(), targetY = vDate.getFullYear();
             let iTot = 0, eTot = 0, dTot = 0, iCnt = 0, eCnt = 0, dCnt = 0, html = "";
 
             if (!store || store.length === 0) return;
 
-            // ตรวจสอบว่าแถวที่ 1 เป็นวันที่หรือไม่ ถ้าใช่แปลว่าไม่มีหัวตาราง
-            const isDataFirstRow = (store[0][0].toString().match(/\d+/g));
-            const dataToProcess = isDataFirstRow ? store : store.slice(1);
-
-            dataToProcess.reverse().forEach(row => {
+            // ตรวจสอบว่าแถวไหนคือข้อมูลจริง (ข้ามหัวตารางถ้ามี)
+            store.forEach((row, index) => {
                 const dateRaw = row[0].toString();
-                const type = row[1], name = row[2], amt = parseFloat(row[3]);
+                const parts = dateRaw.match(/\d+/g);
                 
-                if(!isNaN(amt)) {
-                    // แยก วัน/เดือน/ปี แบบระบุตำแหน่ง
-                    const parts = dateRaw.match(/\d+/g);
-                    if (parts && parts.length >= 3) {
-                        const day = parseInt(parts[0]);
-                        const month = parseInt(parts[1]) - 1;
-                        let year = parseInt(parts[2]);
-                        if (year > 2500) year -= 543;
+                // ต้องมีอย่างน้อย 3 ชุดตัวเลข (วัน, เดือน, ปี) ถึงจะถือเป็นวันที่
+                if (parts && parts.length >= 3) {
+                    const d = parseInt(parts[0]);
+                    const mo = parseInt(parts[1]) - 1; // 0-11
+                    let ye = parseInt(parts[2]);
+                    if (ye > 2500) ye -= 543; // แปลง พ.ศ. เป็น ค.ศ.
+                    if (ye < 100) ye += 2000; // กรณีปีมาแค่ 26 -> 2026
 
-                        if(type === 'Income') iTot += amt;
-                        if(type === 'Expense') eTot += amt;
+                    const type = row[1], name = row[2], amt = parseFloat(row[3]);
+                    if(isNaN(amt)) return;
 
-                        if(month === targetM && year === targetY) {
-                            let icon = "fa-solid fa-wallet", col = "green";
-                            if(type === 'Income') { iCnt++; icon = "fa-solid fa-briefcase"; }
-                            else if(type === 'Expense') { eCnt++; icon = "fa-solid fa-utensils"; col = "red"; if(name.includes('รถ') || name.includes('มัน')) icon = "fa-solid fa-bus"; }
-                            else if(type === 'Deduction') { dTot += amt; dCnt++; icon = "fa-solid fa-clock"; col = "orange"; }
+                    // คำนวณยอดเงินรวม (Global Balance)
+                    if(type === 'Income') iTot += amt;
+                    if(type === 'Expense') eTot += amt;
 
-                            html += `
-                                <div class="flex items-center py-4 border-b border-white/5 last:border-0">
-                                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-${col}-500/20 text-${col}-500 text-sm"><i class="${icon}"></i></div>
-                                    <div class="flex-1 text-sm font-semibold">${name}</div>
-                                    <div class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight mx-4 bg-${col}-500/10 text-${col}-500">${type}</div>
-                                    <div class="num-style font-bold text-sm text-white"><span class="thb text-white">฿</span>${amt.toLocaleString()}</div>
-                                </div>`;
-                        }
+                    // กรองเฉพาะเดือนที่เลือกเพื่อโชว์ใน List
+                    if(mo === targetM && ye === targetY) {
+                        let icon = "fa-solid fa-wallet", col = "green";
+                        if(type === 'Income') { iCnt++; icon = "fa-solid fa-briefcase"; }
+                        else if(type === 'Expense') { eCnt++; icon = "fa-solid fa-utensils"; col = "red"; if(name.includes('รถ') || name.includes('มัน')) icon = "fa-solid fa-bus"; }
+                        else if(type === 'Deduction') { dTot += amt; dCnt++; icon = "fa-solid fa-clock"; col = "orange"; }
+
+                        html = `
+                            <div class="flex items-center py-4 border-b border-white/5 last:border-0 animate-fadeIn">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-${col}-500/20 text-${col}-500 text-sm"><i class="${icon}"></i></div>
+                                <div class="flex-1 text-sm font-semibold">${name}</div>
+                                <div class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight mx-4 bg-${col}-500/10 text-${col}-500">${type}</div>
+                                <div class="num-style font-bold text-sm text-white"><span class="thb text-white">฿</span>${amt.toLocaleString()}</div>
+                            </div>` + html; // เรียงจากใหม่ไปเก่า
                     }
                 }
             });
@@ -276,7 +375,7 @@
                 await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({type: mode, name: n, amount: a}) }); 
                 document.getElementById('tAmt').value = ""; 
                 closeSheet('entrySheet'); 
-                setTimeout(fetchData, 800); 
+                setTimeout(fetchData, 1000); // รอให้ชีตอัปเดต 1 วินาทีก่อนโหลดใหม่
             } finally { b.innerText = "Confirm"; b.disabled = false; }
         }
 
