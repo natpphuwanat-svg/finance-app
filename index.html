@@ -82,11 +82,14 @@
 </head>
 <body class="p-5 pb-24 text-white">
 
-    <!-- Header -->
+    <!-- Header (มีระบบแก้ไขชื่อ) -->
     <div class="flex justify-between items-center mb-8 mt-4 px-1">
-        <div>
+        <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
             <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-semibold text-system">LOADING...</p>
-            <h1 class="text-2xl font-bold tracking-tight">Phuwanat</h1>
+            <div class="flex items-center gap-2">
+                <h1 id="userNameDisplay" class="text-2xl font-bold tracking-tight">Phuwanat</h1>
+                <i class="fa-solid fa-chevron-right text-gray-600 text-xs mt-1"></i>
+            </div>
         </div>
     </div>
 
@@ -122,7 +125,7 @@
                     <div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
                 </div>
-                <span id="valExpense" class="text-expense font-black text-lg tracking-tight">฿0</span>
+                <span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
             </div>
 
             <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
@@ -147,19 +150,36 @@
         <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Bottom Nav (แก้ไขเมนูใหม่: 3 รายการ) -->
+    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-10 pt-2 pb-5 flex justify-between z-40">
         <div class="text-center text-system">
             <i class="fa-solid fa-house-chimney text-lg"></i>
             <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p>
         </div>
         <div class="text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-chart-pie text-lg"></i> <!-- ไอคอน Summary ใหม่ -->
+            <i class="fa-solid fa-chart-pie text-lg"></i>
             <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p>
         </div>
         <div class="text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-gear text-lg"></i> <!-- ไอคอน Settings ใหม่ -->
+            <i class="fa-solid fa-gear text-lg"></i>
             <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">SETTINGS</p>
+        </div>
+    </div>
+
+    <!-- [Modal] Edit Profile (ใหม่!) -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content pb-10">
+            <div class="flex justify-between items-center mb-8 px-1">
+                <h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3>
+                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-6 text-left">
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">User Name</label>
+                    <input type="text" id="inputUserName" maxlength="20" placeholder="Enter your name" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl bg-gray-800 border-none outline-none">
+                </div>
+                <button onclick="saveProfile()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
+            </div>
         </div>
     </div>
 
@@ -220,7 +240,7 @@
 
     <script>
         // ************************************************************
-        // URL ของ Google Apps Script
+        // อย่าลืมใส่ URL ของคุณตรงนี้
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk0WroT6N0EMjCIXZWPr4xqlTQwH4t3CDIqAGuDzyhLH4niKSmL2sIjK9QMUbQh7a-6Q/exec"; 
         // ************************************************************
 
@@ -241,6 +261,26 @@
             document.getElementById('greetingText').innerText = g;
         }
 
+        // --- ระบบ Profile (จัดการชื่อผู้ใช้) ---
+        function loadUserProfile() {
+            const savedName = localStorage.getItem('userName') || 'Phuwanat';
+            document.getElementById('userNameDisplay').innerText = savedName;
+            document.getElementById('inputUserName').value = savedName;
+        }
+
+        function openProfileModal() {
+            toggleModal('profileModal', true);
+        }
+
+        function saveProfile() {
+            const newName = document.getElementById('inputUserName').value.trim();
+            if (newName === "") return alert("Please enter a name");
+            localStorage.setItem('userName', newName);
+            document.getElementById('userNameDisplay').innerText = newName;
+            toggleModal('profileModal', false);
+        }
+
+        // --- ระบบบันทึกข้อมูล ---
         function sortArray(arr) {
             return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
         }
@@ -426,6 +466,7 @@
             updateGreeting();
             updateMonthDisplay();
             populateCategories();
+            loadUserProfile(); // โหลดชื่อผู้ใช้
             fetchData();
         };
     </script>
