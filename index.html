@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -22,7 +22,14 @@
             overflow-x: hidden; 
         }
         .ios-card { background-color: #1c1c1e; border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
-        .nav-blur { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); }
+        
+        /* ปรับความทึบ Bottom Bar (Point 3) */
+        .nav-blur { 
+            background: rgba(18, 18, 18, 0.94); 
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+        }
+        
         #monthPicker { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
         
         .text-system { color: #A3E635; }
@@ -44,7 +51,6 @@
         }
         .hide-divider::before { opacity: 0; }
 
-        /* การเบลอจะเกิดขึ้นเฉพาะตอน "ไม่มีข้อมูลเก่า" เท่านั้น */
         .is-syncing { opacity: 0.7; }
 
         @keyframes spin-soft {
@@ -71,9 +77,13 @@
 
         .alert-modal-content { width: 85%; margin: auto auto 40px auto; background: #2c2c2e; border-radius: 24px; transform: translateY(100%); padding: 24px; text-align: center; }
         .modal-overlay.active .alert-modal-content { transform: translateY(0); }
+
+        /* Animation for Nav Icons (Point 4) */
+        .nav-item { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .nav-item:active { transform: scale(1.15); }
     </style>
 </head>
-<body class="p-5 pb-24 text-white">
+<body class="p-5 pb-32 text-white"> <!-- เพิ่ม pb เพื่อไม่ให้คอนเทนต์จมหายไปในเมนูที่สูงขึ้น -->
 
     <!-- Header -->
     <div class="flex justify-between items-center mb-8 mt-4 px-1">
@@ -100,31 +110,28 @@
         <button onclick="changeMonth(1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- Balance Summary -->
+    <!-- Balance Card -->
     <div id="balanceCard" class="ios-card shadow-2xl border border-white/5 overflow-hidden">
         <div class="text-center py-8">
             <p class="text-gray-400 text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
             <h2 id="totalBalance" class="text-5xl font-black tracking-tighter">฿0</h2>
         </div>
-        
         <div class="px-2 pb-2">
-            <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
+            <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
                 </div>
                 <span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
             </div>
-
-            <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
+            <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
                 </div>
                 <span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
             </div>
-
-            <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
+            <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
@@ -146,35 +153,35 @@
         <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-10 pt-2 pb-5 flex justify-between z-40">
-        <div class="text-center text-system">
+    <!-- Bottom Navigation (Point 1, 2, 3, 5, 6) -->
+    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-2 pb-9 flex justify-center gap-14 z-40">
+        <div class="nav-item text-center text-system">
             <i class="fa-solid fa-house-chimney text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p>
+            <p class="text-[8px] mt-0.5 font-medium uppercase tracking-tighter">Home</p>
         </div>
-        <div class="text-center text-gray-500 opacity-50">
+        <div class="nav-item text-center text-gray-500 opacity-50">
             <i class="fa-solid fa-chart-pie text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p>
+            <p class="text-[8px] mt-0.5 font-medium uppercase tracking-tighter">STATISTICS</p>
         </div>
-        <div class="text-center text-gray-500 opacity-50">
+        <div class="nav-item text-center text-gray-500 opacity-50">
             <i class="fa-solid fa-gear text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">SETTINGS</p>
+            <p class="text-[8px] mt-0.5 font-medium uppercase tracking-tighter">SETTINGS</p>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Modals (เหมือนเดิม) -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3>
-                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-6 text-left">
+            <div class="space-y-6">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">User Name</label>
-                    <input type="text" id="inputUserName" maxlength="20" placeholder="Enter your name" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl bg-gray-800 border-none outline-none">
+                    <input type="text" id="inputUserName" maxlength="20" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl bg-gray-800">
                 </div>
-                <button onclick="saveProfile()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
+                <button onclick="saveProfile()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em]">SAVE</button>
             </div>
         </div>
     </div>
@@ -183,9 +190,9 @@
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">New Entry</h3>
-                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-6 text-left">
+            <div class="space-y-6">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Type</label>
                     <select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800">
@@ -202,7 +209,7 @@
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
                     <input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400">
                 </div>
-                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
+                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em]">SAVE</button>
             </div>
         </div>
     </div>
@@ -222,7 +229,7 @@
         <div class="modal-content h-[85vh] flex flex-col">
             <div class="flex justify-between items-center mb-6 px-1">
                 <div class="text-left">
-                    <h3 id="viewAllTitle" class="text-xl font-black tracking-tight">ALL ENTRIES</h3>
+                    <h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3>
                     <p class="text-[9px] text-gray-500 font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p>
                 </div>
                 <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
@@ -269,43 +276,25 @@
             toggleModal('profileModal', false);
         }
 
-        // --- ระบบ FETCH อัจฉริยะ (CACHE FIRST) ---
-
         async function fetchData() {
             if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
-            
-            // 1. ลองโหลดจาก LocalStorage ก่อน (Instant Load)
             const cachedData = localStorage.getItem('finance_cache');
-            if (cachedData) {
-                entries = JSON.parse(cachedData);
-                renderData(); // แสดงข้อมูลเก่าทันที
-            }
-
-            // 2. แสดงสถานะว่ากำลัง Sync อยู่
+            if (cachedData) { entries = JSON.parse(cachedData); renderData(); }
             const icon = document.getElementById('refreshIcon');
             const balCard = document.getElementById('balanceCard');
             icon.classList.add('spinning');
             balCard.classList.add('is-syncing');
-
             try {
-                // 3. ไปดึงข้อมูลใหม่จริงๆ จาก Google Sheets
                 const response = await fetch(SCRIPT_URL);
                 const newData = await response.json();
-                
-                // 4. ถ้าได้ข้อมูลมา ให้เซฟลง Cache และอัปเดตหน้าจอ
                 entries = newData;
                 localStorage.setItem('finance_cache', JSON.stringify(newData));
                 renderData(); 
-            } catch (e) { 
-                console.error("Fetch error:", e);
-            } finally {
-                // 5. ปิดสถานะ Loading
+            } catch (e) { console.error(e); } finally {
                 icon.classList.remove('spinning');
                 balCard.classList.remove('is-syncing');
             }
         }
-
-        // --- ระบบ UI & การคำนวณ ---
 
         function setFilter(type) {
             currentFilter = (currentFilter === type) ? null : type;
@@ -329,18 +318,15 @@
             const title = document.getElementById('entriesTitle');
             const month = currentViewDate.getMonth();
             const year = currentViewDate.getFullYear();
-
             const monthData = entries.filter(item => {
                 const d = new Date(item.date);
                 return d.getMonth() === month && d.getFullYear() === year;
             });
-
             let totals = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
             monthData.forEach(item => {
                 totals[item.type] += Number(item.amount);
                 totals[`c${item.type.slice(0,3)}`]++;
             });
-
             document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
             document.getElementById('valIncome').innerText = `฿${totals.Income.toLocaleString()}`;
             document.getElementById('valExpense').innerText = `฿${totals.Expense.toLocaleString()}`;
@@ -348,15 +334,11 @@
             document.getElementById('countIncome').innerText = `${totals.cInc} items`;
             document.getElementById('countExpense').innerText = `${totals.cExp} items`;
             document.getElementById('countDeduction').innerText = `${totals.cDed} items`;
-
             let displayData = [...monthData].reverse();
             if (currentFilter) {
                 displayData = displayData.filter(item => item.type === currentFilter);
                 title.innerText = `${currentFilter.toUpperCase()} ENTRIES`;
-            } else {
-                title.innerText = `ENTRIES`;
-            }
-
+            } else { title.innerText = `ENTRIES`; }
             const homeList = displayData.slice(0, 4);
             list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>` : "";
             homeList.forEach(item => list.innerHTML += createItemHTML(item));
@@ -379,15 +361,6 @@
             `;
         }
 
-        // --- ระบบจัดการข้อมูล ---
-
-        function sortArray(arr) { return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' })); }
-        function populateCategories() {
-            const type = document.getElementById('inputType').value;
-            const select = document.getElementById('inputCategory');
-            select.innerHTML = "";
-            sortArray(masterCategories[type]).forEach(cat => { select.innerHTML += `<option value="${cat}">${cat}</option>`; });
-        }
         function markAsDirty() { isModified = true; }
         function openAddEntryModal() {
             isModified = false; document.getElementById('inputAmount').value = "";
@@ -411,10 +384,8 @@
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type, category, amount }) });
                 isModified = false; toggleModal('entryModal', false); 
-                // เพิ่มข้อมูลเข้า Local แป๊บนึงเพื่อให้เห็นทันที
                 entries.push({ date: new Date().toISOString(), type, category, amount });
-                renderData();
-                setTimeout(fetchData, 1500); // แล้วค่อยดึงตัวจริงมาทับ
+                renderData(); setTimeout(fetchData, 1500);
             } catch (e) { alert("Failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
@@ -460,7 +431,7 @@
             updateMonthDisplay();
             populateCategories();
             loadUserProfile();
-            fetchData(); // จะโหลด Cache ทันที และ Sync เบื้องหลัง
+            fetchData();
         };
     </script>
 </body>
