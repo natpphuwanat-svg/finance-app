@@ -74,6 +74,10 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-fade { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Secondary Alert Modal */
+        .alert-modal-content { width: 85%; margin: auto auto 40px auto; background: #2c2c2e; border-radius: 24px; transform: translateY(100%); padding: 24px; text-align: center; }
+        .modal-overlay.active .alert-modal-content { transform: translateY(0); }
     </style>
 </head>
 <body class="p-5 pb-24 text-white">
@@ -126,7 +130,7 @@
                     <div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div>
                     <div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
                 </div>
-                <span id="valDeduction" class="text-deduction font-black text-lg tracking-tight">฿0</span>
+                <span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0</span>
             </div>
         </div>
     </div>
@@ -138,17 +142,25 @@
             <button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button>
         </div>
         <div id="entryList" class="space-y-6 min-h-[100px]">
-            <div class="text-center py-8 text-gray-500 text-sm italic">Loading data...</div>
+            <div class="text-center py-8 text-gray-500 text-sm italic italic">Loading data...</div>
         </div>
         <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Bottom Nav -->
-    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-2 pb-5 flex justify-between z-40">
-        <div class="text-center text-system"><i class="fa-solid fa-house-chimney text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p></div>
-        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-chart-simple text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p></div>
-        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-box-archive text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Archive</p></div>
-        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-user text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Profile</p></div>
+    <!-- Bottom Nav (แก้ไขเมนูใหม่: 3 รายการ) -->
+    <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-10 pt-2 pb-5 flex justify-between z-40">
+        <div class="text-center text-system">
+            <i class="fa-solid fa-house-chimney text-lg"></i>
+            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p>
+        </div>
+        <div class="text-center text-gray-500 opacity-50">
+            <i class="fa-solid fa-chart-pie text-lg"></i> <!-- ไอคอน Summary ใหม่ -->
+            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p>
+        </div>
+        <div class="text-center text-gray-500 opacity-50">
+            <i class="fa-solid fa-gear text-lg"></i> <!-- ไอคอน Settings ใหม่ -->
+            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">SETTINGS</p>
+        </div>
     </div>
 
     <!-- [Modal] New Entry -->
@@ -156,12 +168,12 @@
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">New Entry</h3>
-                <button onclick="toggleModal('entryModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-6 text-left">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Type</label>
-                    <select id="inputType" onchange="populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800">
+                    <select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800">
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
                         <option value="Deduction">Deduction</option>
@@ -169,15 +181,25 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Category</label>
-                    <select id="inputCategory" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"></select>
+                    <select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"></select>
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
-                    <!-- ปรับ Placeholder ให้สว่างขึ้นด้วย placeholder-gray-400 -->
-                    <input type="number" id="inputAmount" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400">
+                    <input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400">
                 </div>
-                <!-- เพิ่ม Margin Top เป็น mt-10 เพื่อความสมดุล -->
                 <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- [Modal] Discard Confirmation -->
+    <div id="discardModal" class="modal-overlay" style="align-items: center; background: rgba(0,0,0,0.8);">
+        <div class="alert-modal-content">
+            <h3 class="text-xl font-bold">Discard changes?</h3>
+            <p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p>
+            <div class="mt-8 space-y-3">
+                <button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm">Keep Editing</button>
+                <button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button>
             </div>
         </div>
     </div>
@@ -198,7 +220,7 @@
 
     <script>
         // ************************************************************
-        // อย่าลืมใส่ URL ของคุณตรงนี้
+        // URL ของ Google Apps Script
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk0WroT6N0EMjCIXZWPr4xqlTQwH4t3CDIqAGuDzyhLH4niKSmL2sIjK9QMUbQh7a-6Q/exec"; 
         // ************************************************************
 
@@ -211,6 +233,7 @@
         let entries = [];
         let currentViewDate = new Date();
         let currentFilter = null;
+        let isModified = false;
 
         function updateGreeting() {
             const h = new Date().getHours();
@@ -274,13 +297,13 @@
                 totals[`c${item.type.slice(0,3)}`]++;
             });
 
+            document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
             document.getElementById('valIncome').innerText = `฿${totals.Income.toLocaleString()}`;
             document.getElementById('valExpense').innerText = `฿${totals.Expense.toLocaleString()}`;
             document.getElementById('valDeduction').innerText = `฿${totals.Deduction.toLocaleString()}`;
             document.getElementById('countIncome').innerText = `${totals.cInc} items`;
             document.getElementById('countExpense').innerText = `${totals.cExp} items`;
             document.getElementById('countDeduction').innerText = `${totals.cDed} items`;
-            document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
 
             let displayData = [...monthData].reverse();
             if (currentFilter) {
@@ -291,7 +314,7 @@
             }
 
             const homeList = displayData.slice(0, 4);
-            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>` : "";
+            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic italic">No records found</p>` : "";
             homeList.forEach(item => list.innerHTML += createItemHTML(item));
         }
 
@@ -301,21 +324,54 @@
             const colorClass = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
             const bgClass = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
             const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
-            
             return `
                 <div class="flex justify-between items-center animate-fade">
                     <div class="flex items-center gap-4">
-                        <div class="w-11 h-11 ${bgClass} rounded-[18px] flex items-center justify-center shadow-lg">
-                            <i class="fa-solid ${icon} text-white text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="text-[15px] font-bold tracking-tight">${item.category}</p>
-                            <span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span>
-                        </div>
+                        <div class="w-11 h-11 ${bgClass} rounded-[18px] flex items-center justify-center shadow-lg"><i class="fa-solid ${icon} text-white text-sm"></i></div>
+                        <div><p class="text-[15px] font-bold tracking-tight">${item.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span></div>
                     </div>
                     <span class="font-black text-[16px] ${colorClass}">฿${Number(item.amount).toLocaleString()}</span>
                 </div>
             `;
+        }
+
+        function markAsDirty() { isModified = true; }
+
+        function openAddEntryModal() {
+            isModified = false;
+            document.getElementById('inputAmount').value = "";
+            const typeSelect = document.getElementById('inputType');
+            typeSelect.value = currentFilter || 'Income';
+            populateCategories();
+            toggleModal('entryModal', true);
+        }
+
+        function handleCloseEntryModal() {
+            if (isModified && document.getElementById('inputAmount').value !== "") {
+                toggleModal('discardModal', true);
+            } else { toggleModal('entryModal', false); }
+        }
+
+        function confirmDiscard() {
+            toggleModal('discardModal', false);
+            toggleModal('entryModal', false);
+            isModified = false;
+        }
+
+        async function saveEntry() {
+            const type = document.getElementById('inputType').value;
+            const category = document.getElementById('inputCategory').value;
+            const amount = parseFloat(document.getElementById('inputAmount').value);
+            if (!amount || amount <= 0) return alert("Please enter amount");
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loader"></span>`;
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type, category, amount }) });
+                isModified = false;
+                toggleModal('entryModal', false);
+                setTimeout(fetchData, 1000);
+            } catch (e) { alert("Failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
         function openViewAll() {
@@ -331,38 +387,10 @@
                 allData = allData.filter(item => item.type === currentFilter);
                 title.innerText = `${currentFilter.toUpperCase()} RECORDS`;
             } else { title.innerText = `ALL ENTRIES`; }
-            
             allData.sort((a, b) => Number(b.amount) - Number(a.amount));
-
             list.innerHTML = "";
             allData.forEach(item => list.innerHTML += createItemHTML(item));
             toggleModal('viewAllModal', true);
-        }
-
-        function openAddEntryModal() {
-            const typeSelect = document.getElementById('inputType');
-            typeSelect.value = currentFilter || 'Income';
-            populateCategories();
-            toggleModal('entryModal', true);
-        }
-
-        async function saveEntry() {
-            const type = document.getElementById('inputType').value;
-            const category = document.getElementById('inputCategory').value;
-            const amount = parseFloat(document.getElementById('inputAmount').value);
-            if (!amount || amount <= 0) return alert("Please enter amount");
-            const btn = document.getElementById('saveBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<span class="loader"></span>`;
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type, category, amount }) });
-                toggleModal('entryModal', false);
-                document.getElementById('inputAmount').value = "";
-                setTimeout(fetchData, 1000);
-            } catch (e) { alert("Failed!"); } finally { 
-                btn.disabled = false; 
-                btn.innerText = "SAVE"; 
-            }
         }
 
         function toggleModal(id, show) {
