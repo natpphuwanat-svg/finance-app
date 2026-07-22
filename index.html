@@ -179,7 +179,7 @@
     <script>
         // ************************************************************
         // URL ของ Google Apps Script
-        const SCRIPT_URL = "วาง_URL_ที่นี่"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxs-m0SDEWwt2D8oc-7rCuS_0h5bKS4NlEPhVwm9888P9OHuHG02WQw0eY34m6etGFqaA/exec"; 
         // ************************************************************
 
         const masterCategories = {
@@ -212,7 +212,7 @@
         }
 
         async function fetchData() {
-            if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbzTg2UdPub76gCVxLzGqfsMAfoWnMGZ535yAmPqgjOX9b8-yi9OOD_pWRApCZRXcWRl5Q/exec") return;
+            if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
             try {
                 const response = await fetch(SCRIPT_URL);
                 entries = await response.json();
