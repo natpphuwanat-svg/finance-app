@@ -6,7 +6,7 @@
     <title>Finance Tracker</title>
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -14,37 +14,84 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        /* [DYNAMIC COLOR SYSTEM] */
+        :root {
+            /* Default: Light Mode */
+            --bg-body: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --text-main: #1C1C1E;
+            --text-sub: #8E8E93;
+            --border-card: rgba(0, 0, 0, 0.05);
+            --divider: rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --input-bg: #E5E5EA;
+            --modal-bg: #FFFFFF;
+            --refresh-bg: #FFFFFF;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #000000;
+                --bg-card: #1C1C1E;
+                --text-main: #FFFFFF;
+                --text-sub: #9CA3AF;
+                --border-card: rgba(255, 255, 255, 0.05);
+                --divider: rgba(255, 255, 255, 0.12);
+                --card-shadow: none;
+                --input-bg: #2C2C2E;
+                --modal-bg: #1C1C1E;
+                --refresh-bg: #1C1C1E;
+            }
+        }
+
         body { 
-            background-color: #000; 
-            color: white; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
             font-family: 'Inter', 'Noto Sans Thai', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
             overflow-x: hidden; 
+            transition: background-color 0.3s ease;
         }
-        .ios-card { background-color: #1c1c1e; border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
-        .nav-blur { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); }
+
+        .ios-card { 
+            background-color: var(--bg-card); 
+            border-radius: 24px; 
+            border: 1px solid var(--border-card);
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        .nav-blur { 
+            background: var(--bg-card); 
+            opacity: 0.95;
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+        }
+
         #monthPicker { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
         
+        /* BRAND COLORS */
         .text-system { color: #A3E635; }
         .bg-system { background-color: #A3E635; }
         .text-income { color: #22C55E; }
         .bg-income { background-color: #22C55E; }
-        .bg-income-op { background-color: rgba(34, 197, 94, 0.15); }
+        .bg-income-op { background-color: rgba(34, 197, 94, 0.12); }
         .text-expense { color: #EF4444; }
         .bg-expense { background-color: #EF4444; }
-        .bg-expense-op { background-color: rgba(239, 68, 68, 0.15); }
+        .bg-expense-op { background-color: rgba(239, 68, 68, 0.12); }
         .text-deduction { color: #F59E0B; }
         .bg-deduction { background-color: #F59E0B; }
-        .bg-deduction-op { background-color: rgba(245, 158, 11, 0.15); }
+        .bg-deduction-op { background-color: rgba(245, 158, 11, 0.12); }
 
+        /* DIVIDER */
         .card-divider { position: relative; }
         .card-divider::before {
             content: ""; position: absolute; top: 0; left: 16px; right: 16px; height: 1px;
-            background-color: rgba(255, 255, 255, 0.12); transition: opacity 0.3s ease;
+            background-color: var(--divider); transition: opacity 0.3s ease;
         }
         .hide-divider::before { opacity: 0; }
 
-        .is-syncing { opacity: 0.7; }
+        .is-syncing { opacity: 0.6; filter: blur(4px); }
         @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
 
@@ -54,51 +101,50 @@
             transform: scale(1.02); z-index: 10;
         }
         
-        .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 50; display: none; opacity: 0; align-items: flex-end; }
-        .modal-content { transition: transform 0.3s ease-out; width: 100%; background: #1c1c1e; border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 50; display: none; opacity: 0; align-items: flex-end; }
+        .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         
-        input, select { background-color: #2c2c2e !important; border: none !important; color: white !important; outline: none !important; }
+        input, select { background-color: var(--input-bg) !important; color: var(--text-main) !important; border: none !important; outline: none !important; }
         .loader { border: 2px solid #000; border-top: 2px solid transparent; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; }
         .animate-fade { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .alert-modal-content { width: 85%; margin: auto auto 40px auto; background: #2c2c2e; border-radius: 24px; transform: translateY(100%); padding: 24px; text-align: center; }
-        .modal-overlay.active .alert-modal-content { transform: translateY(0); }
+        .alert-modal-content { width: 85%; margin: auto auto 40px auto; background: var(--input-bg); border-radius: 24px; transform: translateY(100%); padding: 24px; text-align: center; }
     </style>
 </head>
-<body class="p-5 pb-28 text-white">
+<body class="p-5 pb-28">
 
-    <!-- Header (Profile Section) -->
+    <!-- Header -->
     <div class="flex justify-between items-center mb-8 mt-4 px-1">
         <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
-            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-semibold text-system">LOADING...</p>
+            <p id="greetingText" style="color: var(--text-sub)" class="text-[10px] uppercase tracking-[0.2em] font-bold">LOADING...</p>
             <div class="flex items-center gap-2">
-                <h1 id="userNameDisplay" class="text-2xl font-bold tracking-tight text-white">User</h1>
-                <i class="fa-solid fa-chevron-right text-gray-600 text-xs mt-1"></i>
+                <h1 id="userNameDisplay" class="text-2xl font-black tracking-tight">User</h1>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-xs mt-1"></i>
             </div>
         </div>
-        <button onclick="fetchData()" class="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center border border-white/5 active:bg-gray-800 transition-colors">
-            <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-500 text-sm"></i>
+        <button onclick="fetchData()" style="background-color: var(--refresh-bg)" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/5 shadow-sm active:bg-gray-200 dark:active:bg-gray-800 transition-colors">
+            <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm"></i>
         </button>
     </div>
 
     <!-- Month Navigation -->
     <div class="flex justify-center items-center gap-6 mb-6">
-        <button onclick="changeMonth(-1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="relative flex items-center gap-2">
             <span id="displayMonth" class="text-lg font-bold min-w-[130px] text-center">...</span>
-            <i class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
+            <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
             <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
         </div>
-        <button onclick="changeMonth(1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-right"></i></button>
+        <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
     <!-- Balance Summary -->
-    <div id="balanceCard" class="ios-card shadow-2xl border border-white/5 overflow-hidden">
+    <div id="balanceCard" class="ios-card overflow-hidden">
         <div class="text-center py-8">
-            <p class="text-gray-400 text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
+            <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
             <h2 id="totalBalance" class="text-5xl font-black tracking-tighter">฿0</h2>
         </div>
         
@@ -106,7 +152,7 @@
             <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div>
-                    <div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
+                    <div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div>
                 </div>
                 <span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
             </div>
@@ -114,15 +160,15 @@
             <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div>
-                    <div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
+                    <div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div>
                 </div>
-                <span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
+                <span id="valExpense" class="text-expense font-black text-lg tracking-tight">฿0</span>
             </div>
 
             <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div>
-                    <div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" class="text-[9px] text-gray-500 uppercase font-semibold">0 items</p></div>
+                    <div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div>
                 </div>
                 <span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0</span>
             </div>
@@ -132,11 +178,11 @@
     <!-- ENTRIES Section -->
     <div id="entriesCard" class="ios-card p-5 mt-6">
         <div class="flex justify-between items-center mb-6 px-1">
-            <h3 id="entriesTitle" class="font-black tracking-widest text-[10px] text-gray-500 uppercase">Entries</h3>
+            <h3 id="entriesTitle" style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase">Entries</h3>
             <button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button>
         </div>
         <div id="entryList" class="space-y-6">
-            <div class="text-center py-8 text-gray-500 text-sm italic">Syncing...</div>
+            <div class="text-center py-8 text-gray-400 text-sm italic">Syncing...</div>
         </div>
         <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
@@ -147,11 +193,11 @@
             <i class="fa-solid fa-house-chimney text-2xl"></i>
             <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p>
         </div>
-        <div class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110">
+        <div style="color: var(--text-sub)" class="text-center opacity-70 transition-transform duration-200 active:scale-110">
             <i class="fa-solid fa-chart-pie text-2xl"></i>
             <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p>
         </div>
-        <div class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110">
+        <div style="color: var(--text-sub)" class="text-center opacity-70 transition-transform duration-200 active:scale-110">
             <i class="fa-solid fa-gear text-2xl"></i>
             <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p>
         </div>
@@ -162,14 +208,14 @@
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3>
-                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-6 text-left">
                 <div>
-                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">User Name</label>
-                    <input type="text" id="inputUserName" maxlength="20" placeholder="Enter your name" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl bg-gray-800 border-none outline-none">
+                    <label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label>
+                    <input type="text" id="inputUserName" maxlength="20" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl">
                 </div>
-                <button onclick="saveProfile()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
+                <button onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button>
             </div>
         </div>
     </div>
@@ -179,37 +225,37 @@
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">New Entry</h3>
-                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-6 text-left">
                 <div>
-                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Type</label>
-                    <select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800">
+                    <label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label>
+                    <select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none">
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
                         <option value="Deduction">Deduction</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Category</label>
-                    <select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"></select>
+                    <label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label>
+                    <select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none"></select>
                 </div>
                 <div>
-                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
-                    <input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400">
+                    <label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
+                    <input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder:text-gray-400">
                 </div>
-                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
+                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button>
             </div>
         </div>
     </div>
 
     <!-- [Modal] Discard Confirmation -->
-    <div id="discardModal" class="modal-overlay" style="align-items: center; background: rgba(0,0,0,0.8);">
+    <div id="discardModal" class="modal-overlay" style="align-items: center; background: rgba(0,0,0,0.6);">
         <div class="alert-modal-content">
             <h3 class="text-xl font-bold">Discard changes?</h3>
-            <p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p>
+            <p class="text-gray-500 mt-2 text-sm font-medium">Your changes haven't been saved</p>
             <div class="mt-8 space-y-3">
-                <button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm">Keep Editing</button>
+                <button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm">Keep Editing</button>
                 <button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button>
             </div>
         </div>
@@ -221,9 +267,9 @@
             <div class="flex justify-between items-center mb-6 px-1">
                 <div class="text-left">
                     <h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3>
-                    <p class="text-[9px] text-gray-500 font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p>
+                    <p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p>
                 </div>
-                <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div>
         </div>
@@ -232,7 +278,7 @@
     <script>
         // ************************************************************
         // URL ของ Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2RMPvidn8wwyZChTJH18Divz9wrnC1I1Uxhtr08X3e-CQ-PxW2kS8cJR93q-oNL4I1w/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz-DubBHB-CJ6VL43my4f0vulP7WtDziy-k8uc8NJ2DI-k7GMVdPIm5EMI94QIr0_j_g/exec"; 
         // ************************************************************
 
         const masterCategories = {
@@ -252,7 +298,6 @@
             document.getElementById('greetingText').innerText = g;
         }
 
-        // --- ระบบ Profile ---
         function loadUserProfile() {
             const savedName = localStorage.getItem('userName') || 'Phuwanat';
             document.getElementById('userNameDisplay').innerText = savedName;
@@ -260,16 +305,14 @@
         }
 
         function openProfileModal() { toggleModal('profileModal', true); }
-
         function saveProfile() {
             const newName = document.getElementById('inputUserName').value.trim();
-            if (newName === "") return alert("Please enter a name");
+            if (newName === "") return;
             localStorage.setItem('userName', newName);
             document.getElementById('userNameDisplay').innerText = newName;
             toggleModal('profileModal', false);
         }
 
-        // --- ระบบข้อมูล ---
         async function fetchData() {
             if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
             const cachedData = localStorage.getItem('finance_cache');
@@ -334,7 +377,7 @@
                 title.innerText = `${currentFilter.toUpperCase()} ENTRIES`;
             } else { title.innerText = `ENTRIES`; }
             const homeList = displayData.slice(0, 4);
-            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic italic">No records found</p>` : "";
+            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-500 py-8 text-sm italic">No records found</p>` : "";
             homeList.forEach(item => list.innerHTML += createItemHTML(item));
         }
 
@@ -355,13 +398,6 @@
             `;
         }
 
-        function sortArray(arr) { return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' })); }
-        function populateCategories() {
-            const type = document.getElementById('inputType').value;
-            const select = document.getElementById('inputCategory');
-            select.innerHTML = "";
-            sortArray(masterCategories[type]).forEach(cat => { select.innerHTML += `<option value="${cat}">${cat}</option>`; });
-        }
         function markAsDirty() { isModified = true; }
         function openAddEntryModal() {
             isModified = false; document.getElementById('inputAmount').value = "";
@@ -426,6 +462,13 @@
             }
         }
 
+        function sortArray(arr) { return arr.sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' })); }
+        function populateCategories() {
+            const type = document.getElementById('inputType').value;
+            const select = document.getElementById('inputCategory');
+            select.innerHTML = "";
+            sortArray(masterCategories[type]).forEach(cat => { select.innerHTML += `<option value="${cat}">${cat}</option>`; });
+        }
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
 
         window.onload = () => {
