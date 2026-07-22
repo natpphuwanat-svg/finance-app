@@ -15,15 +15,12 @@
         .ios-card { background-color: #1c1c1e; border-radius: 24px; }
         .nav-blur { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); }
         #monthPicker { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
-        
         .text-lime-brand { color: #A3E635; }
         .bg-lime-brand { background-color: #A3E635; }
         .bg-lime-brand-opacity { background-color: rgba(163, 230, 53, 0.15); }
-        
         #modalOverlay { transition: opacity 0.3s ease; }
         #entryModal { transition: transform 0.3s ease-out; transform: translateY(100%); }
         #entryModal.active { transform: translateY(0); }
-        
         input, select { background-color: #2c2c2e !important; border: none !important; outline: none !important; color: white !important; }
         .loader { border: 2px solid #f3f3f3; border-top: 2px solid #A3E635; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -31,7 +28,7 @@
 </head>
 <body class="p-5 pb-24">
 
-    <!-- Header (แก้ไขแล้ว: มีอันเดียว และไม่มีกระดิ่ง) -->
+    <!-- Header -->
     <div class="flex justify-between items-center mb-8 mt-4">
         <div>
             <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD AFTERNOON</p>
@@ -39,15 +36,16 @@
         </div>
     </div>
 
-    <!-- Month Navigation -->
+    <!-- Month Navigation (ล็อคขั้นต่ำ Jan 2025) -->
     <div class="flex justify-center items-center gap-6 mb-6">
-        <button onclick="changeMonth(-1)" class="p-2 text-gray-500"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="changeMonth(-1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="relative flex items-center gap-2">
             <span id="displayMonth" class="text-lg font-semibold min-w-[120px] text-center">July 2026</span>
             <i class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
-            <input type="month" id="monthPicker" onchange="selectMonth(this.value)">
+            <!-- ใส่ min="2025-01" เพื่อล็อคการเลือกปีใน iPhone -->
+            <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
         </div>
-        <button onclick="changeMonth(1)" class="p-2 text-gray-500"><i class="fa-solid fa-chevron-right"></i></button>
+        <button onclick="changeMonth(1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
     <!-- Balance Card -->
@@ -84,7 +82,7 @@
         </div>
     </div>
 
-    <!-- รายการล่าสุด (Entries) -->
+    <!-- Entries -->
     <div class="ios-card p-5">
         <div class="flex justify-between items-center mb-5 px-1">
             <h3 class="font-black tracking-widest text-[10px] text-gray-500 uppercase">Entries</h3>
@@ -96,37 +94,24 @@
         <button onclick="openModal()" class="w-full mt-10 py-4 bg-lime-brand text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase transition-transform active:scale-95 text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Bottom Navigation (Compact Version: เล็กกะทัดรัด) -->
+    <!-- Bottom Navigation (Compact) -->
     <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-2 pb-5 flex justify-between z-40">
-        <div class="text-center text-lime-brand">
-            <i class="fa-solid fa-house-chimney text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p>
-        </div>
-        <div class="text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-chart-simple text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p>
-        </div>
-        <div class="text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-box-archive text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Archive</p>
-        </div>
-        <div class="text-center text-gray-500 opacity-50">
-            <i class="fa-solid fa-user text-lg"></i>
-            <p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Profile</p>
-        </div>
+        <div class="text-center text-lime-brand"><i class="fa-solid fa-house-chimney text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p></div>
+        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-chart-simple text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p></div>
+        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-box-archive text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Archive</p></div>
+        <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-user text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Profile</p></div>
     </div>
 
-    <!-- Modal เพิ่มข้อมูล -->
+    <!-- Modal Form -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/90 z-50 hidden opacity-0 flex items-end">
         <div id="entryModal" class="w-full bg-[#1c1c1e] rounded-t-[40px] p-8 pb-14 shadow-2xl border-t border-white/10">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="text-xl font-black tracking-tight">New Entry</h3>
-                <button onclick="closeModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
             <div class="space-y-6">
                 <div>
-                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Transaction Type</label>
+                    <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Type</label>
                     <select id="inputType" onchange="populateCategories()" class="w-full h-16 rounded-2xl px-5 mt-2 font-bold text-lg appearance-none">
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
@@ -135,8 +120,7 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Category</label>
-                    <select id="inputCategory" class="w-full h-16 rounded-2xl px-5 mt-2 font-bold text-lg appearance-none">
-                    </select>
+                    <select id="inputCategory" class="w-full h-16 rounded-2xl px-5 mt-2 font-bold text-lg appearance-none"></select>
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
@@ -149,7 +133,7 @@
 
     <script>
         // ************************************************************
-        // แก้ไขบรรทัดนี้: วาง URL ของคุณตรงนี้
+        // อย่าลืมใส่ URL ของคุณตรงนี้
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTg2UdPub76gCVxLzGqfsMAfoWnMGZ535yAmPqgjOX9b8-yi9OOD_pWRApCZRXcWRl5Q/exec"; 
         // ************************************************************
 
@@ -160,6 +144,7 @@
         };
 
         let entries = [];
+        let currentViewDate = new Date();
 
         function updateGreeting() {
             const h = new Date().getHours();
@@ -185,10 +170,17 @@
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
-                entries = data.reverse();
+                // กรองข้อมูลเฉพาะเดือน/ปี ที่กำลังดูอยู่
+                const month = currentViewDate.getMonth();
+                const year = currentViewDate.getFullYear();
+                
+                entries = data.filter(item => {
+                    const d = new Date(item.date);
+                    return d.getMonth() === month && d.getFullYear() === year;
+                }).reverse();
+                
                 renderData();
             } catch (e) {
-                console.error(e);
                 document.getElementById('entryList').innerHTML = `<p class="text-center text-red-500 py-4 text-xs">Error loading data.</p>`;
             }
         }
@@ -223,32 +215,22 @@
         function renderData() {
             const list = document.getElementById('entryList');
             let totals = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
-            
-            list.innerHTML = "";
-            if(entries.length === 0) list.innerHTML = `<p class="text-center text-gray-600 py-8 text-sm italic">No entries yet</p>`;
+            list.innerHTML = entries.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic">No entries for this month</p>` : "";
 
             entries.forEach(item => {
                 totals[item.type] += Number(item.amount);
                 totals[`c${item.type.slice(0,3)}`]++;
-
                 const isInc = item.type === 'Income';
                 const isExp = item.type === 'Expense';
                 const color = isInc ? 'text-lime-brand' : isExp ? 'text-red-500' : 'text-orange-400';
                 const bg = isInc ? 'bg-lime-brand' : isExp ? 'bg-red-500' : 'bg-orange-500';
-                
-                // แก้ไขไอคอนในลิสต์ให้ตรงกับด้านบน (Income = fa-arrow-up)
                 const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
 
                 list.innerHTML += `
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 ${bg} rounded-[18px] flex items-center justify-center shadow-lg">
-                                <i class="fa-solid ${icon} ${isInc ? 'text-black' : 'text-white'} text-sm"></i>
-                            </div>
-                            <div>
-                                <p class="text-[15px] font-bold tracking-tight">${item.category}</p>
-                                <span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span>
-                            </div>
+                            <div class="w-11 h-11 ${bg} rounded-[18px] flex items-center justify-center shadow-lg"><i class="fa-solid ${icon} ${isInc ? 'text-black' : 'text-white'} text-sm"></i></div>
+                            <div><p class="text-[15px] font-bold tracking-tight">${item.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span></div>
                         </div>
                         <span class="font-black text-[16px] ${color}">฿${Number(item.amount).toLocaleString()}</span>
                     </div>
@@ -264,6 +246,36 @@
             document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
         }
 
+        // ฟังก์ชันเปลี่ยนเดือนพร้อมล็อค Jan 2025
+        function changeMonth(s) {
+            let nextDate = new Date(currentViewDate);
+            nextDate.setMonth(nextDate.getMonth() + s);
+            
+            // เช็คว่าถ้าถอยไปก่อน Jan 2025 ให้หยุด
+            if (nextDate < new Date("2025-01-01")) return;
+
+            currentViewDate = nextDate;
+            updateMonthDisplay();
+            fetchData();
+        }
+
+        function selectMonth(v) {
+            if(v) {
+                let selected = new Date(v + "-01");
+                if (selected < new Date("2025-01-01")) {
+                    alert("Data available from Jan 2025 only");
+                    return;
+                }
+                currentViewDate = selected;
+                updateMonthDisplay();
+                fetchData();
+            }
+        }
+
+        function updateMonthDisplay() {
+            document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+
         function openModal() {
             populateCategories();
             document.getElementById('modalOverlay').classList.remove('hidden');
@@ -274,12 +286,6 @@
             document.getElementById('entryModal').classList.remove('active');
             setTimeout(() => document.getElementById('modalOverlay').classList.add('hidden'), 300);
         }
-        let currentViewDate = new Date();
-        function updateMonthDisplay() {
-            document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        }
-        function changeMonth(s) { currentViewDate.setMonth(currentViewDate.getMonth() + s); updateMonthDisplay(); }
-        function selectMonth(v) { if(v) { currentViewDate = new Date(v + "-01"); updateMonthDisplay(); } }
 
         window.onload = () => {
             updateGreeting();
