@@ -8,13 +8,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- นำเข้า Google Fonts: Inter (ตัวเลข/อังกฤษ) และ Noto Sans Thai (ไทย) -->
+    <!-- Fonts: Inter (Numbers/Eng) & Noto Sans Thai (Thai) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* ระบบฟอนต์ Hybrid ตามข้อกำหนด */
         body { 
             background-color: #000; 
             color: white; 
@@ -26,11 +25,11 @@
         .nav-blur { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); }
         #monthPicker { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; }
         
-        /* [COLOR SYSTEM] */
+        /* SYSTEM COLOR (LIME-400) */
         .text-system { color: #A3E635; }
         .bg-system { background-color: #A3E635; }
         
-        /* กำหนดสีข้อมูลตามคำขอ */
+        /* FINANCIAL COLORS */
         .text-income { color: #22C55E; }
         .bg-income { background-color: #22C55E; }
         .bg-income-op { background-color: rgba(34, 197, 94, 0.15); }
@@ -43,7 +42,7 @@
         .bg-deduction { background-color: #F59E0B; }
         .bg-deduction-op { background-color: rgba(245, 158, 11, 0.15); }
 
-        /* ขีดคั่น iOS Style */
+        /* DIVIDER STYLE */
         .card-divider { position: relative; }
         .card-divider::before {
             content: "";
@@ -64,14 +63,14 @@
             z-index: 10;
         }
         
-        /* Modal System */
+        /* MODAL SYSTEM */
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 50; display: none; opacity: 0; align-items: flex-end; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: #1c1c1e; border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid rgba(255,255,255,0.1); }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         
         input, select { background-color: #2c2c2e !important; border: none !important; color: white !important; outline: none !important; }
-        .loader { border: 2px solid #f3f3f3; border-top: 2px solid #A3E635; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; }
+        .loader { border: 2px solid #000; border-top: 2px solid transparent; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-fade { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -82,7 +81,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-8 mt-4 px-1">
         <div>
-            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-semibold">GOOD AFTERNOON</p>
+            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-semibold text-system">LOADING...</p>
             <h1 class="text-2xl font-bold tracking-tight">Phuwanat</h1>
         </div>
     </div>
@@ -101,12 +100,11 @@
     <!-- Balance Summary -->
     <div class="ios-card shadow-2xl border border-white/5 overflow-hidden">
         <div class="text-center py-8">
-            <p class="text-gray-400 text-[10px] tracking-widest mb-2 uppercase font-bold">Current Balance</p>
+            <p class="text-gray-400 text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
             <h2 id="totalBalance" class="text-5xl font-black tracking-tighter">฿0</h2>
         </div>
         
         <div class="px-2 pb-2">
-            <!-- Income Card -->
             <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div>
@@ -115,7 +113,6 @@
                 <span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
             </div>
 
-            <!-- Expense Card -->
             <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div>
@@ -124,7 +121,6 @@
                 <span id="valExpense" class="text-expense font-black text-lg tracking-tight">฿0</span>
             </div>
 
-            <!-- Deduction Card -->
             <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div>
@@ -142,7 +138,7 @@
             <button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button>
         </div>
         <div id="entryList" class="space-y-6 min-h-[100px]">
-            <div class="text-center py-8 text-gray-500 text-sm italic italic">Loading data...</div>
+            <div class="text-center py-8 text-gray-500 text-sm italic">Loading data...</div>
         </div>
         <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
@@ -155,7 +151,7 @@
         <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-user text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Profile</p></div>
     </div>
 
-    <!-- [Modal] New Entry (แก้ไขข้อความแล้ว) -->
+    <!-- [Modal] New Entry -->
     <div id="entryModal" class="modal-overlay">
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
@@ -177,10 +173,11 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
-                    <input type="number" id="inputAmount" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-600">
+                    <!-- ปรับ Placeholder ให้สว่างขึ้นด้วย placeholder-gray-400 -->
+                    <input type="number" id="inputAmount" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400">
                 </div>
-                <!-- ปุ่ม SAVE (แก้ไขข้อความแล้ว) -->
-                <button id="saveBtn" onclick="saveEntry()" class="w-full h-16 bg-system text-black rounded-2xl font-black text-lg mt-6 shadow-2xl shadow-lime-500/20 uppercase tracking-[0.2em]">SAVE</button>
+                <!-- เพิ่ม Margin Top เป็น mt-10 เพื่อความสมดุล -->
+                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
             </div>
         </div>
     </div>
@@ -356,13 +353,16 @@
             if (!amount || amount <= 0) return alert("Please enter amount");
             const btn = document.getElementById('saveBtn');
             btn.disabled = true;
-            btn.innerHTML = `<span class="loader"></span> Saving...`;
+            btn.innerHTML = `<span class="loader"></span>`;
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type, category, amount }) });
                 toggleModal('entryModal', false);
                 document.getElementById('inputAmount').value = "";
                 setTimeout(fetchData, 1000);
-            } catch (e) { alert("Failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
+            } catch (e) { alert("Failed!"); } finally { 
+                btn.disabled = false; 
+                btn.innerText = "SAVE"; 
+            }
         }
 
         function toggleModal(id, show) {
