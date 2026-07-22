@@ -23,7 +23,7 @@
         .bg-income { background-color: #10B981; }
         .bg-income-op { background-color: rgba(16, 185, 129, 0.15); }
 
-        /* ขีดคั่น (Divider) - ปรับให้ชัดขึ้นเป็น 12% และไม่ชนขอบ */
+        /* ขีดคั่น (Divider) */
         .card-divider { position: relative; }
         .card-divider::before {
             content: "";
@@ -32,13 +32,12 @@
             left: 16px;
             right: 16px;
             height: 1px;
-            background-color: rgba(255, 255, 255, 0.12); /* ปรับความเข้มที่นี่ */
+            background-color: rgba(255, 255, 255, 0.12);
             transition: opacity 0.3s ease;
         }
-        /* เมื่อมีการเลือก ให้ซ่อนเส้น */
         .hide-divider::before { opacity: 0; }
 
-        /* สถานะเมื่อการ์ดถูกเลือก */
+        /* การ์ดที่ถูกเลือก */
         .filter-active { 
             border-color: #A3E635 !important; 
             background-color: rgba(163, 230, 53, 0.08) !important; 
@@ -46,25 +45,26 @@
             z-index: 10;
         }
         
+        /* Modal System */
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 50; display: none; opacity: 0; align-items: flex-end; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: #1c1c1e; border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid rgba(255,255,255,0.1); }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         
-        input, select { background-color: #2c2c2e !important; border: none !important; color: white !important; }
+        input, select { background-color: #2c2c2e !important; border: none !important; color: white !important; outline: none !important; }
         .loader { border: 2px solid #f3f3f3; border-top: 2px solid #A3E635; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-fade { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="p-5 pb-24">
+<body class="p-5 pb-24 text-white">
 
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8 mt-4">
+    <div class="flex justify-between items-center mb-8 mt-4 px-1">
         <div>
-            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">GOOD AFTERNOON</p>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Phuwanat</h1>
+            <p id="greetingText" class="text-gray-500 text-[10px] uppercase tracking-[0.2em]">LOADING...</p>
+            <h1 class="text-2xl font-bold tracking-tight">Phuwanat</h1>
         </div>
     </div>
 
@@ -72,22 +72,21 @@
     <div class="flex justify-center items-center gap-6 mb-6">
         <button onclick="changeMonth(-1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="relative flex items-center gap-2">
-            <span id="displayMonth" class="text-lg font-semibold min-w-[120px] text-center">July 2026</span>
+            <span id="displayMonth" class="text-lg font-semibold min-w-[120px] text-center">...</span>
             <i class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
             <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
         </div>
         <button onclick="changeMonth(1)" class="p-2 text-gray-500 active:text-white"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- Balance Summary Container -->
+    <!-- Balance Summary -->
     <div class="ios-card shadow-2xl border border-white/5 overflow-hidden">
         <div class="text-center py-8">
             <p class="text-gray-400 text-[10px] tracking-widest mb-2 uppercase font-bold">Balance</p>
-            <h2 id="totalBalance" class="text-5xl font-bold tracking-tighter text-white">฿0</h2>
+            <h2 id="totalBalance" class="text-5xl font-bold tracking-tighter">฿0</h2>
         </div>
         
         <div class="px-2 pb-2">
-            <!-- Income Card -->
             <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div>
@@ -96,7 +95,6 @@
                 <span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
             </div>
 
-            <!-- Expense Card (ขีดคั่นเส้นที่ 1) -->
             <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down text-sm"></i></div>
@@ -105,7 +103,6 @@
                 <span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
             </div>
 
-            <!-- Deduction Card (ขีดคั่นเส้นที่ 2) -->
             <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus text-xs"></i></div>
@@ -122,13 +119,13 @@
             <h3 id="entriesTitle" class="font-black tracking-widest text-[10px] text-gray-500 uppercase">Entries</h3>
             <button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button>
         </div>
-        <div id="entryList" class="space-y-6">
+        <div id="entryList" class="space-y-6 min-h-[100px]">
             <div class="text-center py-8 text-gray-500 text-sm italic">Loading data...</div>
         </div>
-        <button onclick="toggleModal('entryModal', true)" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
+        <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 nav-blur border-t border-white/5 px-8 pt-2 pb-5 flex justify-between z-40">
         <div class="text-center text-system"><i class="fa-solid fa-house-chimney text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Home</p></div>
         <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-chart-simple text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Summary</p></div>
@@ -136,17 +133,17 @@
         <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-user text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Profile</p></div>
     </div>
 
-    <!-- Modal Record -->
+    <!-- [Modal] New Record (ฉลาดขึ้น!) -->
     <div id="entryModal" class="modal-overlay">
         <div class="modal-content pb-10">
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-center mb-8 px-1">
                 <h3 class="text-xl font-black tracking-tight text-system">New Record</h3>
-                <button onclick="toggleModal('entryModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleModal('entryModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-6 text-left">
+            <div class="space-y-6">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Type</label>
-                    <select id="inputType" onchange="populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none">
+                    <select id="inputType" onchange="populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800">
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
                         <option value="Deduction">Deduction</option>
@@ -154,18 +151,18 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Category</label>
-                    <select id="inputCategory" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none"></select>
+                    <select id="inputCategory" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"></select>
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-black ml-1 tracking-widest">Amount (฿)</label>
-                    <input type="number" id="inputAmount" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl">
+                    <input type="number" id="inputAmount" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder:text-gray-700">
                 </div>
-                <button id="saveBtn" onclick="saveEntry()" class="w-full h-16 bg-system text-black rounded-2xl font-black text-lg mt-6 shadow-2xl shadow-lime-500/20 uppercase tracking-[0.2em]">Save Record</button>
+                <button id="saveBtn" onclick="saveEntry()" class="w-full h-16 bg-system text-black rounded-2xl font-black text-lg mt-6 shadow-2xl shadow-lime-500/20 uppercase tracking-[0.2em] active:scale-[0.98] transition-transform">Save Record</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal View All -->
+    <!-- [Modal] View All -->
     <div id="viewAllModal" class="modal-overlay">
         <div class="modal-content h-[85vh] flex flex-col">
             <div class="flex justify-between items-center mb-6">
@@ -178,7 +175,7 @@
 
     <script>
         // ************************************************************
-        // อย่าลืมใส่ URL ของคุณตรงนี้
+        // URL ของ Google Apps Script
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTg2UdPub76gCVxLzGqfsMAfoWnMGZ535yAmPqgjOX9b8-yi9OOD_pWRApCZRXcWRl5Q/exec"; 
         // ************************************************************
 
@@ -229,20 +226,11 @@
         function updateCardStyles() {
             const types = ['Income', 'Expense', 'Deduction'];
             const hasFilter = currentFilter !== null;
-
             types.forEach(t => {
                 const el = document.getElementById(`card${t}`);
-                const isActive = (currentFilter === t);
-                
-                // สลับขอบเน้น
-                el.classList.toggle('filter-active', isActive);
-
-                // ซ่อน/แสดงเส้นขีดคั่น
-                if (hasFilter) {
-                    el.classList.add('hide-divider');
-                } else {
-                    el.classList.remove('hide-divider');
-                }
+                el.classList.toggle('filter-active', currentFilter === t);
+                if (hasFilter) el.classList.add('hide-divider');
+                else el.classList.remove('hide-divider');
             });
         }
 
@@ -290,21 +278,30 @@
             const colorClass = isInc ? 'text-income' : isExp ? 'text-red-500' : 'text-orange-400';
             const bgClass = isInc ? 'bg-income' : isExp ? 'bg-red-500' : 'bg-orange-500';
             const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
-            
             return `
                 <div class="flex justify-between items-center animate-fade">
                     <div class="flex items-center gap-4">
-                        <div class="w-11 h-11 ${bgClass} rounded-[18px] flex items-center justify-center shadow-lg">
-                            <i class="fa-solid ${icon} text-white text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="text-[15px] font-bold tracking-tight">${item.category}</p>
-                            <span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span>
-                        </div>
+                        <div class="w-11 h-11 ${bgClass} rounded-[18px] flex items-center justify-center shadow-lg"><i class="fa-solid ${icon} text-white text-sm"></i></div>
+                        <div><p class="text-[15px] font-bold tracking-tight">${item.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${item.type}</span></div>
                     </div>
                     <span class="font-black text-[16px] ${colorClass}">฿${Number(item.amount).toLocaleString()}</span>
                 </div>
             `;
+        }
+
+        // ฟังก์ชันอัจฉริยะสำหรับเปิดหน้าเพิ่มข้อมูล
+        function openAddEntryModal() {
+            const typeSelect = document.getElementById('inputType');
+            
+            // ตั้งค่า Type เริ่มต้นตาม Filter ที่เรากำลังเลือกดูอยู่
+            // ถ้าไม่ได้เลือกอะไรเลย (null) ให้ Default เป็น Income
+            typeSelect.value = currentFilter || 'Income';
+            
+            // อัปเดตรายการหมวดหมู่ให้ตรงกับประเภทที่เลือกโดยอัตโนมัติ
+            populateCategories();
+            
+            // เปิด Modal
+            toggleModal('entryModal', true);
         }
 
         function openViewAll() {
@@ -312,19 +309,14 @@
             const title = document.getElementById('viewAllTitle');
             const month = currentViewDate.getMonth();
             const year = currentViewDate.getFullYear();
-
             let allData = entries.filter(item => {
                 const d = new Date(item.date);
                 return d.getMonth() === month && d.getFullYear() === year;
             }).reverse();
-
             if (currentFilter) {
                 allData = allData.filter(item => item.type === currentFilter);
                 title.innerText = `${currentFilter.toUpperCase()} RECORDS`;
-            } else {
-                title.innerText = `ALL ENTRIES`;
-            }
-
+            } else { title.innerText = `ALL ENTRIES`; }
             list.innerHTML = "";
             allData.forEach(item => list.innerHTML += createItemHTML(item));
             toggleModal('viewAllModal', true);
