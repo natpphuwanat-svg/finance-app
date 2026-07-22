@@ -133,7 +133,7 @@
         <div class="text-center text-gray-500 opacity-50"><i class="fa-solid fa-user text-lg"></i><p class="text-[8px] mt-0.5 font-black uppercase tracking-tighter">Profile</p></div>
     </div>
 
-    <!-- [Modal] New Record (ฉลาดขึ้น!) -->
+    <!-- [Modal] New Record -->
     <div id="entryModal" class="modal-overlay">
         <div class="modal-content pb-10">
             <div class="flex justify-between items-center mb-8 px-1">
@@ -162,11 +162,14 @@
         </div>
     </div>
 
-    <!-- [Modal] View All -->
+    <!-- [Modal] View All (อัปเกรด: เรียงตามจำนวนเงิน) -->
     <div id="viewAllModal" class="modal-overlay">
         <div class="modal-content h-[85vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="viewAllTitle" class="text-xl font-black tracking-tight">ALL ENTRIES</h3>
+            <div class="flex justify-between items-center mb-6 px-1">
+                <div class="text-left">
+                    <h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3>
+                    <p class="text-[9px] text-gray-500 font-bold tracking-widest mt-0.5">SORTED BY HIGHEST AMOUNT</p>
+                </div>
                 <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div>
@@ -176,7 +179,7 @@
     <script>
         // ************************************************************
         // URL ของ Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTg2UdPub76gCVxLzGqfsMAfoWnMGZ535yAmPqgjOX9b8-yi9OOD_pWRApCZRXcWRl5Q/exec"; 
+        const SCRIPT_URL = "วาง_URL_ที่นี่"; 
         // ************************************************************
 
         const masterCategories = {
@@ -209,7 +212,7 @@
         }
 
         async function fetchData() {
-            if(SCRIPT_URL === "วาง_URL_ที่นี่") return;
+            if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbzTg2UdPub76gCVxLzGqfsMAfoWnMGZ535yAmPqgjOX9b8-yi9OOD_pWRApCZRXcWRl5Q/exec") return;
             try {
                 const response = await fetch(SCRIPT_URL);
                 entries = await response.json();
@@ -259,7 +262,7 @@
             document.getElementById('countDeduction').innerText = `${totals.cDed} items`;
             document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
 
-            let displayData = [...monthData].reverse();
+            let displayData = [...monthData].reverse(); // หน้าแรกเรียงตามเวลา (ใหม่ไปเก่า)
             if (currentFilter) {
                 displayData = displayData.filter(item => item.type === currentFilter);
                 title.innerText = `${currentFilter} ENTRIES`;
@@ -289,37 +292,39 @@
             `;
         }
 
-        // ฟังก์ชันอัจฉริยะสำหรับเปิดหน้าเพิ่มข้อมูล
-        function openAddEntryModal() {
-            const typeSelect = document.getElementById('inputType');
-            
-            // ตั้งค่า Type เริ่มต้นตาม Filter ที่เรากำลังเลือกดูอยู่
-            // ถ้าไม่ได้เลือกอะไรเลย (null) ให้ Default เป็น Income
-            typeSelect.value = currentFilter || 'Income';
-            
-            // อัปเดตรายการหมวดหมู่ให้ตรงกับประเภทที่เลือกโดยอัตโนมัติ
-            populateCategories();
-            
-            // เปิด Modal
-            toggleModal('entryModal', true);
-        }
-
+        // หน้า View All จะเรียงตามจำนวนเงิน (มาก -> น้อย)
         function openViewAll() {
             const list = document.getElementById('viewAllList');
             const title = document.getElementById('viewAllTitle');
             const month = currentViewDate.getMonth();
             const year = currentViewDate.getFullYear();
+
             let allData = entries.filter(item => {
                 const d = new Date(item.date);
                 return d.getMonth() === month && d.getFullYear() === year;
-            }).reverse();
+            });
+
+            // กรองตามประเภทที่เลือกไว้ในหน้าแรก (ถ้ามี)
             if (currentFilter) {
                 allData = allData.filter(item => item.type === currentFilter);
                 title.innerText = `${currentFilter.toUpperCase()} RECORDS`;
-            } else { title.innerText = `ALL ENTRIES`; }
+            } else { 
+                title.innerText = `ALL ENTRIES`; 
+            }
+
+            // *** เงื่อนไขที่คุณต้องการ: เรียงตามจำนวนเงินจากมากไปน้อย ***
+            allData.sort((a, b) => Number(b.amount) - Number(a.amount));
+
             list.innerHTML = "";
             allData.forEach(item => list.innerHTML += createItemHTML(item));
             toggleModal('viewAllModal', true);
+        }
+
+        function openAddEntryModal() {
+            const typeSelect = document.getElementById('inputType');
+            typeSelect.value = currentFilter || 'Income';
+            populateCategories();
+            toggleModal('entryModal', true);
         }
 
         async function saveEntry() {
