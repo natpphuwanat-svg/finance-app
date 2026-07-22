@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
@@ -54,7 +54,7 @@
 
         .grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .grid-btn { width: 100%; aspect-ratio: 1/1; border-radius: 20px; border: 2.5px solid transparent; background: #1c222b; transition: 0.25s; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #555; font-size: 14px; overflow: hidden; }
-        .grid-btn.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); color: var(--lime); box-shadow: 0 10px 20px rgba(190, 242, 100, 0.15); }
+        .grid-btn.selected { border-color: var(--lime); background: rgba(190, 242, 100, 0.1); color: var(--lime); }
 
         .summary-card { background: #11141b; border-radius: 28px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
         .summary-row { display: flex; align-items: center; padding: 18px 20px; cursor: pointer; }
@@ -151,13 +151,10 @@
                 <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">MONTHLY RECORDS</h3>
                 <span class="text-xs font-bold text-lime-400">View All</span>
             </div>
-            <div id="hList" class="flex flex-col">
-                <!-- รายการจะโชว์ที่นี่ -->
-            </div>
+            <div id="hList" class="flex flex-col"></div>
         </section>
     </main>
 
-    <!-- Sheets (Picker, Profile, Crop, Entry) -->
     <div id="jumpSheet" class="sheet">
         <div class="sheet-overlay" onclick="closeSheet('jumpSheet')"></div>
         <div class="sheet-content">
@@ -213,7 +210,7 @@
                     <input type="number" id="tAmt" placeholder="0.00" class="w-full glass p-8 rounded-3xl text-5xl font-black text-center text-lime-400 outline-none num-style">
                 </div>
             </div>
-            <button onclick="sendTransaction()" id="btnSave" class="w-full bg-white text-black py-5 rounded-2xl font-extrabold text-lg uppercase">Confirm</button>
+            <button onclick="sendTransaction()" id="btnSave" class="w-full bg-white text-black py-5 rounded-2xl font-extrabold text-lg uppercase active:opacity-50 transition-all">Confirm</button>
         </div>
     </div>
 
@@ -279,7 +276,7 @@
             const custom = localStorage.getItem("f_uC");
             let h = PRESETS.map(u => `<div class="grid-btn ${currentAv === u ? 'selected' : ''}" onclick="pickAv('${u}')"><img src="${u}"></div>`).join('');
             h += `<div class="grid-btn flex flex-col items-center justify-center bg-white/5 ${currentAv === custom ? 'selected' : ''}" onclick="triggerInput()">
-                ${custom ? `<img src="${custom}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 mt-1 uppercase">Upload</span>`}
+                ${custom ? `<img src="${custom}">` : `<i class="fa-solid fa-camera text-2xl opacity-20"></i><span class="text-[7px] font-bold opacity-30 uppercase mt-1">Upload</span>`}
             </div>`;
             g.innerHTML = h;
         }
@@ -302,7 +299,6 @@
         function closeCrop() { document.getElementById('cropModal').classList.remove('active'); document.getElementById('fInput').value = ""; }
         function saveProfile() { localStorage.setItem("f_uN", document.getElementById('pName').value); localStorage.setItem("f_uI", currentAv); loadProfile(); closeSheet('profileSheet'); }
 
-        // ✅ DATA LOGIC FIX: Robust Date Parser for iPhone
         async function fetchData() {
             try {
                 document.getElementById('sync').classList.remove('hidden');
@@ -316,37 +312,39 @@
             finally { document.getElementById('sync').classList.add('hidden'); }
         }
 
+        // ✅ FIXED RENDERING LOGIC
         function renderUI() {
             const targetM = vDate.getMonth(), targetY = vDate.getFullYear();
             let iTot = 0, eTot = 0, dTot = 0, iCnt = 0, eCnt = 0, dCnt = 0, html = "";
 
             if (!store || store.length === 0) return;
 
-            // ตรวจสอบว่าแถวแรกเป็นข้อมูลหรือหัวตาราง
-            const startIdx = (store[0] && store[0][0] && store[0][0].toString().includes('/')) ? 0 : 1;
+            // ตรวจสอบว่าแถวแรกเป็นหัวตารางหรือไม่
+            const firstCell = store[0][0].toString();
+            const startIdx = (firstCell.includes('/') || firstCell.includes('-')) ? 0 : 1;
 
             store.slice(startIdx).reverse().forEach(row => {
                 const dateRaw = row[0].toString();
                 const type = row[1], name = row[2], amt = parseFloat(row[3]);
                 
                 if(!isNaN(amt)) {
-                    // ✅ ระบบแยกวันที่แบบ Manual เพื่อข้ามบั๊ก iPhone Safari
-                    // รองรับรูปแบบ "22/7/2026, 11:17"
-                    const matches = dateRaw.match(/\d+/g);
-                    if (matches && matches.length >= 3) {
-                        const d = parseInt(matches[0]);
-                        const mo = parseInt(matches[1]) - 1;
-                        let ye = parseInt(matches[2]);
+                    // ✅ ระบบแกะวันที่แบบ Manual เพื่อความชัวร์ 100% บน iPhone
+                    // ดึงเฉพาะตัวเลขออกมา เช่น [22, 7, 2026]
+                    const parts = dateRaw.match(/\d+/g);
+                    if (parts && parts.length >= 3) {
+                        const day = parseInt(parts[0]);
+                        const month = parseInt(parts[1]) - 1; // 0-11
+                        let year = parseInt(parts[2]);
                         
-                        // รองรับปี พ.ศ. (ถ้ามี)
-                        if (ye > 2500) ye -= 543;
+                        // ปรับแก้ปี พ.ศ. เป็น ค.ศ.
+                        if (year > 2500) year -= 543;
 
-                        // คำนวณยอดเงินรวม (ทุกเดือนเพื่อ Balance)
+                        // คำนวณยอดเงินรวม (ทุกเดือนเพื่อแสดง Balance)
                         if(type === 'Income') iTot += amt;
                         if(type === 'Expense') eTot += amt;
 
-                        // กรองข้อมูลเพื่อแสดงใน Monthly Records เฉพาะเดือนที่เลือก
-                        if(mo === targetM && ye === targetY) {
+                        // กรองแสดงผลเฉพาะเดือน/ปีที่เลือก
+                        if(month === targetM && year === targetY) {
                             let icon = "fa-solid fa-wallet", col = "green";
                             if(type === 'Income') { iCnt++; icon = "fa-solid fa-briefcase"; }
                             if(type === 'Expense') { eCnt++; icon = "fa-solid fa-utensils"; col = "red"; if(name.includes('รถ')) icon = "fa-solid fa-bus"; }
@@ -386,11 +384,20 @@
         }
 
         function checkNewCat(s) { if(s.value === 'NEW') { const n = prompt("Category Name:"); if(n) { const o = new Option(n, n); s.insertBefore(o, s.firstChild); s.value = n; } } }
+        
         async function sendTransaction() {
             const n = document.getElementById('tCat').value, a = document.getElementById('tAmt').value; if(!a || a <= 0) return;
             const b = document.getElementById('btnSave'); b.innerText = "Syncing..."; b.disabled = true;
-            try { await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({type: mode, name: n, amount: a}) }); document.getElementById('tAmt').value = ""; closeSheet('entrySheet'); fetchData(); } finally { b.innerText = "Confirm"; b.disabled = false; }
+            try { 
+                await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({type: mode, name: n, amount: a}) }); 
+                document.getElementById('tAmt').value = ""; 
+                closeSheet('entrySheet'); 
+                // หน่วงเวลาเล็กน้อยเพื่อให้ Google Sheets ประมวลผลเสร็จก่อนโหลดใหม่
+                setTimeout(fetchData, 800); 
+            } catch(e) { alert("Error saving data"); }
+            finally { b.innerText = "Confirm"; b.disabled = false; }
         }
+
         function openSheet(id) { document.getElementById(id).classList.add('active'); document.body.classList.add('lock-scroll'); }
         function closeSheet(id) { document.getElementById(id).classList.remove('active'); document.body.classList.remove('lock-scroll'); }
     </script>
