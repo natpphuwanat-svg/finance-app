@@ -35,16 +35,13 @@
         .card-divider { position: relative; }
         .card-divider::before { content: ""; position: absolute; top: 0; left: 16px; right: 16px; height: 1px; background-color: var(--divider); transition: opacity 0.3s ease; }
         .hide-divider::before { opacity: 0; }
-        .is-syncing { opacity: 0.6; filter: blur(4px); }
-        @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
+        .is-syncing { opacity: 0.6; filter: blur(8px); pointer-events: none; transition: all 0.5s ease; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         input[type="number"], input[type="text"], select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 16px; }
-        .alert-container { align-items: center; }
         .alert-box { width: 85%; max-width: 320px; background: var(--input-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; }
         .modal-overlay.active .alert-box { transform: scale(1); }
         .page-view { display: none; animation: fadeIn 0.4s ease; }
@@ -70,6 +67,7 @@
                 <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm"></i>
             </button>
         </div>
+
         <div class="flex justify-center items-center gap-6 mb-6">
             <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="relative flex items-center gap-2 px-4 py-1">
@@ -79,6 +77,7 @@
             </div>
             <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
+
         <div id="balanceCard" class="ios-card overflow-hidden mb-6">
             <div class="text-center py-8">
                 <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
@@ -96,10 +95,24 @@
                 </div>
             </div>
         </div>
-        <div id="entriesCard" class="ios-card p-5"><div class="flex justify-between items-center mb-6 px-1"><h3 id="entriesTitle" style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase">Entries</h3><button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button></div><div id="entryList" class="space-y-6"><div class="text-center py-8 text-gray-400 text-sm italic">Syncing...</div></div><button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button></div>
+
+        <div id="entriesCard" class="ios-card p-5">
+            <div class="flex justify-between items-center mb-6 px-1">
+                <h3 id="entriesTitle" style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase">Entries</h3>
+                <button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button>
+            </div>
+            <div id="entryList" class="space-y-6"><div class="text-center py-8 text-gray-400 text-sm italic">Syncing...</div></div>
+            <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
+        </div>
     </div>
 
-    <div id="view-stats" class="page-view"><div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div><div class="ios-card p-1.5 flex gap-1 mb-8 mx-4"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div><div class="ios-card p-6 mb-8 mx-1"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3></div></div></div><div class="px-2 pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div></div>
+    <div id="view-stats" class="page-view">
+        <div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div>
+        <div class="ios-card p-1.5 flex gap-1 mb-8 mx-4"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div>
+        <div class="ios-card p-6 mb-8 mx-1"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3></div></div></div>
+        <div id="insightsContainer" class="px-2 pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div>
+    </div>
+
     <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
     <div class="fixed bottom-0 left-0 right-0 nav-blur px-10 pt-3 pb-[26px] flex justify-between z-40">
@@ -108,15 +121,15 @@
         <div id="nav-settings" onclick="switchView('settings')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-gear text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p></div>
     </div>
 
-    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
-    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
+    <div id="profileModal" class="modal-overlay"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
+    <div id="entryModal" class="modal-overlay"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
     <div id="discardModal" class="modal-overlay alert-container"><div class="alert-box"><h3 class="text-xl font-bold text-white">Discard changes?</h3><p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
-    <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
+    <div id="viewAllModal" class="modal-overlay"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
 
     <script>
         // ************************************************************
         // URL ของ Google Apps Script ของคุณ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyM1Hg-vs5Ysn12uXCZrkZLuUDmy9y5emKiIa6BBd-uHTWeWRFW1A9qtuNkf0RaLTadYg/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFgGq4kLe4by6p0QC3ftSk88YKMJ_6sEGVl4r_8llekNHZyNsetYTGYCuS4Peps988Qg/exec"; 
         // ************************************************************
 
         const masterCategories = {
@@ -127,44 +140,104 @@
 
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
-        function switchView(vN) {
+        function switchView(viewName) {
             document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${vN}`).classList.add('active');
+            document.getElementById(`view-${viewName}`).classList.add('active');
             ['home', 'stats', 'settings'].forEach(n => {
                 const el = document.getElementById(`nav-${n}`);
-                if(n === vN) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); }
+                if(n === viewName) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); }
                 else { el.classList.add('opacity-50', 'text-gray-500'); el.classList.remove('text-system'); }
             });
-            if(vN === 'stats') renderStatistics();
+            if(viewName === 'stats') renderStatistics();
         }
 
         async function fetchData() {
             if(!SCRIPT_URL || SCRIPT_URL.includes("วาง_URL")) return;
             const cached = localStorage.getItem('finance_cache');
             if (cached) { entries = JSON.parse(cached); renderData(); }
-            const icon = document.getElementById('refreshIcon'), balCard = document.getElementById('balanceCard');
-            icon.classList.add('spinning'); balCard.classList.add('is-syncing');
+            
+            const icon = document.getElementById('refreshIcon'), balCard = document.getElementById('balanceCard'), entCard = document.getElementById('entriesCard'), insCard = document.getElementById('insightsContainer');
+            icon.classList.add('spinning'); balCard.classList.add('is-syncing'); entCard.classList.add('is-syncing'); if(insCard) insCard.classList.add('is-syncing');
+            
             try {
                 const res = await fetch(SCRIPT_URL);
                 const data = await res.json();
                 entries = data; localStorage.setItem('finance_cache', JSON.stringify(data));
                 renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics();
-            } catch (e) { console.error(e); } finally { icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); }
+            } catch (e) { console.error(e); } finally { icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); entCard.classList.remove('is-syncing'); if(insCard) insCard.classList.remove('is-syncing'); }
         }
 
-        function setStatsTimeframe(t) { statsTimeframe = t; document.getElementById('btn-month').classList.toggle('active', t === 'month'); document.getElementById('btn-year').classList.toggle('active', t === 'year'); renderStatistics(); }
+        // --- ระบบบันทึกข้อมูล (อัปเกรดเพื่อป้องกันการมั่ว 100%) ---
+        async function saveEntry() {
+            const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
+            if (!a || a <= 0) return alert("Please enter amount");
+            const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader"></span>`;
+            
+            // ล็อควันที่ให้อยู่ในเดือนที่เลือก และใช้เวลาเที่ยงวันเพื่อเลี่ยง Timezone shift
+            const Y = currentViewDate.getFullYear(), M = currentViewDate.getMonth();
+            const dateToSave = new Date(Y, M, 1, 12, 0, 0);
+
+            try {
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ type: t, category: c, amount: a, date: dateToSave.toISOString() }) 
+                });
+                isModified = false; toggleModal('entryModal', false); 
+                // เพิ่มข้อมูลเข้า Local เพื่อโชว์ทันที
+                entries.push({ date: dateToSave.toISOString(), type: t, category: c, amount: a });
+                renderData();
+                setTimeout(fetchData, 1500);
+            } catch (e) { alert("Save failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
+        }
+
+        function renderData() {
+            const list = document.getElementById('entryList'), title = document.getElementById('entriesTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
+            const mData = entries.filter(i => {
+                const d = new Date(i.date);
+                // กรองเป๊ะๆ ทั้งเดือนและปี
+                return d.getMonth() === m && d.getFullYear() === y;
+            });
+
+            let t = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
+            mData.forEach(i => { t[i.type] += Number(i.amount); t[`c${i.type.slice(0,3)}`]++; });
+
+            document.getElementById('totalBalance').innerText = `฿${(t.Income - t.Expense).toLocaleString()}`;
+            document.getElementById('valIncome').innerText = `฿${t.Income.toLocaleString()}`;
+            document.getElementById('valExpense').innerText = `฿${t.Expense.toLocaleString()}`;
+            document.getElementById('valDeduction').innerText = `฿${t.Deduction.toLocaleString()}`;
+            document.getElementById('countIncome').innerText = `${t.cInc} items`;
+            document.getElementById('countExpense').innerText = `${t.cExp} items`;
+            document.getElementById('countDeduction').innerText = `${t.cDed} items`;
+
+            let disp = [...mData].reverse();
+            if (currentFilter) { disp = disp.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else title.innerText = `ENTRIES`;
+            list.innerHTML = disp.length ? "" : `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>`;
+            disp.slice(0, 4).forEach(i => list.innerHTML += createItemHTML(i));
+        }
+
+        function createItemHTML(i) {
+            const isInc = i.type === 'Income', isExp = i.type === 'Expense';
+            const c = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
+            const b = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
+            const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
+            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${Number(i.amount).toLocaleString()}</span></div>`;
+        }
+
         function renderStatistics() {
             const m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             let scope = entries.filter(i => { const d = new Date(i.date); return statsTimeframe === 'month' ? (d.getMonth() === m && d.getFullYear() === y) : (d.getFullYear() === y); });
             let t = { Income: 0, Expense: 0, Deduction: 0 }; scope.forEach(i => t[i.type] += Number(i.amount));
             updateChart(t); generateSmartInsights(scope, m, y);
         }
+
         function updateChart(totals) {
             const ctx = document.getElementById('statsDonutChart').getContext('2d'), total = totals.Income + totals.Expense + totals.Deduction;
             document.getElementById('chartValue').innerText = `฿${total.toLocaleString()}`;
             if (myChart) myChart.destroy();
             myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Income', 'Expense', 'Deduction'], datasets: [{ data: [totals.Income, totals.Expense, totals.Deduction], backgroundColor: ['#22C55E', '#EF4444', '#F59E0B'], borderWidth: 0, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
+
         function generateSmartInsights(cur, m, y) {
             const list = document.getElementById('insightsList'); list.innerHTML = "";
             const disc = ["มาสาย", "ผิดกฎระเบียบ", "ไม่สแกนนิ้ว"];
@@ -179,73 +252,23 @@
             if(annOom > 0) list.innerHTML += createInsightHTML('system', 'fa-vault', 'Company Fund', `Total company savings for ${y} is ฿${annOom.toLocaleString()}.`);
             if(!list.innerHTML) list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs italic">All looks steady.</p>`;
         }
+
         function createInsightHTML(t, i, title, d) {
             const c = { amber: 'bg-deduction-op text-deduction border-orange-500/20', emerald: 'bg-income-op text-income border-emerald-500/20', system: 'bg-lime-900/10 text-system border-lime-500/20' };
             return `<div class="insight-card animate-fade ${c[t]}"><i class="fa-solid ${i} text-xl"></i><div class="text-left"><p class="font-black text-xs uppercase tracking-widest">${title}</p><p class="text-[11px] opacity-80 mt-0.5 font-medium">${d}</p></div></div>`;
         }
-        function setFilter(t) { currentFilter = (currentFilter === t) ? null : t; updateCardStyles(); renderData(); }
-        function updateCardStyles() { ['Income', 'Expense', 'Deduction'].forEach(t => { const el = document.getElementById(`card${t}`); el.classList.toggle('filter-active', currentFilter === t); el.classList.toggle('hide-divider', currentFilter !== null); }); }
-        function renderData() {
-            const list = document.getElementById('entryList'), title = document.getElementById('entriesTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
-            const mData = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
-            let t = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
-            mData.forEach(i => { t[i.type] += Number(i.amount); t[`c${i.type.slice(0,3)}`]++; });
-            document.getElementById('totalBalance').innerText = `฿${(t.Income - t.Expense).toLocaleString()}`;
-            document.getElementById('valIncome').innerText = `฿${t.Income.toLocaleString()}`;
-            document.getElementById('valExpense').innerText = `฿${t.Expense.toLocaleString()}`;
-            document.getElementById('valDeduction').innerText = `฿${t.Deduction.toLocaleString()}`;
-            document.getElementById('countIncome').innerText = `${t.cInc} items`;
-            document.getElementById('countExpense').innerText = `${t.cExp} items`;
-            document.getElementById('countDeduction').innerText = `${t.cDed} items`;
-            let disp = [...mData].reverse(); if(currentFilter) { disp = disp.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else title.innerText = `ENTRIES`;
-            list.innerHTML = disp.length ? "" : `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>`;
-            disp.slice(0, 4).forEach(i => list.innerHTML += createItemHTML(i));
-        }
-        function createItemHTML(i) {
-            const isInc = i.type === 'Income', isExp = i.type === 'Expense';
-            const c = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
-            const b = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
-            const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
-            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${Number(i.amount).toLocaleString()}</span></div>`;
-        }
+
         function updateGreeting() { const h = new Date().getHours(); document.getElementById('greetingText').innerText = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : "GOOD EVENING"; }
         function loadUserProfile() { const n = localStorage.getItem('userName') || 'Phuwanat'; document.getElementById('userNameDisplay').innerText = n; document.getElementById('inputUserName').value = n; }
         function openProfileModal() { toggleModal('profileModal', true); }
         function saveProfile() { const n = document.getElementById('inputUserName').value.trim(); if (n) { localStorage.setItem('userName', n); document.getElementById('userNameDisplay').innerText = n; toggleModal('profileModal', false); } }
         function markAsDirty() { isModified = true; }
+        function setStatsTimeframe(t) { statsTimeframe = t; document.getElementById('btn-month').classList.toggle('active', t === 'month'); document.getElementById('btn-year').classList.toggle('active', t === 'year'); renderStatistics(); }
         function openAddEntryModal() { isModified = false; document.getElementById('inputAmount').value = ""; document.getElementById('inputType').value = currentFilter || 'Income'; populateCategories(); toggleModal('entryModal', true); }
         function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value) toggleModal('discardModal', true); else toggleModal('entryModal', false); }
         function confirmDiscard() { toggleModal('discardModal', false); toggleModal('entryModal', false); isModified = false; }
-
-        // แก้ไขฟังก์ชัน SAVE ให้ส่งวันที่ที่เลือกอยู่ไปด้วย
-        async function saveEntry() {
-            const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
-            if (!a || a <= 0) return alert("Please enter amount");
-            const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader"></span>`;
-            
-            // สร้างวันที่โดยใช้เดือนและปีที่เรากำลังเลือกดูอยู่ในแอปขณะนั้น
-            const targetDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), new Date().getDate());
-
-            try { 
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({ 
-                        type: t, 
-                        category: c, 
-                        amount: a, 
-                        date: targetDate.toISOString() // ส่งวันที่ที่ต้องการไป
-                    }) 
-                }); 
-                isModified = false; 
-                toggleModal('entryModal', false); 
-                // เพิ่มข้อมูลเข้าเครื่องชั่วคราว
-                entries.push({ date: targetDate.toISOString(), type: t, category: c, amount: a }); 
-                renderData(); 
-                setTimeout(fetchData, 1500); 
-            } catch (e) { alert("Failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
-        }
-
+        function setFilter(t) { currentFilter = (currentFilter === t) ? null : t; updateCardStyles(); renderData(); }
+        function updateCardStyles() { ['Income', 'Expense', 'Deduction'].forEach(t => { const el = document.getElementById(`card${t}`); el.classList.toggle('filter-active', currentFilter === t); el.classList.toggle('hide-divider', currentFilter !== null); }); }
         function openViewAll() {
             const list = document.getElementById('viewAllList'), title = document.getElementById('viewAllTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             let all = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
@@ -257,11 +280,7 @@
         function selectMonth(v) { if(v) { let d = new Date(v + "-01"); if (d < new Date("2025-01-01")) return alert("Available from 2025"); currentViewDate = d; updateMonthDisplay(); renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics(); } }
         function populateCategories() { const t = document.getElementById('inputType').value, s = document.getElementById('inputCategory'); s.innerHTML = ""; masterCategories[t].sort((a, b) => a.localeCompare(b, 'th')).forEach(c => { s.innerHTML += `<option value="${c}">${c}</option>`; }); }
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
-        
-        window.onload = () => {
-            updateGreeting(); updateMonthDisplay(); populateCategories(); loadUserProfile(); fetchData();
-            if (window.navigator.standalone) setTimeout(fetchData, 500);
-        };
+        window.onload = () => { updateGreeting(); updateMonthDisplay(); populateCategories(); loadUserProfile(); fetchData(); if (window.navigator.standalone) setTimeout(fetchData, 500); };
     </script>
 </body>
 </html>
