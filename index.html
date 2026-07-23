@@ -16,14 +16,12 @@
     
     <style>
         :root {
-            /* [Light Mode Colors] */
             --bg-body: #F2F2F7; --bg-card: #FFFFFF; --text-main: #1C1C1E; --text-sub: #8E8E93;
             --border-card: rgba(0, 0, 0, 0.05); --divider: rgba(0, 0, 0, 0.08); --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             --input-bg: #F2F2F7; --modal-bg: #FFFFFF; --refresh-bg: #FFFFFF;
         }
         @media (prefers-color-scheme: dark) {
             :root {
-                /* [Dark Mode Colors] */
                 --bg-body: #000000; --bg-card: #1C1C1E; --text-main: #FFFFFF; --text-sub: #9CA3AF;
                 --border-card: rgba(255, 255, 255, 0.05); --divider: rgba(255, 255, 255, 0.12);
                 --card-shadow: none; --input-bg: #2C2C2E; --modal-bg: #1C1C1E; --refresh-bg: #1C1C1E;
@@ -31,8 +29,6 @@
         }
         
         body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', 'Noto Sans Thai', sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; padding-top: calc(env(safe-area-inset-top, 20px) + 20px); padding-left: 24px; padding-right: 24px; padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px); transition: background-color 0.3s ease; }
-        
-        /* ป้องกันหน้าหลักเลื่อนเมื่อเปิด Modal */
         body.modal-open { overflow: hidden; position: fixed; width: 100%; }
 
         .ios-card { background-color: var(--bg-card); border-radius: 28px; border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: all 0.4s ease; }
@@ -53,6 +49,7 @@
         .spinning { animation: spin-soft 1.2s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
         
+        /* Modal System - Fixed Blocking */
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
         @media (prefers-color-scheme: dark) { .modal-overlay { background: rgba(0,0,0,0.85); } }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
@@ -61,9 +58,6 @@
         
         input, select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 18px; outline: none; }
         .alert-box { width: 85%; max-width: 320px; background: var(--modal-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .alert-box h3 { color: var(--text-main) !important; } .alert-box p { color: var(--text-sub) !important; }
-        .modal-overlay.active .alert-box { transform: scale(1); }
-
         .page-view { display: none; animation: fadeIn 0.4s ease; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -87,7 +81,7 @@
                 </div>
             </div>
             <button onclick="fetchData(true)" style="background-color: var(--refresh-bg)" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/5 shadow-sm active:scale-90 transition-transform">
-                <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm transition-all duration-300"></i>
+                <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm"></i>
             </button>
         </div>
 
@@ -131,17 +125,11 @@
         </div>
     </div>
 
-    <!-- View 2 & 3 -->
-    <div id="view-stats" class="page-view">
-        <div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight" style="color: var(--text-main)">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div>
-        <div class="ios-card p-1.5 flex gap-1 mb-8 mx-1"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div>
-        <div id="statsChartCard" class="ios-card p-8 mb-8"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter" style="color: var(--text-main)">฿0.00</h3></div></div></div>
-        <div id="insightsContainer" class="pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div>
-    </div>
-    
+    <!-- Stats & Settings -->
+    <div id="view-stats" class="page-view"><div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight" style="color: var(--text-main)">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div><div class="ios-card p-1.5 flex gap-1 mb-8 mx-1"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div><div id="statsChartCard" class="ios-card p-8 mb-8"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter" style="color: var(--text-main)">฿0.00</h3></div></div></div><div id="insightsContainer" class="pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div></div>
     <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight" style="color: var(--text-main)">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Nav -->
     <div class="fixed bottom-0 left-0 right-0 nav-blur px-12 pt-3 pb-[26px] flex justify-between z-40">
         <div id="nav-home" onclick="switchView('home')" class="text-center text-system transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-house-chimney text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p></div>
         <div id="nav-stats" onclick="switchView('stats')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-chart-pie text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p></div>
@@ -149,50 +137,50 @@
     </div>
 
     <!-- Modals -->
-    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
+    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
     <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
-    <div id="discardModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold">Discard changes?</h3><p class="mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm text-black dark:text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
-    <div id="viewAllModal" class="modal-overlay flex items-end">
-        <div class="modal-content h-[85vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6 px-1">
-                <div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase" style="color: var(--text-main)">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div>
-                <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 pr-8 pl-1"></div>
-        </div>
-    </div>
+    <div id="discardModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold" style="color: var(--text-main)">Discard changes?</h3><p class="mt-2 text-sm font-medium" style="color: var(--text-sub)">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm" style="color: var(--text-main)">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
+    <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase" style="color: var(--text-main)">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 pr-8 pl-1"></div></div></div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOlAK4GdwPYxtTKiCyiiFoyluowfK8dKtkjRb-ojXl9VgN_KC9XAN7ezrVmFDH5cEJ6w/exec"; 
+        
         const categoryIcons = {
             "เงินเดือน": "fa-wallet", "apple music": "fa-music", "ยอดขายทะลุเป้าหมาย": "fa-arrow-trend-up", "แชร์": "fa-users", "อื่นๆ": "fa-plus",
             "3BB": "fa-wifi", "แม่": "fa-heart", "ศรีสวัสดิ์": "fa-motorcycle", "สยามชัย": "fa-house", "AIS": "fa-mobile-screen", "SEasy": "fa-cart-shopping", "Spay later": "fa-credit-card", "Tpay later": "fa-credit-card",
             "มาสาย": "fa-clock", "ลืมรูดบัตร": "fa-id-card", "ออนไลน์ออกก่อนเกิน": "fa-door-open", "ออนไลน์ออกก่อน": "fa-person-running", "ไม่สแกนนิ้ว": "fa-fingerprint", "ผิดกฎระเบียบ": "fa-circle-exclamation", "ลาป่วย": "fa-briefcase-medical", "ออมทรัพย์": "fa-piggy-bank"
         };
+
         const masterCategories = {
             Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"],
             Expense: ["3BB", "แชร์", "แม่", "ศรีสวัสดิ์", "สยามชัย", "AIS", "SEasy", "Spay later", "Tpay later"],
             Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"]
         };
+
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
-        // --- ฟังก์ชันจัดรูปแบบเงิน: 2 ตำแหน่ง พร้อมเครื่องหมายจุลภาค ---
-        function formatMoney(num) {
-            return Number(num).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+        function formatMoney(num) { return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function resetViewportScroll() { if (document.activeElement) document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        function toggleModal(id, show) { 
+            const el = document.getElementById(id); 
+            if (show) { 
+                el.classList.add('active'); 
+                document.body.classList.add('modal-open'); 
+            } else { 
+                el.classList.remove('active'); 
+                document.body.classList.remove('modal-open'); 
+                resetViewportScroll();
+            } 
         }
 
-        function resetViewportScroll() { if (document.activeElement) document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function toggleModal(id, show) { const el = document.getElementById(id); if (show) { el.classList.add('active'); document.body.classList.add('modal-open'); } else { el.classList.remove('active'); document.body.classList.remove('modal-open'); } }
         function switchView(vN) { resetViewportScroll(); document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active')); document.getElementById(`view-${vN}`).classList.add('active'); ['home', 'stats', 'settings'].forEach(n => { const el = document.getElementById(`nav-${n}`); if(n === vN) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); } else { el.classList.add('opacity-50', 'text-gray-500'); el.classList.remove('text-system'); } }); if(vN === 'stats') renderStatistics(); }
 
         async function fetchData(isManual = false) {
             if(!SCRIPT_URL || SCRIPT_URL.includes("วาง_URL")) return;
             const cacheBuster = isManual ? `?v=${new Date().getTime()}` : "";
             const cached = localStorage.getItem('finance_cache');
-            if (cached) { entries = JSON.parse(cached); renderData(); }
+            if (cached && !isManual) { entries = JSON.parse(cached); renderData(); }
             const icon = document.getElementById('refreshIcon');
             icon.classList.add('spinning');
             try {
@@ -210,9 +198,9 @@
             const saveDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), 1, 12, 0, 0);
             const newEntry = { date: saveDate.toISOString(), type: t, category: c, amount: a };
             try {
-                entries.push(newEntry); renderData();
-                toggleModal('entryModal', false); isModified = false; resetViewportScroll();
                 fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newEntry) });
+                entries.push(newEntry); renderData();
+                toggleModal('entryModal', false); isModified = false;
                 setTimeout(() => fetchData(true), 2000);
             } catch (e) { alert("Save error."); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
@@ -222,17 +210,14 @@
             if (!newName) return;
             const btn = document.getElementById('saveProfileBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
             localStorage.setItem('userName', newName); document.getElementById('userNameDisplay').innerText = newName;
-            setTimeout(() => { btn.disabled = false; btn.innerText = "SAVE"; toggleModal('profileModal', false); resetViewportScroll(); }, 400);
+            setTimeout(() => { btn.disabled = false; btn.innerText = "SAVE"; toggleModal('profileModal', false); }, 400);
         }
 
         function renderData() {
             const list = document.getElementById('entryList'), title = document.getElementById('entriesTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             const mData = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
-            
             let t = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
             mData.forEach(i => { t[i.type] += Number(i.amount); t[`c${i.type.slice(0,3)}`]++; });
-            
-            // อัปเดตยอดเงินหลัก (2 จุดทศนิยม)
             document.getElementById('totalBalance').innerText = `฿${formatMoney(t.Income - t.Expense)}`;
             document.getElementById('valIncome').innerText = `฿${formatMoney(t.Income)}`;
             document.getElementById('valExpense').innerText = `฿${formatMoney(t.Expense)}`;
@@ -240,7 +225,6 @@
             document.getElementById('countIncome').innerText = `${t.cInc} items`;
             document.getElementById('countExpense').innerText = `${t.cExp} items`;
             document.getElementById('countDeduction').innerText = `${t.cDed} items`;
-
             list.innerHTML = "";
             let displayList = [];
             if (currentFilter) {
@@ -254,7 +238,7 @@
                 const topDed = mData.filter(i => i.type === 'Deduction' && i.category !== "ออมทรัพย์").sort((a,b) => b.amount - a.amount).slice(0, 1);
                 displayList = [...topInc, ...topExp, ...topDed];
             }
-            if (!displayList.length) list.innerHTML = `<p class="text-center text-gray-600 py-10 text-sm italic">No records found</p>`;
+            if (!displayList.length) list.innerHTML = `<p class="text-center text-gray-400 py-10 text-sm font-medium">No entries yet</p>`;
             else displayList.forEach(i => list.innerHTML += createItemHTML(i));
         }
 
@@ -263,19 +247,7 @@
             const c = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
             const b = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
             const icon = categoryIcons[i.category] || (isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus');
-            
-            return `<div class="flex justify-between items-center animate-fade">
-                <div class="flex items-center gap-4">
-                    <div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white">
-                        <i class="fa-solid ${icon} text-[16px]"></i>
-                    </div>
-                    <div>
-                        <p class="text-[15px] font-bold tracking-tight" style="color: var(--text-main)">${i.category}</p>
-                        <span class="text-[9px] opacity-40 font-black uppercase tracking-widest" style="color: var(--text-main)">${i.type}</span>
-                    </div>
-                </div>
-                <span class="font-black text-[16px] ${c}">฿${formatMoney(i.amount)}</span> <!-- แสดง 2 ตำแหน่ง -->
-            </div>`;
+            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-[16px]"></i></div><div><p class="text-[15px] font-bold tracking-tight" style="color: var(--text-main)">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest" style="color: var(--text-main)">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${formatMoney(i.amount)}</span></div>`;
         }
 
         function updateGreeting() { const h = new Date().getHours(); document.getElementById('greetingText').innerText = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : "GOOD EVENING"; }
@@ -283,11 +255,10 @@
         function openProfileModal() { toggleModal('profileModal', true); }
         function markAsDirty() { isModified = true; }
         function openAddEntryModal() { isModified = false; document.getElementById('inputAmount').value = ""; document.getElementById('inputType').value = currentFilter || 'Income'; populateCategories(); toggleModal('entryModal', true); }
-        function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value) toggleModal('discardModal', true); else { toggleModal('entryModal', false); resetViewportScroll(); } }
-        function confirmDiscard() { toggleModal('discardModal', false); toggleModal('entryModal', false); isModified = false; resetViewportScroll(); }
+        function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value) toggleModal('discardModal', true); else toggleModal('entryModal', false); }
+        function confirmDiscard() { toggleModal('discardModal', false); toggleModal('entryModal', false); isModified = false; }
         function setFilter(t) { currentFilter = (currentFilter === t) ? null : t; updateCardStyles(); renderData(); }
         function updateCardStyles() { ['Income', 'Expense', 'Deduction'].forEach(t => { const el = document.getElementById(`card${t}`); el.classList.toggle('filter-active', currentFilter === t); el.classList.toggle('hide-divider', currentFilter !== null); }); }
-        
         function openViewAll() {
             const list = document.getElementById('viewAllList'), title = document.getElementById('viewAllTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             let all = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
@@ -298,8 +269,6 @@
         function selectMonth(v) { if(v) { let d = new Date(v + "-01"); if (d < new Date("2025-01-01")) return alert("Available from 2025"); currentViewDate = d; updateMonthDisplay(); renderData(); fetchData(true); } }
         function populateCategories() { const t = document.getElementById('inputType').value, s = document.getElementById('inputCategory'); s.innerHTML = ""; masterCategories[t].sort((a, b) => a.localeCompare(b, 'th')).forEach(c => { s.innerHTML += `<option value="${c}">${c}</option>`; }); }
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
-        
-        // --- ส่วนงาน STATISTICS (อัปเดตทศนิยม) ---
         function renderStatistics() {
             const m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             let scope = entries.filter(i => { const d = new Date(i.date); return statsTimeframe === 'month' ? (d.getMonth() === m && d.getFullYear() === y) : (d.getFullYear() === y); });
@@ -308,7 +277,7 @@
         }
         function updateChart(totals) {
             const ctx = document.getElementById('statsDonutChart').getContext('2d'), total = totals.Income + totals.Expense + totals.Deduction;
-            document.getElementById('chartValue').innerText = `฿${formatMoney(total)}`; // แสดง 2 ตำแหน่ง
+            document.getElementById('chartValue').innerText = `฿${total.toLocaleString()}`;
             if (myChart) myChart.destroy();
             myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Income', 'Expense', 'Deduction'], datasets: [{ data: [totals.Income, totals.Expense, totals.Deduction], backgroundColor: ['#22C55E', '#EF4444', '#F59E0B'], borderWidth: 0, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
@@ -323,7 +292,7 @@
             const debts = ["ศรีสวัสดิ์", "แชร์", "Spay later"];
             debts.forEach(d => { if(prev.some(i => i.category === d) && !cur.some(i => i.category === d) && statsTimeframe === 'month') list.innerHTML += createInsightHTML('emerald', 'fa-circle-check', 'Debt Cleared!', `Congrats! Paid off ${d}.`); });
             let annOom = entries.filter(i => { const d = new Date(i.date); return d.getFullYear() === y && i.category === "ออมทรัพย์"; }).reduce((s, i) => s + Number(i.amount), 0);
-            if(annOom > 0) list.innerHTML += createInsightHTML('system', 'fa-vault', 'Company Fund', `Your total company savings for ${y} is ฿${formatMoney(annOom)}.`); // แสดง 2 ตำแหน่ง
+            if(annOom > 0) list.innerHTML += createInsightHTML('system', 'fa-vault', 'Company Fund', `Total company savings for ${y} is ฿${annOom.toLocaleString()}.`);
             if(!list.innerHTML) list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs italic">All looks steady.</p>`;
         }
         function createInsightHTML(t, i, title, d) {
