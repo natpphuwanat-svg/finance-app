@@ -28,70 +28,36 @@
             }
         }
         
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            font-family: 'Inter', 'Noto Sans Thai', sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            overflow-x: hidden; 
-            padding-top: calc(env(safe-area-inset-top, 20px) + 20px);
-            padding-left: 24px;
-            padding-right: 24px;
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px);
-        }
-
-        .ios-card { 
-            background-color: var(--bg-card); 
-            border-radius: 28px; 
-            border: 1px solid var(--border-card); 
-            box-shadow: var(--card-shadow); 
-            transition: all 0.4s ease; 
-        }
-
-        .nav-blur { 
-            background: var(--bg-card); 
-            opacity: 0.98; 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-top: 1px solid var(--border-card);
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 12px);
-        }
-        
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', 'Noto Sans Thai', sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; padding-top: calc(env(safe-area-inset-top, 20px) + 20px); padding-left: 24px; padding-right: 24px; padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px); }
+        .ios-card { background-color: var(--bg-card); border-radius: 28px; border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: all 0.4s ease; }
+        .nav-blur { background: var(--bg-card); opacity: 0.98; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-card); padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 12px); }
         #monthPicker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0 !important; z-index: 10; cursor: pointer; -webkit-appearance: none; appearance: none; }
-
         .text-system { color: #A3E635; } .bg-system { background-color: #A3E635; }
         .text-income { color: #22C55E; } .bg-income { background-color: #22C55E; } .bg-income-op { background-color: rgba(34, 197, 94, 0.12); }
         .text-expense { color: #EF4444; } .bg-expense { background-color: #EF4444; } .bg-expense-op { background-color: rgba(239, 68, 68, 0.12); }
         .text-deduction { color: #F59E0B; } .bg-deduction { background-color: #F59E0B; } .bg-deduction-op { background-color: rgba(245, 158, 11, 0.12); }
-
         .card-divider { position: relative; }
-        .card-divider::before { 
-            content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 1px; 
-            background-color: var(--divider); transition: opacity 0.3s ease; 
-        }
+        .card-divider::before { content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 1px; background-color: var(--divider); transition: opacity 0.3s ease; }
         .hide-divider::before { opacity: 0; }
         
-        .is-syncing { opacity: 0.7; filter: blur(6px); pointer-events: none; transition: all 0.5s ease; }
+        /* ปรับปรุงสถานะการซิงค์: ไม่เบลอจนมองไม่เห็น แต่ลดความชัดลงเล็กน้อย */
+        .is-syncing { opacity: 0.85; filter: grayscale(20%); pointer-events: none; transition: all 0.4s ease; }
         
         @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
-        
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        
         input[type="number"], input[type="text"], select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 18px; outline: none; }
         .alert-box { width: 85%; max-width: 320px; background: var(--input-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; }
-
         .page-view { display: none; animation: fadeIn 0.4s ease; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .switcher-btn { flex: 1; padding: 8px; border-radius: 12px; font-weight: 700; font-size: 12px; transition: all 0.2s; color: var(--text-sub); }
         .switcher-btn.active { background-color: #A3E635; color: black; box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3); }
-        .loader-white { border: 2px solid rgba(0,0,0,0.15); border-top: 2px solid #000; border-radius: 50%; width: 16px; height: 16px; animation: spin-soft 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+        .loader-white { border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid #000; border-radius: 50%; width: 16px; height: 16px; animation: spin-soft 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
     </style>
 </head>
 <body>
@@ -106,6 +72,7 @@
                     <i class="fa-solid fa-chevron-right text-gray-400 text-xs mt-1"></i>
                 </div>
             </div>
+            <!-- ปุ่ม Refresh ที่จะหมุนเบื้องหลัง -->
             <button onclick="fetchData(true)" style="background-color: var(--refresh-bg)" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/5 shadow-sm active:scale-90 transition-transform">
                 <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm"></i>
             </button>
@@ -122,7 +89,6 @@
             <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
-        <!-- Balance Card -->
         <div id="balanceCard" class="ios-card overflow-hidden mb-8">
             <div class="text-center py-10">
                 <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
@@ -146,18 +112,20 @@
                 <h3 id="entriesTitle" style="color: var(--text-sub)" class="font-black tracking-widest text-[11px] uppercase">Entries</h3>
                 <button onclick="openViewAll()" class="text-system text-[11px] font-black uppercase tracking-widest">View All</button>
             </div>
-            <div id="entryList" class="space-y-7"><div class="text-center py-10 text-gray-400 text-sm italic">Syncing...</div></div>
+            <div id="entryList" class="space-y-7">
+                <div class="text-center py-10 text-gray-400 text-sm italic">Loading...</div>
+            </div>
             <button onclick="openAddEntryModal()" class="w-full mt-12 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
         </div>
     </div>
 
-    <!-- View 2 & 3 (Stats/Settings) -->
     <div id="view-stats" class="page-view">
         <div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div>
         <div class="ios-card p-1.5 flex gap-1 mb-8 mx-1"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div>
         <div id="statsChartCard" class="ios-card p-8 mb-8"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3></div></div></div>
         <div id="insightsContainer" class="pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div>
     </div>
+
     <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
     <!-- Bottom Navigation -->
@@ -168,123 +136,79 @@
     </div>
 
     <!-- Modals -->
-    <!-- [Modal] Edit Profile (เพิ่มสปินเนอร์ตอนบันทึกชื่อ + ปรับสโครล) -->
-    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
-
-    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
-    
-    <div id="discardModal" class="modal-overlay alert-container"><div class="alert-box"><h3 class="text-xl font-bold text-white">Discard changes?</h3><p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
-    
+    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
+    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
+    <div id="discardModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold text-white">Discard changes?</h3><p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
     <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase text-white dark:text-white">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
 
     <script>
-        // ************************************************************
-        // URL ของ Google Apps Script ของคุณ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzaB1mCxvDZ3Nni3zlcsgVCFnuHX2dTouw_iMAACvfiK9majCR1Tf-VhGPhawDwuoXVMA/exec"; 
-        // ************************************************************
-
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlhBUzpn2fCRnuKTP0bFvMXzmhNYZLn8P9XOmcL0gwR1l8bM46rYN6VDsEZggYEFbeOw/exec"; 
         const masterCategories = {
             Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"],
             Expense: ["3BB", "แชร์", "แม่", "ศรีสวัสดิ์", "สยามชัย", "AIS", "SEasy", "Spay later", "Tpay later"],
             Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"]
         };
-
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
-        function resetViewportScroll() {
-            // ปิดคีย์บอร์ดและเลื่อนหน้าจอกลับบนสุด
-            if (document.activeElement) document.activeElement.blur();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        function resetViewportScroll() { if (document.activeElement) document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function switchView(vN) { resetViewportScroll(); document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active')); document.getElementById(`view-${vN}`).classList.add('active'); ['home', 'stats', 'settings'].forEach(n => { const el = document.getElementById(`nav-${n}`); if(n === vN) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); } else { el.classList.add('opacity-50', 'text-gray-500'); el.classList.remove('text-system'); } }); if(vN === 'stats') renderStatistics(); }
 
-        function switchView(vN) {
-            resetViewportScroll();
-            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${vN}`).classList.add('active');
-            ['home', 'stats', 'settings'].forEach(n => {
-                const el = document.getElementById(`nav-${n}`);
-                if(n === vN) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); }
-                else { el.classList.add('opacity-50', 'text-gray-500'); el.classList.remove('text-system'); }
-            });
-            if(vN === 'stats') renderStatistics();
-        }
-
+        // --- ระบบรีเฟรชข้อมูลเบื้องหลัง (Super Fast Refresh) ---
         async function fetchData(isManual = false) {
             if(!SCRIPT_URL || SCRIPT_URL.includes("วาง_URL")) return;
             const cacheBuster = isManual ? `?v=${new Date().getTime()}` : "";
+            
+            // 1. ดึง Cache มาโชว์ทันที (ทำให้แอปดูเร็ว)
             const cached = localStorage.getItem('finance_cache');
-            if (cached && !isManual) { entries = JSON.parse(cached); renderData(); }
+            if (cached) { entries = JSON.parse(cached); renderData(); }
 
-            const icon = document.getElementById('refreshIcon'), balCard = document.getElementById('balanceCard'), entCard = document.getElementById('entriesCard'), insCard = document.getElementById('insightsContainer'), statCard = document.getElementById('statsChartCard');
-            icon.classList.add('spinning'); balCard.classList.add('is-syncing'); entCard.classList.add('is-syncing'); if(insCard) insCard.classList.add('is-syncing'); if(statCard) statCard.classList.add('is-syncing');
+            // 2. หมุนไอคอนจางๆ (Soft indicator)
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('spinning');
 
             try {
+                // 3. ไปดึงข้อมูลจริงจาก Sheets (ใช้เวลา 2-4 วินาที)
                 const res = await fetch(SCRIPT_URL + cacheBuster);
                 const data = await res.json();
+                
+                // 4. ได้ข้อมูลแล้วค่อยอัปเดตจอเงียบๆ
                 entries = data;
                 localStorage.setItem('finance_cache', JSON.stringify(data));
                 renderData();
                 if(document.getElementById('view-stats').classList.contains('active')) renderStatistics();
             } catch (e) { console.error(e); } finally {
-                icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); entCard.classList.remove('is-syncing'); if(insCard) insCard.classList.remove('is-syncing'); if(statCard) statCard.classList.remove('is-syncing');
+                icon.classList.remove('spinning');
             }
         }
 
-        // --- ระบบบันทึกข้อมูลแบบ Instant & Smooth ---
         async function saveEntry() {
             const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
             if (!a || a <= 0) return alert("Please enter amount");
-            
-            const btn = document.getElementById('saveBtn'); btn.disabled = true; 
-            btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
-            
+            const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
             const saveDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), 1, 12, 0, 0);
             const newEntry = { date: saveDate.toISOString(), type: t, category: c, amount: a };
-
             try {
-                // บันทึกลง Local และแสดงผลทันที
-                entries.push(newEntry);
-                localStorage.setItem('finance_cache', JSON.stringify(entries));
-                renderData();
-                
-                isModified = false;
-                toggleModal('entryModal', false);
-                resetViewportScroll();
-
-                // ส่งไป Sheets เบื้องหลัง
+                // Optimistic Update: โชว์ทันที
+                entries.push(newEntry); localStorage.setItem('finance_cache', JSON.stringify(entries)); renderData();
+                toggleModal('entryModal', false); isModified = false; resetViewportScroll();
+                // ส่งเบื้องหลัง
                 fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newEntry) });
-
-                // เริ่ม Sync ยืนยันข้อมูลใน 0.5 วินาทีถัดมา
-                setTimeout(() => fetchData(true), 500);
+                setTimeout(() => fetchData(true), 1500); // ยืนยันข้อมูลใน 1.5 วินาที
             } catch (e) { alert("Save error."); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
-        // --- ระบบบันทึกชื่อโปรไฟล์ (พร้อมปุ่มแสดงสถานะ + เลื่อนจอขึ้นบน) ---
         async function saveProfile() {
             const newName = document.getElementById('inputUserName').value.trim();
             if (!newName) return;
-
             const btn = document.getElementById('saveProfileBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
-
-            localStorage.setItem('userName', newName);
-            document.getElementById('userNameDisplay').innerText = newName;
-
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.innerText = "SAVE";
-                toggleModal('profileModal', false);
-                resetViewportScroll();
-            }, 400);
+            btn.disabled = true; btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
+            localStorage.setItem('userName', newName); document.getElementById('userNameDisplay').innerText = newName;
+            setTimeout(() => { btn.disabled = false; btn.innerText = "SAVE"; toggleModal('profileModal', false); resetViewportScroll(); }, 400);
         }
 
         function renderData() {
             const list = document.getElementById('entryList'), title = document.getElementById('entriesTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
-            const mData = entries.filter(i => {
-                const d = new Date(i.date);
-                return d.getMonth() === m && d.getFullYear() === y;
-            });
+            const mData = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
             let t = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
             mData.forEach(i => { t[i.type] += Number(i.amount); t[`c${i.type.slice(0,3)}`]++; });
             document.getElementById('totalBalance').innerText = `฿${(t.Income - t.Expense).toLocaleString()}`;
@@ -295,7 +219,7 @@
             document.getElementById('countExpense').innerText = `${t.cExp} items`;
             document.getElementById('countDeduction').innerText = `${t.cDed} items`;
             let disp = [...mData].reverse(); if(currentFilter) { disp = disp.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else title.innerText = `ENTRIES`;
-            list.innerHTML = disp.length ? "" : `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>`;
+            list.innerHTML = disp.length ? "" : `<p class="text-center text-gray-600 py-10 text-sm italic">No records found</p>`;
             disp.slice(0, 4).forEach(i => list.innerHTML += createItemHTML(i));
         }
 
@@ -304,7 +228,7 @@
             const c = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
             const b = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
             const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
-            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${Number(i.amount).toLocaleString()}</span></div>`;
+            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight text-white dark:text-white">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest text-white dark:text-white">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${Number(i.amount).toLocaleString()}</span></div>`;
         }
 
         function updateGreeting() { const h = new Date().getHours(); document.getElementById('greetingText').innerText = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : "GOOD EVENING"; }
@@ -328,7 +252,6 @@
         function populateCategories() { const t = document.getElementById('inputType').value, s = document.getElementById('inputCategory'); s.innerHTML = ""; masterCategories[t].sort((a, b) => a.localeCompare(b, 'th')).forEach(c => { s.innerHTML += `<option value="${c}">${c}</option>`; }); }
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
         
-        // Stats Logic
         function setStatsTimeframe(t) { statsTimeframe = t; document.getElementById('btn-month').classList.toggle('active', t === 'month'); document.getElementById('btn-year').classList.toggle('active', t === 'year'); renderStatistics(); }
         function renderStatistics() {
             const m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
@@ -354,7 +277,7 @@
             debts.forEach(d => { if(prev.some(i => i.category === d) && !cur.some(i => i.category === d) && statsTimeframe === 'month') list.innerHTML += createInsightHTML('emerald', 'fa-circle-check', 'Debt Cleared!', `Congrats! Paid off ${d}.`); });
             let annOom = entries.filter(i => { const d = new Date(i.date); return d.getFullYear() === y && i.category === "ออมทรัพย์"; }).reduce((s, i) => s + Number(i.amount), 0);
             if(annOom > 0) list.innerHTML += createInsightHTML('system', 'fa-vault', 'Company Fund', `Total company savings for ${y} is ฿${annOom.toLocaleString()}.`);
-            if(!list.innerHTML) list.innerHTML = `<p class="text-center text-gray-400 py-4 text-xs italic">All looks steady.</p>`;
+            if(!list.innerHTML) list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs italic">All looks steady.</p>`;
         }
         function createInsightHTML(t, i, title, d) {
             const c = { amber: 'bg-deduction-op text-deduction border-orange-500/20', emerald: 'bg-income-op text-income border-emerald-500/20', system: 'bg-lime-900/10 text-system border-lime-500/20' };
@@ -363,7 +286,6 @@
 
         window.onload = () => {
             updateGreeting(); updateMonthDisplay(); populateCategories(); loadUserProfile(); fetchData(true);
-            if (window.navigator.standalone) setTimeout(() => fetchData(true), 500);
         };
     </script>
 </body>
