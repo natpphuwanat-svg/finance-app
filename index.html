@@ -147,8 +147,8 @@
         
         const categoryIcons = {
             "เงินเดือน": "fa-wallet", "apple music": "fa-music", "ยอดขายทะลุเป้าหมาย": "fa-arrow-trend-up", "แชร์": "fa-users", "อื่นๆ": "fa-plus",
-            "3BB": "fa-wifi", "แม่": "fa-heart", "ศรีสวัสดิ์": "fa-motorcycle", "สยามชัย": "fa-house", "AIS": "fa-mobile-screen", "SEasy": "fa-cart-shopping", "Spay later": "fa-credit-card", "Tpay later": "fa-credit-card",
-            "มาสาย": "fa-clock", "ลืมรูดบัตร": "fa-id-card", "ออนไลน์ออกก่อนเกิน": "fa-door-open", "ออนไลน์ออกก่อน": "fa-person-running", "ไม่สแกนนิ้ว": "fa-fingerprint", "ผิดกฎระเบียบ": "fa-circle-exclamation", "ลาป่วย": "fa-briefcase-medical", "ออมทรัพย์": "fa-piggy-bank"
+            "3BB": "fa-wifi", "แม่": "fa-house-user", "ศรีสวัสดิ์": "fa-motorcycle", "สยามชัย": "fa-plug-circle-bolt", "AIS": "fa-signal", "SEasy": "fa-money-bill-transfer", "Spay later": "fa-bag-shopping", "Tpay later": "fa-cart-shopping",
+            "มาสาย": "fa-business-time", "ลืมรูดบัตร": "fa-id-card-clip", "ออนไลน์ออกก่อนเกิน": "fa-building-circle-arrow-right", "ออนไลน์ออกก่อน": "fa-house", "ไม่สแกนนิ้ว": "fa-fingerprint", "ผิดกฎระเบียบ": "fa-building-circle-exclamation", "ลาป่วย": "fa-briefcase-medical", "ออมทรัพย์": "fa-piggy-bank"
         };
 
         const masterCategories = {
@@ -159,7 +159,7 @@
 
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
-        function formatMoney(num) { return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function formatMoney(num) { return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }y
         function resetViewportScroll() { if (document.activeElement) document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         
         function toggleModal(id, show) { 
