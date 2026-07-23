@@ -16,83 +16,49 @@
     
     <style>
         :root {
-            /* [Light Mode] */
-            --bg-body: #F2F2F7;
-            --bg-card: #FFFFFF;
-            --text-main: #1C1C1E;
-            --text-sub: #8E8E93;
-            --border-card: rgba(0, 0, 0, 0.05);
-            --divider: rgba(0, 0, 0, 0.08);
-            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            --input-bg: #F2F2F7;
-            --modal-bg: #FFFFFF;
-            --refresh-bg: #FFFFFF;
+            /* [Light Mode Colors] */
+            --bg-body: #F2F2F7; --bg-card: #FFFFFF; --text-main: #1C1C1E; --text-sub: #8E8E93;
+            --border-card: rgba(0, 0, 0, 0.05); --divider: rgba(0, 0, 0, 0.08); --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --input-bg: #F2F2F7; --modal-bg: #FFFFFF; --refresh-bg: #FFFFFF;
         }
-
         @media (prefers-color-scheme: dark) {
             :root {
-                /* [Dark Mode] */
-                --bg-body: #000000;
-                --bg-card: #1C1C1E;
-                --text-main: #FFFFFF;
-                --text-sub: #9CA3AF;
-                --border-card: rgba(255, 255, 255, 0.05);
-                --divider: rgba(255, 255, 255, 0.12);
-                --card-shadow: none;
-                --input-bg: #2C2C2E;
-                --modal-bg: #1C1C1E;
-                --refresh-bg: #1C1C1E;
+                /* [Dark Mode Colors] */
+                --bg-body: #000000; --bg-card: #1C1C1E; --text-main: #FFFFFF; --text-sub: #9CA3AF;
+                --border-card: rgba(255, 255, 255, 0.05); --divider: rgba(255, 255, 255, 0.12);
+                --card-shadow: none; --input-bg: #2C2C2E; --modal-bg: #1C1C1E; --refresh-bg: #1C1C1E;
             }
         }
         
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            font-family: 'Inter', 'Noto Sans Thai', sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            overflow-x: hidden; 
-            padding-top: calc(env(safe-area-inset-top, 20px) + 20px);
-            padding-left: 24px;
-            padding-right: 24px;
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', 'Noto Sans Thai', sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; padding-top: calc(env(safe-area-inset-top, 20px) + 20px); padding-left: 24px; padding-right: 24px; padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px); transition: background-color 0.3s ease; }
         .ios-card { background-color: var(--bg-card); border-radius: 28px; border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: all 0.4s ease; }
         .nav-blur { background: var(--bg-card); opacity: 0.98; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-card); padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 12px); }
-        
         #monthPicker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0 !important; z-index: 10; cursor: pointer; -webkit-appearance: none; appearance: none; }
-
         .text-system { color: #A3E635; } .bg-system { background-color: #A3E635; }
         .text-income { color: #22C55E; } .bg-income { background-color: #22C55E; } .bg-income-op { background-color: rgba(34, 197, 94, 0.12); }
         .text-expense { color: #EF4444; } .bg-expense { background-color: #EF4444; } .bg-expense-op { background-color: rgba(239, 68, 68, 0.12); }
         .text-deduction { color: #F59E0B; } .bg-deduction { background-color: #F59E0B; } .bg-deduction-op { background-color: rgba(245, 158, 11, 0.12); }
-
         .card-divider { position: relative; }
         .card-divider::before { content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 1px; background-color: var(--divider); transition: opacity 0.3s ease; }
         .hide-divider::before { opacity: 0; }
-        
         .is-syncing { opacity: 0.85; filter: grayscale(20%); pointer-events: none; transition: all 0.4s ease; }
         @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinning { animation: spin-soft 1.2s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
-        
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
         @media (prefers-color-scheme: dark) { .modal-overlay { background: rgba(0,0,0,0.85); } }
-        
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        
         input, select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 18px; outline: none; }
         .alert-box { width: 85%; max-width: 320px; background: var(--modal-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .page-view { display: none; animation: fadeIn 0.4s ease; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .switcher-btn { flex: 1; padding: 8px; border-radius: 12px; font-weight: 700; font-size: 12px; transition: all 0.2s; color: var(--text-sub); }
         .switcher-btn.active { background-color: #A3E635; color: black; box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3); }
         .loader-white { border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid var(--text-main); border-radius: 50%; width: 16px; height: 16px; animation: spin-soft 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+        .insight-card { padding: 16px; border-radius: 20px; border: 1px solid var(--border-card); display: flex; align-items: center; gap: 12px; }
     </style>
 </head>
 <body>
@@ -103,7 +69,6 @@
             <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
                 <p id="greetingText" style="color: var(--text-sub)" class="text-[10px] uppercase tracking-[0.2em] font-bold">HELLO</p>
                 <div class="flex items-center gap-2">
-                    <!-- ลบ text-white ออกเพื่อให้เปลี่ยนสีตามโหมด -->
                     <h1 id="userNameDisplay" class="text-2xl font-black tracking-tight" style="color: var(--text-main)">User</h1>
                     <i class="fa-solid fa-chevron-right text-gray-400 text-xs mt-1"></i>
                 </div>
@@ -117,7 +82,6 @@
         <div class="flex justify-center items-center gap-6 mb-8">
             <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="relative flex items-center gap-2 px-2 py-1">
-                <!-- ลบ text-white ออกเพื่อให้เปลี่ยนสีตามโหมด -->
                 <span id="displayMonth" class="text-lg font-bold min-w-[130px] text-center" style="color: var(--text-main)">...</span>
                 <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                 <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
@@ -163,37 +127,58 @@
     <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight" style="color: var(--text-main)">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
     <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 nav-blur px-12 pt-3 flex justify-between z-40">
+    <div class="fixed bottom-0 left-0 right-0 nav-blur px-12 pt-3 pb-[26px] flex justify-between z-40">
         <div id="nav-home" onclick="switchView('home')" class="text-center text-system transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-house-chimney text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p></div>
         <div id="nav-stats" onclick="switchView('stats')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-chart-pie text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p></div>
         <div id="nav-settings" onclick="switchView('settings')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-gear text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p></div>
     </div>
 
     <!-- Modals -->
-    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
+    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
     <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
-    
-    <!-- Discard Alert: แก้ไขสีตัวหนังสือให้สลับตามโหมด -->
-    <div id="discardModal" class="modal-overlay alert-container flex items-center">
-        <div class="alert-box mx-auto">
-            <h3 class="text-xl font-bold" style="color: var(--text-main)">Discard changes?</h3>
-            <p class="mt-2 text-sm font-medium" style="color: var(--text-sub)">Your changes haven't been saved</p>
-            <div class="mt-8 space-y-3">
-                <button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm" style="color: var(--text-main)">Keep Editing</button>
-                <button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button>
-            </div>
-        </div>
-    </div>
-    
+    <div id="discardModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold" style="color: var(--text-main)">Discard changes?</h3><p class="mt-2 text-sm font-medium" style="color: var(--text-sub)">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm" style="color: var(--text-main)">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
     <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase" style="color: var(--text-main)">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
 
     <script>
+        // ************************************************************
+        // ใส่ URL ของคุณตรงนี้!
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlhBUzpn2fCRnuKTP0bFvMXzmhNYZLn8P9XOmcL0gwR1l8bM46rYN6VDsEZggYEFbeOw/exec"; 
+        // ************************************************************
+
+        // รายการไอคอนสำหรับแต่ละหมวดหมู่ (Icon Mapping)
+        const categoryIcons = {
+            // Income
+            "เงินเดือน": "fa-wallet",
+            "apple music": "fa-music",
+            "ยอดขายทะลุเป้าหมาย": "fa-arrow-trend-up",
+            "แชร์": "fa-users",
+            "อื่นๆ": "fa-plus",
+            // Expense
+            "3BB": "fa-wifi",
+            "แม่": "fa-heart",
+            "ศรีสวัสดิ์": "fa-motorcycle",
+            "สยามชัย": "fa-house",
+            "AIS": "fa-mobile-screen",
+            "SEasy": "fa-cart-shopping",
+            "Spay later": "fa-credit-card",
+            "Tpay later": "fa-credit-card",
+            // Deduction
+            "มาสาย": "fa-clock",
+            "ลืมรูดบัตร": "fa-id-card",
+            "ออนไลน์ออกก่อนเกิน": "fa-door-open",
+            "ออนไลน์ออกก่อน": "fa-person-running",
+            "ไม่สแกนนิ้ว": "fa-fingerprint",
+            "ผิดกฎระเบียบ": "fa-circle-exclamation",
+            "ลาป่วย": "fa-briefcase-medical",
+            "ออมทรัพย์": "fa-piggy-bank"
+        };
+
         const masterCategories = {
             Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"],
             Expense: ["3BB", "แชร์", "แม่", "ศรีสวัสดิ์", "สยามชัย", "AIS", "SEasy", "Spay later", "Tpay later"],
-            Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ผ่อนสินค้า", "ออมทรัพย์"]
+            Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"]
         };
+
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
         function resetViewportScroll() { if (document.activeElement) document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -204,16 +189,14 @@
             const cacheBuster = isManual ? `?v=${new Date().getTime()}` : "";
             const cached = localStorage.getItem('finance_cache');
             if (cached && !isManual) { entries = JSON.parse(cached); renderData(); }
-            const icon = document.getElementById('refreshIcon'), balCard = document.getElementById('balanceCard'), entCard = document.getElementById('entriesCard'), insCard = document.getElementById('insightsContainer'), statCard = document.getElementById('statsChartCard');
-            icon.classList.add('spinning'); if(isManual) { balCard.classList.add('is-syncing'); entCard.classList.add('is-syncing'); }
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('spinning');
             try {
                 const res = await fetch(SCRIPT_URL + cacheBuster);
                 const data = await res.json();
                 entries = data; localStorage.setItem('finance_cache', JSON.stringify(data));
                 renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics();
-            } catch (e) { console.error(e); } finally {
-                icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); entCard.classList.remove('is-syncing');
-            }
+            } catch (e) { console.error(e); } finally { icon.classList.remove('spinning'); }
         }
 
         async function saveEntry() {
@@ -223,10 +206,10 @@
             const saveDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), 1, 12, 0, 0);
             const newEntry = { date: saveDate.toISOString(), type: t, category: c, amount: a };
             try {
-                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newEntry) });
                 entries.push(newEntry); renderData();
                 toggleModal('entryModal', false); isModified = false; resetViewportScroll();
-                setTimeout(() => fetchData(true), 1500);
+                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newEntry) });
+                setTimeout(() => fetchData(true), 2000);
             } catch (e) { alert("Save error."); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
@@ -260,7 +243,10 @@
             const isInc = i.type === 'Income', isExp = i.type === 'Expense';
             const c = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
             const b = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
-            const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
+            
+            // ปรับปรุง: ดึงไอคอนจาก Mapping หรือใช้ Default Arrows
+            const icon = categoryIcons[i.category] || (isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus');
+            
             return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight" style="color: var(--text-main)">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest" style="color: var(--text-main)">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${Number(i.amount).toLocaleString()}</span></div>`;
         }
 
@@ -273,6 +259,7 @@
         function confirmDiscard() { toggleModal('discardModal', false); toggleModal('entryModal', false); isModified = false; resetViewportScroll(); }
         function setFilter(t) { currentFilter = (currentFilter === t) ? null : t; updateCardStyles(); renderData(); }
         function updateCardStyles() { ['Income', 'Expense', 'Deduction'].forEach(t => { const el = document.getElementById(`card${t}`); el.classList.toggle('filter-active', currentFilter === t); el.classList.toggle('hide-divider', currentFilter !== null); }); }
+        
         function openViewAll() {
             const list = document.getElementById('viewAllList'), title = document.getElementById('viewAllTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             let all = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
