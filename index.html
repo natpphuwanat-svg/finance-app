@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Finance Tracker</title>
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Fonts & Libraries -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -31,17 +31,7 @@
         .ios-card { background-color: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: all 0.4s ease; }
         .nav-blur { background: var(--bg-card); opacity: 0.98; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-card); }
         
-        /* แก้ไข Month Picker ให้ล่องหน 100% บนทุกเครื่อง */
-        #monthPicker { 
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            opacity: 0 !important; 
-            z-index: 10; 
-            cursor: pointer; 
-            -webkit-appearance: none;
-            appearance: none;
-            border: none;
-        }
+        #monthPicker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0 !important; z-index: 10; cursor: pointer; -webkit-appearance: none; appearance: none; }
 
         .text-system { color: #A3E635; } .bg-system { background-color: #A3E635; }
         .text-income { color: #22C55E; } .bg-income { background-color: #22C55E; } .bg-income-op { background-color: rgba(34, 197, 94, 0.12); }
@@ -56,29 +46,49 @@
         .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
         
-        .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; opacity: 0; align-items: flex-end; }
+        /* Modal & Input Fixes */
+        .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; opacity: 0; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         
+        /* บังคับสีพื้นหลังของช่อง Input และลบสไตล์พื้นฐาน iPhone */
+        input[type="number"], input[type="text"], select { 
+            background-color: var(--input-bg) !important; 
+            color: var(--text-main) !important; 
+            -webkit-appearance: none; 
+            appearance: none; 
+            border-radius: 16px;
+        }
+
+        /* Discard Alert Fix (Center Popup) */
+        .alert-container { align-items: center; justify-content: center; }
+        .alert-box { 
+            width: 85%; max-width: 320px; 
+            background: var(--input-bg); 
+            border-radius: 28px; 
+            padding: 24px; 
+            text-align: center; 
+            transform: scale(0.9); transition: transform 0.2s ease;
+        }
+        .modal-overlay.active .alert-box { transform: scale(1); }
+
         .page-view { display: none; animation: fadeIn 0.4s ease; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .switcher-btn { flex: 1; padding: 8px; border-radius: 12px; font-weight: 700; font-size: 12px; transition: all 0.2s; color: var(--text-sub); }
         .switcher-btn.active { background-color: #A3E635; color: black; box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3); }
-        
         .insight-card { padding: 16px; border-radius: 20px; border: 1px solid var(--border-card); display: flex; align-items: center; gap: 12px; }
     </style>
 </head>
-<body class="p-5 pb-32 text-white">
+<body class="p-5 pb-32">
 
     <!-- View 1: HOME SCREEN -->
     <div id="view-home" class="page-view active">
-        <!-- Header -->
         <div class="flex justify-between items-center mb-8 mt-4 px-1">
             <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
-                <p id="greetingText" style="color: var(--text-sub)" class="text-[10px] uppercase tracking-[0.2em] font-bold text-system">HELLO</p>
+                <p id="greetingText" style="color: var(--text-sub)" class="text-[10px] uppercase tracking-[0.2em] font-bold">HELLO</p>
                 <div class="flex items-center gap-2">
                     <h1 id="userNameDisplay" class="text-2xl font-black tracking-tight">User</h1>
                     <i class="fa-solid fa-chevron-right text-gray-400 text-xs mt-1"></i>
@@ -89,19 +99,16 @@
             </button>
         </div>
 
-        <!-- Month Navigation -->
         <div class="flex justify-center items-center gap-6 mb-6">
             <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="relative flex items-center gap-2 px-4 py-1">
                 <span id="displayMonth" class="text-lg font-bold min-w-[130px] text-center">...</span>
                 <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
-                <!-- Input Month: ล่องหนแต่กดได้ครอบคลุมพื้นที่ตัวอักษร -->
                 <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
             </div>
             <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
-        <!-- Balance Card -->
         <div id="balanceCard" class="ios-card overflow-hidden mb-6">
             <div class="text-center py-8">
                 <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
@@ -132,126 +139,46 @@
             </div>
         </div>
 
-        <!-- ENTRIES -->
         <div id="entriesCard" class="ios-card p-5">
             <div class="flex justify-between items-center mb-6 px-1">
                 <h3 id="entriesTitle" style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase">Entries</h3>
                 <button onclick="openViewAll()" class="text-system text-[10px] font-black uppercase tracking-widest">View All</button>
             </div>
-            <div id="entryList" class="space-y-6">
-                <div class="text-center py-8 text-gray-400 text-sm italic">Syncing...</div>
-            </div>
+            <div id="entryList" class="space-y-6"><div class="text-center py-8 text-gray-400 text-sm italic">Syncing...</div></div>
             <button onclick="openAddEntryModal()" class="w-full mt-10 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
         </div>
     </div>
 
-    <!-- View 2: STATISTICS SCREEN -->
+    <!-- View 2: STATISTICS -->
     <div id="view-stats" class="page-view">
-        <div class="text-center mt-6 mb-8">
-            <h1 class="text-2xl font-black tracking-tight">Financial Stats</h1>
-            <p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p>
-        </div>
-        <div class="ios-card p-1.5 flex gap-1 mb-8 mx-4">
-            <button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button>
-            <button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button>
-        </div>
-        <div class="ios-card p-6 mb-8 mx-1">
-            <div class="relative h-[240px]">
-                <canvas id="statsDonutChart"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4">
-                    <p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p>
-                    <h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3>
-                </div>
-            </div>
-        </div>
-        <div class="px-2 pb-20">
-            <h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3>
-            <div id="insightsList" class="space-y-4"></div>
-        </div>
+        <div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div>
+        <div class="ios-card p-1.5 flex gap-1 mb-8 mx-4"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div>
+        <div class="ios-card p-6 mb-8 mx-1"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3></div></div></div>
+        <div class="px-2 pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div>
     </div>
 
-    <!-- View 3: SETTINGS SCREEN -->
-    <div id="view-settings" class="page-view">
-        <div class="text-center mt-20 px-8">
-            <div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-gear text-4xl text-system"></i>
-            </div>
-            <h1 class="text-2xl font-bold tracking-tight">Settings</h1>
-            <p class="text-gray-500 text-sm mt-2 leading-relaxed">App customization and advanced data management will be available in the next update.</p>
-        </div>
-    </div>
+    <!-- View 3: SETTINGS -->
+    <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
     <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 nav-blur px-10 pt-3 pb-[26px] flex justify-between z-40">
-        <div id="nav-home" onclick="switchView('home')" class="text-center text-system transition-transform duration-200 active:scale-110 cursor-pointer">
-            <i class="fa-solid fa-house-chimney text-2xl"></i>
-            <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p>
-        </div>
-        <div id="nav-stats" onclick="switchView('stats')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer">
-            <i class="fa-solid fa-chart-pie text-2xl"></i>
-            <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p>
-        </div>
-        <div id="nav-settings" onclick="switchView('settings')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer">
-            <i class="fa-solid fa-gear text-2xl"></i>
-            <p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p>
-        </div>
+        <div id="nav-home" onclick="switchView('home')" class="text-center text-system transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-house-chimney text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p></div>
+        <div id="nav-stats" onclick="switchView('stats')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-chart-pie text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p></div>
+        <div id="nav-settings" onclick="switchView('settings')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-gear text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p></div>
     </div>
 
     <!-- Modals -->
-    <div id="profileModal" class="modal-overlay">
-        <div class="modal-content pb-10">
-            <div class="flex justify-between items-center mb-8 px-1">
-                <h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3>
-                <button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-6 text-left">
-                <div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold text-xl"></div>
-                <button onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button>
-            </div>
-        </div>
-    </div>
+    <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
 
-    <div id="entryModal" class="modal-overlay">
-        <div class="modal-content pb-10">
-            <div class="flex justify-between items-center mb-8 px-1">
-                <h3 class="text-xl font-black tracking-tight text-system">New Entry</h3>
-                <button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-6 text-left">
-                <div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div>
-                <div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div>
-                <div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder:text-gray-400"></div>
-                <button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button>
-            </div>
-        </div>
-    </div>
+    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 px-5 mt-2 font-bold appearance-none"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 px-5 mt-2 font-black text-2xl placeholder-gray-400"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
 
-    <div id="discardModal" class="modal-overlay" style="align-items: center; background: rgba(0,0,0,0.6);">
-        <div class="alert-modal-content">
-            <h3 class="text-xl font-bold text-white">Discard changes?</h3>
-            <p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p>
-            <div class="mt-8 space-y-3">
-                <button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm text-white">Keep Editing</button>
-                <button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button>
-            </div>
-        </div>
-    </div>
+    <!-- Improved Discard Modal (Centered) -->
+    <div id="discardModal" class="modal-overlay alert-container flex"><div class="alert-box"><h3 class="text-xl font-bold text-white">Discard changes?</h3><p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
 
-    <div id="viewAllModal" class="modal-overlay">
-        <div class="modal-content h-[85vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6 px-1">
-                <div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div>
-                <button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div>
-        </div>
-    </div>
+    <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
 
     <script>
-        // ************************************************************
-        // ใส่ URL ของคุณตรงนี้!
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6T88uGz_lV5r8yvK1Y04Zz4YvG1v7-6F7p4zV3/exec"; 
-        // ************************************************************
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMTTNgJDHgD__Za9OvMLjIWglO5G8cApHso1jUB72VdDKopRbOghJevCzuGI4WC1Ya/exec"; 
 
         const masterCategories = {
             Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"],
@@ -259,143 +186,105 @@
             Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"]
         };
 
-        let entries = [];
-        let currentViewDate = new Date();
-        let currentFilter = null;
-        let isModified = false;
-        let statsTimeframe = 'month';
-        let myChart = null;
+        let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
         function switchView(viewName) {
             document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
-            const navs = ['home', 'stats', 'settings'];
-            navs.forEach(n => {
+            ['home', 'stats', 'settings'].forEach(n => {
                 const el = document.getElementById(`nav-${n}`);
-                if(n === viewName) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); }
+                if(n === viewName) { el.classList.replace('opacity-50', 'text-system'); el.classList.replace('text-gray-500', 'text-system'); }
                 else { el.classList.add('opacity-50', 'text-gray-500'); el.classList.remove('text-system'); }
             });
             if(viewName === 'stats') renderStatistics();
         }
 
         async function fetchData() {
-            if(SCRIPT_URL.includes("วาง_URL")) return;
-            const cachedData = localStorage.getItem('finance_cache');
-            if (cachedData) { entries = JSON.parse(cachedData); renderData(); }
-            const icon = document.getElementById('refreshIcon');
-            const balCard = document.getElementById('balanceCard');
+            if(!SCRIPT_URL || SCRIPT_URL.includes("วาง_URL")) return;
+            const cached = localStorage.getItem('finance_cache');
+            if (cached) { entries = JSON.parse(cached); renderData(); }
+            const icon = document.getElementById('refreshIcon'), balCard = document.getElementById('balanceCard');
             icon.classList.add('spinning'); balCard.classList.add('is-syncing');
             try {
-                const response = await fetch(SCRIPT_URL);
-                const newData = await response.json();
-                entries = newData;
-                localStorage.setItem('finance_cache', JSON.stringify(newData));
-                renderData(); 
-            } catch (e) { console.error(e); } finally {
-                icon.classList.remove('spinning'); balCard.classList.remove('is-syncing');
-            }
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+                entries = data; localStorage.setItem('finance_cache', JSON.stringify(data));
+                renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics();
+            } catch (e) { console.error(e); } finally { icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); }
         }
 
-        function setStatsTimeframe(type) {
-            statsTimeframe = type;
-            document.getElementById('btn-month').classList.toggle('active', type === 'month');
-            document.getElementById('btn-year').classList.toggle('active', type === 'year');
-            renderStatistics();
-        }
+        function setStatsTimeframe(t) { statsTimeframe = t; document.getElementById('btn-month').classList.toggle('active', t === 'month'); document.getElementById('btn-year').classList.toggle('active', t === 'year'); renderStatistics(); }
 
         function renderStatistics() {
             const m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
-            let scope = entries.filter(i => {
-                const d = new Date(i.date);
-                return statsTimeframe === 'month' ? (d.getMonth() === m && d.getFullYear() === y) : (d.getFullYear() === y);
-            });
+            let scope = entries.filter(i => { const d = new Date(i.date); return statsTimeframe === 'month' ? (d.getMonth() === m && d.getFullYear() === y) : (d.getFullYear() === y); });
             let t = { Income: 0, Expense: 0, Deduction: 0 };
             scope.forEach(i => t[i.type] += Number(i.amount));
-            updateChart(t);
-            generateSmartInsights(scope, m, y);
+            updateChart(t); generateSmartInsights(scope, m, y);
         }
 
         function updateChart(totals) {
-            const ctx = document.getElementById('statsDonutChart').getContext('2d');
-            const totalFlow = totals.Income + totals.Expense + totals.Deduction;
-            document.getElementById('chartValue').innerText = `฿${totalFlow.toLocaleString()}`;
+            const ctx = document.getElementById('statsDonutChart').getContext('2d'), total = totals.Income + totals.Expense + totals.Deduction;
+            document.getElementById('chartValue').innerText = `฿${total.toLocaleString()}`;
             if (myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Income', 'Expense', 'Deduction'],
-                    datasets: [{
-                        data: [totals.Income, totals.Expense, totals.Deduction],
-                        backgroundColor: ['#22C55E', '#EF4444', '#F59E0B'],
-                        borderWidth: 0, cutout: '80%'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
+            myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Income', 'Expense', 'Deduction'], datasets: [{ data: [totals.Income, totals.Expense, totals.Deduction], backgroundColor: ['#22C55E', '#EF4444', '#F59E0B'], borderWidth: 0, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
-        function generateSmartInsights(currentData, m, y) {
-            const list = document.getElementById('insightsList');
-            list.innerHTML = "";
-            const disciplineItems = ["มาสาย", "ผิดกฎระเบียบ", "ไม่สแกนนิ้ว"];
-            let curLate = currentData.filter(i => disciplineItems.includes(i.category)).length;
-            const prevM = new Date(y, m - 1, 1);
-            const prevData = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === prevM.getMonth() && d.getFullYear() === prevM.getFullYear(); });
-            let prevLate = prevData.filter(i => disciplineItems.includes(i.category)).length;
-            if(curLate > prevLate && statsTimeframe === 'month') list.innerHTML += createInsightHTML('amber', 'fa-triangle-exclamation', 'Be Careful!', `Month-over-month discipline issues increased by ${curLate - prevLate} times.`);
-            const debtItems = ["ศรีสวัสดิ์", "แชร์", "Spay later"];
-            debtItems.forEach(debt => {
-                if(prevData.some(i => i.category === debt) && !currentData.some(i => i.category === debt) && statsTimeframe === 'month') list.innerHTML += createInsightHTML('emerald', 'fa-circle-check', 'Debt Cleared!', `Congrats! You have finished paying off ${debt} this month.`);
-            });
+        function generateSmartInsights(cur, m, y) {
+            const list = document.getElementById('insightsList'); list.innerHTML = "";
+            const disc = ["มาสาย", "ผิดกฎระเบียบ", "ไม่สแกนนิ้ว"];
+            let curL = cur.filter(i => disc.includes(i.category)).length;
+            const prevD = new Date(y, m - 1, 1);
+            const prev = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === prevD.getMonth() && d.getFullYear() === prevD.getFullYear(); });
+            let prevL = prev.filter(i => disc.includes(i.category)).length;
+            if(curL > prevL && statsTimeframe === 'month') list.innerHTML += createInsightHTML('amber', 'fa-triangle-exclamation', 'Be Careful!', `Discipline issues increased by ${curL - prevL} times.`);
+            const debts = ["ศรีสวัสดิ์", "แชร์", "Spay later"];
+            debts.forEach(d => { if(prev.some(i => i.category === d) && !cur.some(i => i.category === d) && statsTimeframe === 'month') list.innerHTML += createInsightHTML('emerald', 'fa-circle-check', 'Debt Cleared!', `Congrats! Paid off ${d}.`); });
             let annOom = entries.filter(i => { const d = new Date(i.date); return d.getFullYear() === y && i.category === "ออมทรัพย์"; }).reduce((s, i) => s + Number(i.amount), 0);
-            if(annOom > 0) list.innerHTML += createInsightHTML('system', 'fa-vault', 'Company Fund', `Your total company savings for ${y} is ฿${annOom.toLocaleString()}.`);
-            if(list.innerHTML === "") list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs italic">All looks steady. No major changes detected.</p>`;
+            if(annOom > 0) list.innerHTML += createInsightHTML('system', 'fa-vault', 'Company Fund', `Total company savings for ${y} is ฿${annOom.toLocaleString()}.`);
+            if(!list.innerHTML) list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs italic">All looks steady.</p>`;
         }
 
-        function createInsightHTML(theme, icon, title, desc) {
-            const colors = { amber: 'bg-deduction-op text-deduction border-orange-500/20', emerald: 'bg-income-op text-income border-emerald-500/20', system: 'bg-lime-900/10 text-system border-lime-500/20' };
-            return `<div class="insight-card animate-fade ${colors[theme]}"><i class="fa-solid ${icon} text-xl"></i><div class="text-left"><p class="font-black text-xs uppercase tracking-widest">${title}</p><p class="text-[11px] opacity-80 mt-0.5 leading-relaxed font-medium">${desc}</p></div></div>`;
+        function createInsightHTML(t, i, title, d) {
+            const c = { amber: 'bg-deduction-op text-deduction border-orange-500/20', emerald: 'bg-income-op text-income border-emerald-500/20', system: 'bg-lime-900/10 text-system border-lime-500/20' };
+            return `<div class="insight-card animate-fade ${c[t]}"><i class="fa-solid ${i} text-xl"></i><div class="text-left"><p class="font-black text-xs uppercase tracking-widest">${title}</p><p class="text-[11px] opacity-80 mt-0.5 font-medium">${d}</p></div></div>`;
         }
 
-        function setFilter(type) { currentFilter = (currentFilter === type) ? null : type; updateCardStyles(); renderData(); }
-        function updateCardStyles() {
-            ['Income', 'Expense', 'Deduction'].forEach(t => { const el = document.getElementById(`card${t}`); el.classList.toggle('filter-active', currentFilter === t); if (currentFilter !== null) el.classList.add('hide-divider'); else el.classList.remove('hide-divider'); });
-        }
+        function setFilter(t) { currentFilter = (currentFilter === t) ? null : t; updateCardStyles(); renderData(); }
+        function updateCardStyles() { ['Income', 'Expense', 'Deduction'].forEach(t => { const el = document.getElementById(`card${t}`); el.classList.toggle('filter-active', currentFilter === t); el.classList.toggle('hide-divider', currentFilter !== null); }); }
 
         function renderData() {
             const list = document.getElementById('entryList'), title = document.getElementById('entriesTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
-            const monthData = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
-            let totals = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
-            monthData.forEach(i => { totals[i.type] += Number(i.amount); totals[`c${i.type.slice(0,3)}`]++; });
-            document.getElementById('totalBalance').innerText = `฿${(totals.Income - totals.Expense).toLocaleString()}`;
-            document.getElementById('valIncome').innerText = `฿${totals.Income.toLocaleString()}`;
-            document.getElementById('valExpense').innerText = `฿${totals.Expense.toLocaleString()}`;
-            document.getElementById('valDeduction').innerText = `฿${totals.Deduction.toLocaleString()}`;
-            document.getElementById('countIncome').innerText = `${totals.cInc} items`;
-            document.getElementById('countExpense').innerText = `${totals.cExp} items`;
-            document.getElementById('countDeduction').innerText = `${totals.cDed} items`;
-            let displayData = [...monthData].reverse();
-            if (currentFilter) { displayData = displayData.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else { title.innerText = `ENTRIES`; }
-            const homeList = displayData.slice(0, 4);
-            list.innerHTML = homeList.length === 0 ? `<p class="text-center text-gray-600 py-8 text-sm italic italic">No records found</p>` : "";
-            homeList.forEach(i => list.innerHTML += createItemHTML(i));
+            const mData = entries.filter(i => { const d = new Date(i.date); return d.getMonth() === m && d.getFullYear() === y; });
+            let t = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
+            mData.forEach(i => { t[i.type] += Number(i.amount); t[`c${i.type.slice(0,3)}`]++; });
+            document.getElementById('totalBalance').innerText = `฿${(t.Income - t.Expense).toLocaleString()}`;
+            document.getElementById('valIncome').innerText = `฿${t.Income.toLocaleString()}`;
+            document.getElementById('valExpense').innerText = `฿${t.Expense.toLocaleString()}`;
+            document.getElementById('valDeduction').innerText = `฿${t.Deduction.toLocaleString()}`;
+            document.getElementById('countIncome').innerText = `${t.cInc} items`;
+            document.getElementById('countExpense').innerText = `${t.cExp} items`;
+            document.getElementById('countDeduction').innerText = `${t.cDed} items`;
+            let disp = [...mData].reverse(); if(currentFilter) { disp = disp.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else title.innerText = `ENTRIES`;
+            list.innerHTML = disp.length ? "" : `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>`;
+            disp.slice(0, 4).forEach(i => list.innerHTML += createItemHTML(i));
         }
 
         function createItemHTML(i) {
             const isInc = i.type === 'Income', isExp = i.type === 'Expense';
-            const color = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
-            const bg = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
+            const c = isInc ? 'text-income' : isExp ? 'text-expense' : 'text-deduction';
+            const b = isInc ? 'bg-income' : isExp ? 'bg-expense' : 'bg-deduction';
             const icon = isInc ? 'fa-arrow-up' : isExp ? 'fa-arrow-down' : 'fa-minus';
-            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${bg} rounded-[18px] flex items-center justify-center shadow-lg"><i class="fa-solid ${icon} text-white text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${i.type}</span></div></div><span class="font-black text-[16px] ${color}">฿${Number(i.amount).toLocaleString()}</span></div>`;
+            return `<div class="flex justify-between items-center animate-fade"><div class="flex items-center gap-4"><div class="w-11 h-11 ${b} rounded-[18px] flex items-center justify-center shadow-lg text-white"><i class="fa-solid ${icon} text-sm"></i></div><div><p class="text-[15px] font-bold tracking-tight">${i.category}</p><span class="text-[9px] opacity-40 font-black uppercase tracking-widest">${i.type}</span></div></div><span class="font-black text-[16px] ${c}">฿${Number(i.amount).toLocaleString()}</span></div>`;
         }
 
-        function updateGreeting() { const h = new Date().getHours(); document.getElementById('greetingText').innerText = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : h < 21 ? "GOOD EVENING" : "GOOD NIGHT"; }
+        function updateGreeting() { const h = new Date().getHours(); document.getElementById('greetingText').innerText = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : "GOOD EVENING"; }
         function loadUserProfile() { const n = localStorage.getItem('userName') || 'Phuwanat'; document.getElementById('userNameDisplay').innerText = n; document.getElementById('inputUserName').value = n; }
         function openProfileModal() { toggleModal('profileModal', true); }
-        function saveProfile() { const n = document.getElementById('inputUserName').value.trim(); if (!n) return; localStorage.setItem('userName', n); document.getElementById('userNameDisplay').innerText = n; toggleModal('profileModal', false); }
+        function saveProfile() { const n = document.getElementById('inputUserName').value.trim(); if (n) { localStorage.setItem('userName', n); document.getElementById('userNameDisplay').innerText = n; toggleModal('profileModal', false); } }
         function markAsDirty() { isModified = true; }
-        function openAddEntryModal() { isModified = false; document.getElementById('inputAmount').value = ""; const s = document.getElementById('inputType'); s.value = currentFilter || 'Income'; populateCategories(); toggleModal('entryModal', true); }
-        function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value !== "") toggleModal('discardModal', true); else toggleModal('entryModal', false); }
+        function openAddEntryModal() { isModified = false; document.getElementById('inputAmount').value = ""; document.getElementById('inputType').value = currentFilter || 'Income'; populateCategories(); toggleModal('entryModal', true); }
+        function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value) toggleModal('discardModal', true); else toggleModal('entryModal', false); }
         function confirmDiscard() { toggleModal('discardModal', false); toggleModal('entryModal', false); isModified = false; }
         async function saveEntry() {
             const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
@@ -409,12 +298,17 @@
             if (currentFilter) { all = all.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} RECORDS`; } else title.innerText = `ALL ENTRIES`;
             all.sort((a, b) => Number(b.amount) - Number(a.amount)); list.innerHTML = ""; all.forEach(i => list.innerHTML += createItemHTML(i)); toggleModal('viewAllModal', true);
         }
-        function toggleModal(id, show) { const el = document.getElementById(id); if (show) { el.style.display = 'flex'; setTimeout(() => el.classList.add('active'), 10); } else { el.classList.remove('active'); setTimeout(() => el.style.display = 'none', 300); } }
+        function toggleModal(id, show) { const el = document.getElementById(id); if (show) { el.style.display = (id==='discardModal'?'flex':'flex'); setTimeout(() => el.classList.add('active'), 10); } else { el.classList.remove('active'); setTimeout(() => el.style.display = 'none', 300); } }
         function changeMonth(s) { let d = new Date(currentViewDate); d.setMonth(d.getMonth() + s); if (d < new Date("2025-01-01")) return; currentViewDate = d; updateMonthDisplay(); renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics(); }
         function selectMonth(v) { if(v) { let d = new Date(v + "-01"); if (d < new Date("2025-01-01")) return alert("Available from 2025"); currentViewDate = d; updateMonthDisplay(); renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics(); } }
         function populateCategories() { const t = document.getElementById('inputType').value, s = document.getElementById('inputCategory'); s.innerHTML = ""; masterCategories[t].sort((a, b) => a.localeCompare(b, 'th')).forEach(c => { s.innerHTML += `<option value="${c}">${c}</option>`; }); }
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
-        window.onload = () => { updateGreeting(); updateMonthDisplay(); populateCategories(); loadUserProfile(); fetchData(); };
+        
+        window.onload = () => {
+            updateGreeting(); updateMonthDisplay(); populateCategories(); loadUserProfile(); fetchData();
+            // บังคับให้ fetchData ทำงานอีกครั้งสำหรับโหมด Standalone
+            if (window.navigator.standalone) setTimeout(fetchData, 500);
+        };
     </script>
 </body>
 </html>
