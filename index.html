@@ -16,7 +16,7 @@
     
     <style>
         :root {
-            /* [Light Mode Colors] */
+            /* [Light Mode] */
             --bg-body: #F2F2F7;
             --bg-card: #FFFFFF;
             --text-main: #1C1C1E;
@@ -24,15 +24,14 @@
             --border-card: rgba(0, 0, 0, 0.05);
             --divider: rgba(0, 0, 0, 0.08);
             --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            --input-bg: #E5E5EA;
+            --input-bg: #F2F2F7;
             --modal-bg: #FFFFFF;
             --refresh-bg: #FFFFFF;
-            --alert-bg: #FFFFFF;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* [Dark Mode Colors] */
+                /* [Dark Mode] */
                 --bg-body: #000000;
                 --bg-card: #1C1C1E;
                 --text-main: #FFFFFF;
@@ -43,7 +42,6 @@
                 --input-bg: #2C2C2E;
                 --modal-bg: #1C1C1E;
                 --refresh-bg: #1C1C1E;
-                --alert-bg: #2C2C2E;
             }
         }
         
@@ -60,42 +58,23 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .ios-card { 
-            background-color: var(--bg-card); 
-            border-radius: 28px; 
-            border: 1px solid var(--border-card); 
-            box-shadow: var(--card-shadow); 
-            transition: all 0.4s ease; 
-        }
-
-        .nav-blur { 
-            background: var(--bg-card); 
-            opacity: 0.98; 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-top: 1px solid var(--border-card);
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 12px);
-        }
+        .ios-card { background-color: var(--bg-card); border-radius: 28px; border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: all 0.4s ease; }
+        .nav-blur { background: var(--bg-card); opacity: 0.98; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-card); padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 12px); }
         
         #monthPicker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0 !important; z-index: 10; cursor: pointer; -webkit-appearance: none; appearance: none; }
 
-        /* FINANCIAL COLORS (Fixed) */
+        .text-system { color: #A3E635; } .bg-system { background-color: #A3E635; }
         .text-income { color: #22C55E; } .bg-income { background-color: #22C55E; } .bg-income-op { background-color: rgba(34, 197, 94, 0.12); }
         .text-expense { color: #EF4444; } .bg-expense { background-color: #EF4444; } .bg-expense-op { background-color: rgba(239, 68, 68, 0.12); }
         .text-deduction { color: #F59E0B; } .bg-deduction { background-color: #F59E0B; } .bg-deduction-op { background-color: rgba(245, 158, 11, 0.12); }
-        .text-system { color: #A3E635; } .bg-system { background-color: #A3E635; }
 
         .card-divider { position: relative; }
-        .card-divider::before { 
-            content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 1px; 
-            background-color: var(--divider); transition: opacity 0.3s ease; 
-        }
+        .card-divider::before { content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 1px; background-color: var(--divider); transition: opacity 0.3s ease; }
         .hide-divider::before { opacity: 0; }
         
-        .is-syncing { opacity: 0.7; filter: blur(6px); pointer-events: none; transition: all 0.5s ease; }
-        
+        .is-syncing { opacity: 0.85; filter: grayscale(20%); pointer-events: none; transition: all 0.4s ease; }
         @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
+        .spinning { animation: spin-soft 1.2s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
         
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
@@ -106,13 +85,7 @@
         .modal-overlay.active .modal-content { transform: translateY(0); }
         
         input, select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 18px; outline: none; }
-        
-        /* แก้ไข Alert Box ให้ตัวหนังสือเปลี่ยนตามโหมด */
-        .alert-box { width: 85%; max-width: 320px; background: var(--alert-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .alert-box h3 { color: var(--text-main) !important; }
-        .alert-box p { color: var(--text-sub) !important; }
-        .modal-overlay.active .alert-box { transform: scale(1); }
-
+        .alert-box { width: 85%; max-width: 320px; background: var(--modal-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .page-view { display: none; animation: fadeIn 0.4s ease; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -125,11 +98,12 @@
 <body>
 
     <div id="view-home" class="page-view active">
-        <!-- Header: Phuwanat (แก้ไขสีแล้ว) -->
+        <!-- Header -->
         <div class="flex justify-between items-center mb-8 px-1">
             <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
                 <p id="greetingText" style="color: var(--text-sub)" class="text-[10px] uppercase tracking-[0.2em] font-bold">HELLO</p>
                 <div class="flex items-center gap-2">
+                    <!-- ลบ text-white ออกเพื่อให้เปลี่ยนสีตามโหมด -->
                     <h1 id="userNameDisplay" class="text-2xl font-black tracking-tight" style="color: var(--text-main)">User</h1>
                     <i class="fa-solid fa-chevron-right text-gray-400 text-xs mt-1"></i>
                 </div>
@@ -139,10 +113,11 @@
             </button>
         </div>
 
-        <!-- Month Navigation (แก้ไขสีแล้ว) -->
+        <!-- Month Navigation -->
         <div class="flex justify-center items-center gap-6 mb-8">
             <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="relative flex items-center gap-2 px-2 py-1">
+                <!-- ลบ text-white ออกเพื่อให้เปลี่ยนสีตามโหมด -->
                 <span id="displayMonth" class="text-lg font-bold min-w-[130px] text-center" style="color: var(--text-main)">...</span>
                 <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                 <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
@@ -150,7 +125,6 @@
             <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
-        <!-- Balance Card (แก้ไขสีแล้ว) -->
         <div id="balanceCard" class="ios-card overflow-hidden mb-8">
             <div class="text-center py-10">
                 <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
@@ -174,19 +148,18 @@
                 <h3 id="entriesTitle" style="color: var(--text-sub)" class="font-black tracking-widest text-[11px] uppercase">Entries</h3>
                 <button onclick="openViewAll()" class="text-system text-[11px] font-black uppercase tracking-widest">View All</button>
             </div>
-            <div id="entryList" class="space-y-7"><div class="text-center py-10 text-gray-400 text-sm italic">Syncing...</div></div>
+            <div id="entryList" class="space-y-7"><div class="text-center py-10 text-gray-400 text-sm italic">Loading data...</div></div>
             <button onclick="openAddEntryModal()" class="w-full mt-12 py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase active:scale-95 transition-transform text-xs">+ Add Entry</button>
         </div>
     </div>
 
-    <!-- View 2 & 3 (Stats/Settings) -->
+    <!-- View 2 & 3 -->
     <div id="view-stats" class="page-view">
         <div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight" style="color: var(--text-main)">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div>
         <div class="ios-card p-1.5 flex gap-1 mb-8 mx-1"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div>
         <div id="statsChartCard" class="ios-card p-8 mb-8"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter" style="color: var(--text-main)">฿0</h3></div></div></div>
         <div id="insightsContainer" class="pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div>
     </div>
-    
     <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight" style="color: var(--text-main)">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
     <!-- Bottom Navigation -->
@@ -198,10 +171,19 @@
 
     <!-- Modals -->
     <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button id="saveProfileBtn" onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
-    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
+    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] transition-transform active:scale-[0.98]">SAVE</button></div></div></div>
     
-    <!-- Discard Alert: แก้ไขสีตัวหนังสือแล้ว -->
-    <div id="discardModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold">Discard changes?</h3><p class="mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm text-black dark:text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
+    <!-- Discard Alert: แก้ไขสีตัวหนังสือให้สลับตามโหมด -->
+    <div id="discardModal" class="modal-overlay alert-container flex items-center">
+        <div class="alert-box mx-auto">
+            <h3 class="text-xl font-bold" style="color: var(--text-main)">Discard changes?</h3>
+            <p class="mt-2 text-sm font-medium" style="color: var(--text-sub)">Your changes haven't been saved</p>
+            <div class="mt-8 space-y-3">
+                <button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm" style="color: var(--text-main)">Keep Editing</button>
+                <button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button>
+            </div>
+        </div>
+    </div>
     
     <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase" style="color: var(--text-main)">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
 
@@ -210,7 +192,7 @@
         const masterCategories = {
             Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"],
             Expense: ["3BB", "แชร์", "แม่", "ศรีสวัสดิ์", "สยามชัย", "AIS", "SEasy", "Spay later", "Tpay later"],
-            Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"]
+            Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ผ่อนสินค้า", "ออมทรัพย์"]
         };
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
@@ -223,29 +205,28 @@
             const cached = localStorage.getItem('finance_cache');
             if (cached && !isManual) { entries = JSON.parse(cached); renderData(); }
             const icon = document.getElementById('refreshIcon'), balCard = document.getElementById('balanceCard'), entCard = document.getElementById('entriesCard'), insCard = document.getElementById('insightsContainer'), statCard = document.getElementById('statsChartCard');
-            icon.classList.add('spinning'); balCard.classList.add('is-syncing'); entCard.classList.add('is-syncing'); if(insCard) insCard.classList.add('is-syncing'); if(statCard) statCard.classList.add('is-syncing');
+            icon.classList.add('spinning'); if(isManual) { balCard.classList.add('is-syncing'); entCard.classList.add('is-syncing'); }
             try {
                 const res = await fetch(SCRIPT_URL + cacheBuster);
                 const data = await res.json();
                 entries = data; localStorage.setItem('finance_cache', JSON.stringify(data));
                 renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics();
             } catch (e) { console.error(e); } finally {
-                icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); entCard.classList.remove('is-syncing'); if(insCard) insCard.classList.remove('is-syncing'); if(statCard) statCard.classList.remove('is-syncing');
+                icon.classList.remove('spinning'); balCard.classList.remove('is-syncing'); entCard.classList.remove('is-syncing');
             }
         }
 
         async function saveEntry() {
             const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
             if (!a || a <= 0) return alert("Please enter amount");
-            const btn = document.getElementById('saveBtn'); btn.disabled = true; 
-            btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
+            const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
             const saveDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), 1, 12, 0, 0);
             const newEntry = { date: saveDate.toISOString(), type: t, category: c, amount: a };
             try {
                 fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newEntry) });
-                entries.push(newEntry); localStorage.setItem('finance_cache', JSON.stringify(entries)); renderData();
+                entries.push(newEntry); renderData();
                 toggleModal('entryModal', false); isModified = false; resetViewportScroll();
-                setTimeout(() => fetchData(true), 2000);
+                setTimeout(() => fetchData(true), 1500);
             } catch (e) { alert("Save error."); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
@@ -299,8 +280,8 @@
             all.sort((a, b) => Number(b.amount) - Number(a.amount)); list.innerHTML = ""; all.forEach(i => list.innerHTML += createItemHTML(i)); toggleModal('viewAllModal', true);
         }
         function toggleModal(id, show) { const el = document.getElementById(id); if (show) { el.classList.add('active'); } else { el.classList.remove('active'); } }
-        function changeMonth(s) { let d = new Date(currentViewDate); d.setMonth(d.getMonth() + s); if (d < new Date("2025-01-01")) return; currentViewDate = d; updateMonthDisplay(); renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics(); }
-        function selectMonth(v) { if(v) { let d = new Date(v + "-01"); if (d < new Date("2025-01-01")) return alert("Available from 2025"); currentViewDate = d; updateMonthDisplay(); renderData(); if(document.getElementById('view-stats').classList.contains('active')) renderStatistics(); } }
+        function changeMonth(s) { let d = new Date(currentViewDate); d.setMonth(d.getMonth() + s); if (d < new Date("2025-01-01")) return; currentViewDate = d; updateMonthDisplay(); renderData(); fetchData(true); }
+        function selectMonth(v) { if(v) { let d = new Date(v + "-01"); if (d < new Date("2025-01-01")) return alert("Available from 2025"); currentViewDate = d; updateMonthDisplay(); renderData(); fetchData(true); } }
         function populateCategories() { const t = document.getElementById('inputType').value, s = document.getElementById('inputCategory'); s.innerHTML = ""; masterCategories[t].sort((a, b) => a.localeCompare(b, 'th')).forEach(c => { s.innerHTML += `<option value="${c}">${c}</option>`; }); }
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
         
