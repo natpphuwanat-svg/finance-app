@@ -7,10 +7,13 @@
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Fonts & Libraries -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         :root {
             --bg-body: #F2F2F7; --bg-card: #FFFFFF; --text-main: #1C1C1E; --text-sub: #8E8E93;
@@ -24,45 +27,76 @@
                 --card-shadow: none; --input-bg: #2C2C2E; --modal-bg: #1C1C1E; --refresh-bg: #1C1C1E;
             }
         }
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', 'Noto Sans Thai', sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; padding-top: env(safe-area-inset-top, 20px); }
+        
+        /* แก้ไขบั๊คส่วนหัวติดขอบ iPhone */
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            font-family: 'Inter', 'Noto Sans Thai', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            overflow-x: hidden; 
+            /* เว้นระยะปลอดภัยจากด้านบนและล่างของเครื่อง */
+            padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 80px);
+        }
+
         .ios-card { background-color: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: all 0.4s ease; }
-        .nav-blur { background: var(--bg-card); opacity: 0.98; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-card); }
+        
+        /* แถบล่าง iOS Style */
+        .nav-blur { 
+            background: var(--bg-card); 
+            opacity: 0.98; 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid var(--border-card);
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 12px);
+        }
+        
         #monthPicker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0 !important; z-index: 10; cursor: pointer; -webkit-appearance: none; appearance: none; }
+
         .text-system { color: #A3E635; } .bg-system { background-color: #A3E635; }
         .text-income { color: #22C55E; } .bg-income { background-color: #22C55E; } .bg-income-op { background-color: rgba(34, 197, 94, 0.12); }
         .text-expense { color: #EF4444; } .bg-expense { background-color: #EF4444; } .bg-expense-op { background-color: rgba(239, 68, 68, 0.12); }
         .text-deduction { color: #F59E0B; } .bg-deduction { background-color: #F59E0B; } .bg-deduction-op { background-color: rgba(245, 158, 11, 0.12); }
+
         .card-divider { position: relative; }
         .card-divider::before { content: ""; position: absolute; top: 0; left: 16px; right: 16px; height: 1px; background-color: var(--divider); transition: opacity 0.3s ease; }
         .hide-divider::before { opacity: 0; }
-        .is-syncing { opacity: 0.5; filter: blur(10px); pointer-events: none; transition: all 0.5s ease; }
-        .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
+        
+        /* สถานะกำลังโหลดแบบเบลอนวลๆ */
+        .is-syncing { opacity: 0.7; filter: blur(4px); pointer-events: none; transition: all 0.4s ease; }
+        
         @keyframes spin-soft { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinning { animation: spin-soft 1s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
+        
         .modal-overlay { transition: opacity 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; opacity: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        input[type="number"], input[type="text"], select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 16px; }
+        
+        input[type="number"], input[type="text"], select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 16px; outline: none; }
         .alert-box { width: 85%; max-width: 320px; background: var(--input-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; }
         .modal-overlay.active .alert-box { transform: scale(1); }
+
         .page-view { display: none; animation: fadeIn 0.4s ease; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .switcher-btn { flex: 1; padding: 8px; border-radius: 12px; font-weight: 700; font-size: 12px; transition: all 0.2s; color: var(--text-sub); }
         .switcher-btn.active { background-color: #A3E635; color: black; box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3); }
         .loader-white { border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid #000; border-radius: 50%; width: 16px; height: 16px; animation: spin-soft 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
     </style>
 </head>
-<body class="p-5 pb-32">
+<body>
 
     <div id="view-home" class="page-view active">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8 mt-2 px-1">
+        <!-- Header: Fixed Notch Overlap -->
+        <div class="flex justify-between items-center mb-8 px-1">
             <div onclick="openProfileModal()" class="active:opacity-50 transition-opacity cursor-pointer">
                 <p id="greetingText" style="color: var(--text-sub)" class="text-[10px] uppercase tracking-[0.2em] font-bold">HELLO</p>
                 <div class="flex items-center gap-2">
-                    <h1 id="userNameDisplay" class="text-2xl font-black tracking-tight">User</h1>
+                    <h1 id="userNameDisplay" class="text-2xl font-black tracking-tight text-white dark:text-white">User</h1>
                     <i class="fa-solid fa-chevron-right text-gray-400 text-xs mt-1"></i>
                 </div>
             </div>
@@ -75,28 +109,27 @@
         <div class="flex justify-center items-center gap-6 mb-6">
             <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="relative flex items-center gap-2 px-4 py-1">
-                <span id="displayMonth" class="text-lg font-bold min-w-[130px] text-center">...</span>
+                <span id="displayMonth" class="text-lg font-bold min-w-[130px] text-center text-white dark:text-white">...</span>
                 <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                 <input type="month" id="monthPicker" min="2025-01" onchange="selectMonth(this.value)">
             </div>
             <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
-        <!-- Balance Summary -->
         <div id="balanceCard" class="ios-card overflow-hidden mb-6">
             <div class="text-center py-8">
                 <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
-                <h2 id="totalBalance" class="text-5xl font-black tracking-tighter">฿0</h2>
+                <h2 id="totalBalance" class="text-5xl font-black tracking-tighter text-white dark:text-white">฿0</h2>
             </div>
             <div class="px-2 pb-2">
                 <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
-                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div><div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold text-income">0 items</p></div></div><span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
+                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div><div class="text-left"><p class="font-bold text-sm">Income</p><p id="countIncome" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div></div><span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0</span>
                 </div>
                 <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
-                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div><div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold text-expense">0 items</p></div></div><span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
+                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-expense-op rounded-full flex items-center justify-center text-expense"><i class="fa-solid fa-arrow-down text-sm"></i></div><div class="text-left"><p class="font-bold text-sm">Expense</p><p id="countExpense" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div></div><span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0</span>
                 </div>
                 <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
-                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div><div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold text-orange-400">0 items</p></div></div><span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0</span>
+                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-deduction-op rounded-full flex items-center justify-center text-deduction"><i class="fa-solid fa-minus text-xs"></i></div><div class="text-left"><p class="font-bold text-sm">Deduction</p><p id="countDeduction" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div></div><span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0</span>
                 </div>
             </div>
         </div>
@@ -112,13 +145,18 @@
     </div>
 
     <!-- View 2: STATISTICS -->
-    <div id="view-stats" class="page-view"><div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div><div class="ios-card p-1.5 flex gap-1 mb-8 mx-4"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div><div id="statsChartCard" class="ios-card p-6 mb-8 mx-1"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3></div></div></div><div id="insightsContainer" class="px-2 pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div></div>
-    
+    <div id="view-stats" class="page-view">
+        <div class="text-center mt-6 mb-8"><h1 class="text-2xl font-black tracking-tight">Financial Stats</h1><p style="color: var(--text-sub)" class="text-[10px] uppercase tracking-widest mt-1">Deep Analysis & Insights</p></div>
+        <div class="ios-card p-1.5 flex gap-1 mb-8 mx-4"><button onclick="setStatsTimeframe('month')" id="btn-month" class="switcher-btn active">MONTHLY</button><button onclick="setStatsTimeframe('year')" id="btn-year" class="switcher-btn">ANNUAL</button></div>
+        <div id="statsChartCard" class="ios-card p-6 mb-8 mx-1"><div class="relative h-[240px]"><canvas id="statsDonutChart"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4"><p id="chartLabel" style="color: var(--text-sub)" class="text-[10px] font-bold uppercase tracking-widest">TOTAL FLOW</p><h3 id="chartValue" class="text-2xl font-black tracking-tighter">฿0</h3></div></div></div>
+        <div id="insightsContainer" class="px-2 pb-20"><h3 style="color: var(--text-sub)" class="font-black tracking-widest text-[10px] uppercase mb-4 px-1">Smart Insights</h3><div id="insightsList" class="space-y-4"></div></div>
+    </div>
+
     <!-- View 3: SETTINGS -->
-    <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">App customization coming soon.</p></div></div>
+    <div id="view-settings" class="page-view"><div class="text-center mt-20 px-8"><div class="w-20 h-20 bg-gray-800 rounded-[24px] flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-gear text-4xl text-system"></i></div><h1 class="text-2xl font-bold tracking-tight">Settings</h1><p class="text-gray-500 text-sm mt-2 leading-relaxed">Personalization coming soon.</p></div></div>
 
     <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 nav-blur px-10 pt-3 pb-[26px] flex justify-between z-40">
+    <div class="fixed bottom-0 left-0 right-0 nav-blur px-10 pt-3 flex justify-between z-40">
         <div id="nav-home" onclick="switchView('home')" class="text-center text-system transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-house-chimney text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">Home</p></div>
         <div id="nav-stats" onclick="switchView('stats')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-chart-pie text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">STATISTICS</p></div>
         <div id="nav-settings" onclick="switchView('settings')" class="text-center text-gray-500 opacity-50 transition-transform duration-200 active:scale-110 cursor-pointer"><i class="fa-solid fa-gear text-2xl"></i><p class="text-[10px] mt-1 font-black uppercase tracking-tighter">SETTINGS</p></div>
@@ -126,13 +164,13 @@
 
     <!-- Modals -->
     <div id="profileModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">Edit Name</h3><button onclick="toggleModal('profileModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">User Name</label><input type="text" id="inputUserName" maxlength="20" class="w-full h-14 px-5 mt-2 font-bold text-xl"></div><button onclick="saveProfile()" class="w-full h-14 bg-system text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
-    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-400"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
+    <div id="entryModal" class="modal-overlay flex items-end"><div class="modal-content pb-10"><div class="flex justify-between items-center mb-8 px-1"><h3 class="text-xl font-black tracking-tight text-system">New Entry</h3><button onclick="handleCloseEntryModal()" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-transform"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-6 text-left"><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Type</label><select id="inputType" onchange="markAsDirty(); populateCategories()" class="w-full h-14 rounded-2xl px-5 mt-2 font-bold appearance-none bg-gray-800"><option value="Income">Income</option><option value="Expense">Expense</option><option value="Deduction">Deduction</option></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Category</label><select id="inputCategory" onchange="markAsDirty()" class="w-full h-14 px-5 mt-2 font-bold appearance-none bg-gray-800"></select></div><div><label style="color: var(--text-sub)" class="text-[10px] uppercase font-black ml-1 tracking-widest">Amount (฿)</label><input type="number" id="inputAmount" oninput="markAsDirty()" placeholder="0.00" class="w-full h-14 rounded-2xl px-5 mt-2 font-black text-2xl placeholder-gray-500"></div><button id="saveBtn" onclick="saveEntry()" class="w-full h-14 bg-[#A3E635] text-black rounded-2xl font-extrabold text-lg mt-10 shadow-xl shadow-lime-500/20 uppercase tracking-[0.12em] active:scale-[0.98] transition-transform">SAVE</button></div></div></div>
     <div id="discardModal" class="modal-overlay alert-container"><div class="alert-box"><h3 class="text-xl font-bold text-white">Discard changes?</h3><p class="text-gray-400 mt-2 text-sm font-medium">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-800 rounded-2xl font-bold text-sm text-white">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
-    <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
+    <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase text-white dark:text-white">ALL ENTRIES</h3><p style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><button onclick="toggleModal('viewAllModal', false)" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 px-1"></div></div></div>
 
     <script>
         // ************************************************************
-        // URL ของ Google Apps Script ของคุณ
+        // ใส่ URL ของคุณตรงนี้!
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzaB1mCxvDZ3Nni3zlcsgVCFnuHX2dTouw_iMAACvfiK9majCR1Tf-VhGPhawDwuoXVMA/exec"; 
         // ************************************************************
 
@@ -144,10 +182,15 @@
 
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, statsTimeframe = 'month', myChart = null;
 
-        function switchView(viewName) {
+        function switchView(vN) {
             document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${viewName}`).classList.add('active');
-            if(viewName === 'stats') renderStatistics();
+            document.getElementById(`view-${vN}`).classList.add('active');
+            ['home', 'stats', 'settings'].forEach(n => {
+                const el = document.getElementById(`nav-${n}`);
+                if(n === vN) { el.classList.remove('opacity-50', 'text-gray-500'); el.classList.add('text-system'); }
+                else { el.classList.add('opacity-50', 'text-gray-500'); el.classList.remove('text-system'); }
+            });
+            if(vN === 'stats') renderStatistics();
         }
 
         async function fetchData(isManual = false) {
@@ -171,41 +214,45 @@
             }
         }
 
-        // --- ระบบบันทึกข้อมูลแบบแม่นยำ ---
+        // --- ระบบบันทึกข้อมูลแบบรวดเร็วทันใจ (Optimistic Update) ---
         async function saveEntry() {
             const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
             if (!a || a <= 0) return alert("Please enter amount");
             const btn = document.getElementById('saveBtn'); btn.disabled = true; 
             btn.innerHTML = `<span class="loader-white"></span> SAVING...`;
             
-            // ใช้ความแม่นยำสูง: วันที่ 1 ของเดือน และเป็นช่วงเที่ยงวัน (ป้องกัน Timezone Shift)
             const saveDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), 1, 12, 0, 0);
+            const newEntry = { date: saveDate.toISOString(), type: t, category: c, amount: a };
 
             try {
-                await fetch(SCRIPT_URL, { 
+                // ส่งไป Sheets
+                fetch(SCRIPT_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
-                    body: JSON.stringify({ type: t, category: c, amount: a, date: saveDate.toISOString() }) 
+                    body: JSON.stringify(newEntry) 
                 });
+
+                // แสดงผลบนจอทันที (ไม่ต้องรอ 5 วินาที)
+                entries.push(newEntry);
+                localStorage.setItem('finance_cache', JSON.stringify(entries));
+                renderData();
+                
                 toggleModal('entryModal', false);
                 isModified = false;
-                // สำคัญ: รีเฟรชข้อมูลจาก Sheets ทันทีเพื่อความแม่นยำ
-                await fetchData(true);
-            } catch (e) { alert("Save failed!"); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
+
+                // Sync จริงเบื้องหลังเพื่อให้ข้อมูลในเครื่องกับ Sheets ตรงกัน 100%
+                setTimeout(() => fetchData(true), 2000);
+            } catch (e) { alert("Save error. Please check connection."); } finally { btn.disabled = false; btn.innerText = "SAVE"; }
         }
 
         function renderData() {
             const list = document.getElementById('entryList'), title = document.getElementById('entriesTitle'), m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
-            
-            // กรองข้อมูลโดยเทียบ ISO Date String ที่ถอดรหัสแล้ว
             const mData = entries.filter(i => {
                 const d = new Date(i.date);
                 return d.getMonth() === m && d.getFullYear() === y;
             });
-
             let t = { Income: 0, Expense: 0, Deduction: 0, cInc: 0, cExp: 0, cDed: 0 };
             mData.forEach(i => { t[i.type] += Number(i.amount); t[`c${i.type.slice(0,3)}`]++; });
-
             document.getElementById('totalBalance').innerText = `฿${(t.Income - t.Expense).toLocaleString()}`;
             document.getElementById('valIncome').innerText = `฿${t.Income.toLocaleString()}`;
             document.getElementById('valExpense').innerText = `฿${t.Expense.toLocaleString()}`;
@@ -213,9 +260,7 @@
             document.getElementById('countIncome').innerText = `${t.cInc} items`;
             document.getElementById('countExpense').innerText = `${t.cExp} items`;
             document.getElementById('countDeduction').innerText = `${t.cDed} items`;
-
-            let disp = [...mData].reverse();
-            if (currentFilter) { disp = disp.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else title.innerText = `ENTRIES`;
+            let disp = [...mData].reverse(); if(currentFilter) { disp = disp.filter(i => i.type === currentFilter); title.innerText = `${currentFilter.toUpperCase()} ENTRIES`; } else title.innerText = `ENTRIES`;
             list.innerHTML = disp.length ? "" : `<p class="text-center text-gray-600 py-8 text-sm italic">No records found</p>`;
             disp.slice(0, 4).forEach(i => list.innerHTML += createItemHTML(i));
         }
@@ -233,6 +278,7 @@
         function openProfileModal() { toggleModal('profileModal', true); }
         function saveProfile() { const n = document.getElementById('inputUserName').value.trim(); if (n) { localStorage.setItem('userName', n); document.getElementById('userNameDisplay').innerText = n; toggleModal('profileModal', false); } }
         function markAsDirty() { isModified = true; }
+        function setStatsTimeframe(t) { statsTimeframe = t; document.getElementById('btn-month').classList.toggle('active', t === 'month'); document.getElementById('btn-year').classList.toggle('active', t === 'year'); renderStatistics(); }
         function openAddEntryModal() { isModified = false; document.getElementById('inputAmount').value = ""; document.getElementById('inputType').value = currentFilter || 'Income'; populateCategories(); toggleModal('entryModal', true); }
         function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value) toggleModal('discardModal', true); else toggleModal('entryModal', false); }
         function confirmDiscard() { toggleModal('discardModal', false); toggleModal('entryModal', false); isModified = false; }
@@ -251,7 +297,6 @@
         function updateMonthDisplay() { document.getElementById('displayMonth').innerText = currentViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
         
         // กราฟ
-        function setStatsTimeframe(t) { statsTimeframe = t; document.getElementById('btn-month').classList.toggle('active', t === 'month'); document.getElementById('btn-year').classList.toggle('active', t === 'year'); renderStatistics(); }
         function renderStatistics() {
             const m = currentViewDate.getMonth(), y = currentViewDate.getFullYear();
             let scope = entries.filter(i => { const d = new Date(i.date); return statsTimeframe === 'month' ? (d.getMonth() === m && d.getFullYear() === y) : (d.getFullYear() === y); });
