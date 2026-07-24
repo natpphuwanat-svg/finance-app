@@ -9,21 +9,21 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Fonts & Libraries -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            /* [Light Mode Colors] */
+            /* [Light Mode] */
             --bg-body: #F2F2F7; --bg-card: #FFFFFF; --text-main: #1C1C1E; --text-sub: #8E8E93;
             --border-card: rgba(0, 0, 0, 0.05); --divider: rgba(0, 0, 0, 0.08); --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             --input-bg: #F2F2F7; --modal-bg: #FFFFFF; --refresh-bg: #FFFFFF; --btn-close-bg: #E5E5EA; --btn-close-text: #8E8E93;
         }
         @media (prefers-color-scheme: dark) {
             :root {
-                /* [Dark Mode Colors] */
+                /* [Dark Mode] */
                 --bg-body: #000000; --bg-card: #1C1C1E; --text-main: #FFFFFF; --text-sub: #9CA3AF;
                 --border-card: rgba(255, 255, 255, 0.05); --divider: rgba(255, 255, 255, 0.12);
                 --card-shadow: none; --input-bg: #2C2C2E; --modal-bg: #1C1C1E; --refresh-bg: #1C1C1E;
@@ -52,6 +52,7 @@
         .spinning { animation: spin-soft 1.2s linear infinite; color: #A3E635 !important; }
         .filter-active { border-color: #A3E635 !important; background-color: rgba(163, 230, 53, 0.08) !important; transform: scale(1.02); z-index: 10; }
         
+        /* Modal System */
         .modal-overlay { transition: opacity 0.3s ease, visibility 0.3s ease; position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
         @media (prefers-color-scheme: dark) { .modal-overlay { background: rgba(0,0,0,0.85); } }
         .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -60,13 +61,12 @@
         .modal-content { transition: transform 0.3s ease-out; width: 100%; background: var(--modal-bg); border-radius: 32px 32px 0 0; transform: translateY(100%); padding: 24px; border-top: 1px solid var(--border-card); }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         
-        input, select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 18px; outline: none; border: none !important; box-shadow: none !important; }
+        input, select { background-color: var(--input-bg) !important; color: var(--text-main) !important; -webkit-appearance: none; appearance: none; border-radius: 18px; outline: none; }
         .btn-close { width: 40px; height: 40px; background-color: var(--btn-close-bg); color: var(--btn-close-text); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
         .alert-box { width: 85%; max-width: 320px; background: var(--modal-bg); border-radius: 28px; padding: 24px; text-align: center; transform: scale(0.9); transition: transform 0.2s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         
         /* Spinner */
         .loader-black { border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid #000; border-radius: 50%; width: 18px; height: 18px; animation: spin-soft 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
-        .loader-white { border: 2px solid rgba(255,255,255,0.15); border-top: 2px solid #fff; border-radius: 50%; width: 18px; height: 18px; animation: spin-soft 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
 
         .fab-btn { position: fixed; bottom: calc(env(safe-area-inset-bottom, 20px) + 85px); right: 24px; width: 48px; height: 48px; background-color: #94D82D; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); z-index: 90; transition: all 0.2s ease; }
         .amount-border { border: 1px solid var(--divider); border-radius: 12px; padding: 6px 12px; font-weight: 900; }
@@ -90,11 +90,11 @@
                 </div>
             </div>
             <button onclick="fetchData(true)" style="background-color: var(--refresh-bg)" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/5 shadow-sm active:scale-90 transition-transform">
-                <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm"></i>
+                <i id="refreshIcon" class="fa-solid fa-rotate-right text-gray-400 text-sm transition-all duration-300"></i>
             </button>
         </div>
 
-        <!-- Month Navigation -->
+        <!-- Navigation -->
         <div class="flex justify-center items-center gap-6 mb-8">
             <button onclick="changeMonth(-1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="relative flex items-center gap-2 px-2 py-1">
@@ -105,7 +105,6 @@
             <button onclick="changeMonth(1)" class="p-2 text-gray-400 active:text-lime-500"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
-        <!-- Balance Card -->
         <div id="balanceCard" class="ios-card overflow-hidden mb-8">
             <div class="text-center py-10">
                 <p style="color: var(--text-sub)" class="text-[10px] tracking-widest mb-2 uppercase font-bold">Available Balance</p>
@@ -113,13 +112,13 @@
             </div>
             <div class="px-2 pb-2">
                 <div id="cardIncome" onclick="setFilter('Income')" class="flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
-                    <div class="flex items-center gap-3"><div class="w-11 h-11 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div><div class="text-left"><p class="font-bold text-[15px]" style="color: var(--text-main)">Income</p><p id="countIncome" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold text-income">0 items</p></div></div><span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0.00</span>
+                    <div class="flex items-center gap-3"><div class="w-11 h-11 bg-income-op rounded-full flex items-center justify-center text-income"><i class="fa-solid fa-arrow-up text-sm"></i></div><div class="text-left"><p class="font-bold text-[15px]" style="color: var(--text-main)">Income</p><p id="countIncome" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div></div><span id="valIncome" class="text-income font-black text-lg tracking-tight">฿0.00</span>
                 </div>
                 <div id="cardExpense" onclick="setFilter('Expense')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
-                    <div class="flex items-center gap-3"><div class="w-11 h-11 bg-expense-op rounded-full flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down text-sm"></i></div><div class="text-left"><p class="font-bold text-[15px]" style="color: var(--text-main)">Expense</p><p id="countExpense" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold text-red-500">0 items</p></div></div><span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0.00</span>
+                    <div class="flex items-center gap-3"><div class="w-11 h-11 bg-expense-op rounded-full flex items-center justify-center text-red-500"><i class="fa-solid fa-arrow-down text-sm"></i></div><div class="text-left"><p class="font-bold text-[15px]" style="color: var(--text-main)">Expense</p><p id="countExpense" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div></div><span id="valExpense" class="text-red-500 font-black text-lg tracking-tight">฿0.00</span>
                 </div>
                 <div id="cardDeduction" onclick="setFilter('Deduction')" class="card-divider flex justify-between items-center p-4 rounded-2xl transition-all active:scale-95 cursor-pointer border border-transparent">
-                    <div class="flex items-center gap-3"><div class="w-11 h-11 bg-deduction-op rounded-full flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus text-xs"></i></div><div class="text-left"><p class="font-bold text-[15px]" style="color: var(--text-main)">Deduction</p><p id="countDeduction" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold text-orange-400">0 items</p></div></div><span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0.00</span>
+                    <div class="flex items-center gap-3"><div class="w-11 h-11 bg-deduction-op rounded-full flex items-center justify-center text-orange-400"><i class="fa-solid fa-minus text-xs"></i></div><div class="text-left"><p class="font-bold text-[15px]" style="color: var(--text-main)">Deduction</p><p id="countDeduction" style="color: var(--text-sub)" class="text-[9px] uppercase font-bold">0 items</p></div></div><span id="valDeduction" class="text-orange-400 font-black text-lg tracking-tight">฿0.00</span>
                 </div>
             </div>
         </div>
@@ -147,23 +146,16 @@
     <div id="confirmDeleteModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold" style="color: var(--text-main)">Delete Entry ?</h3><p class="mt-2 text-sm font-medium" style="color: var(--text-sub)">This action cannot be undone.</p><div class="mt-8 flex gap-3"><button onclick="toggleModal('confirmDeleteModal', false)" class="flex-1 h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm" style="color: var(--text-main)">Cancel</button><button id="confirmDeleteBtn" class="flex-1 h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Delete</button></div></div></div>
     <div id="discardModal" class="modal-overlay alert-container flex items-center"><div class="alert-box mx-auto"><h3 class="text-xl font-bold" style="color: var(--text-main)">Discard changes ?</h3><p class="mt-2 text-sm font-medium" style="color: var(--text-sub)">Your changes haven't been saved</p><div class="mt-8 space-y-3"><button onclick="toggleModal('discardModal', false)" class="w-full h-14 bg-gray-200 dark:bg-gray-800 rounded-2xl font-bold text-sm" style="color: var(--text-main)">Keep Editing</button><button onclick="confirmDiscard()" class="w-full h-14 bg-[#EF4444] text-white rounded-2xl font-bold text-sm">Discard</button></div></div></div>
     
-    <div id="viewAllModal" class="modal-overlay flex items-end">
-        <div class="modal-content h-[85vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6 px-1">
-                <div onclick="toggleEditMode()" class="flex items-center gap-2 active:opacity-50 transition-opacity cursor-pointer text-left">
-                    <div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase" style="color: var(--text-main)">ALL ENTRIES</h3><p id="sortLabel" style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div>
-                    <i id="editIcon" class="fa-solid fa-pen-to-square text-[16px] text-gray-400 mt-1"></i>
-                </div>
-                <button onclick="toggleModal('viewAllModal', false)" class="btn-close"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 pr-4 pl-1 border-b border-white/5"></div>
-            <div class="pt-4 pb-12"><button onclick="openAddEntryModal()" class="w-full py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase text-xs">+ Add Entry</button></div>
-        </div>
-    </div>
+    <div id="viewAllModal" class="modal-overlay flex items-end"><div class="modal-content h-[85vh] flex flex-col"><div class="flex justify-between items-center mb-6 px-1"><div onclick="toggleEditMode()" class="flex items-center gap-2 active:opacity-50 transition-opacity cursor-pointer text-left"><div class="text-left"><h3 id="viewAllTitle" class="text-xl font-black tracking-tight uppercase" style="color: var(--text-main)">ALL ENTRIES</h3><p id="sortLabel" style="color: var(--text-sub)" class="text-[9px] font-bold tracking-widest mt-0.5 uppercase">Amount (High to Low)</p></div><i id="editIcon" class="fa-solid fa-pen-to-square text-[16px] text-gray-400 mt-1"></i></div><button onclick="toggleModal('viewAllModal', false)" class="btn-close"><i class="fa-solid fa-xmark"></i></button></div><div id="viewAllList" class="flex-1 overflow-y-auto space-y-6 pb-10 pr-4 pl-1 border-b border-white/5"></div><div class="pt-4 pb-12"><button onclick="openAddEntryModal()" class="w-full py-4 bg-system text-black rounded-2xl font-black tracking-widest shadow-xl shadow-lime-500/20 uppercase text-xs">+ Add Entry</button></div></div></div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLR8fKAI8g5dAeaaEFSqf97wPj06H7bw96xchQeuQu6wQ0MwL8FIaPc7PvkFgJCNfoSQ/exec"; 
-        const categoryIcons = { "เงินเดือน": "fa-wallet", "apple music": "fa-music", "ยอดขายทะลุเป้าหมาย": "fa-arrow-trend-up", "แชร์": "fa-users", "อื่นๆ": "fa-plus", "3BB": "fa-wifi", "แม่": "fa-house-user", "ศรีสวัสดิ์": "fa-motorcycle", "สยามชัย": "fa-house", "AIS": "fa-mobile-screen", "SEasy": "fa-cart-shopping", "Spay later": "fa-credit-card", "Tpay later": "fa-credit-card", "มาสาย": "fa-business-time", "ลืมรูดบัตร": "fa-id-card", "ออนไลน์ออกก่อนเกิน": "fa-door-open", "ออนไลน์ออกก่อน": "fa-person-running", "ไม่สแกนนิ้ว": "fa-fingerprint", "ผิดกฎระเบียบ": "fa-circle-exclamation", "ลาป่วย": "fa-briefcase-medical", "ออมทรัพย์": "fa-piggy-bank" };
+        
+        const categoryIcons = { 
+            "เงินเดือน": "fa-wallet", "apple music": "fa-music", "ยอดขายทะลุเป้าหมาย": "fa-arrow-trend-up", "แชร์": "fa-users", "อื่นๆ": "fa-plus", 
+            "3BB": "fa-wifi", "แม่": "fa-house-user", "ศรีสวัสดิ์": "fa-motorcycle", "สยามชัย": "fa-house", "AIS": "fa-mobile-screen", "SEasy": "fa-cart-shopping", "Spay later": "fa-credit-card", "Tpay later": "fa-credit-card", 
+            "มาสาย": "fa-business-time", "ลืมรูดบัตร": "fa-id-card", "ออนไลน์ออกก่อนเกิน": "fa-door-open", "ออนไลน์ออกก่อน": "fa-person-running", "ไม่สแกนนิ้ว": "fa-fingerprint", "ผิดกฎระเบียบ": "fa-circle-exclamation", "ลาป่วย": "fa-briefcase-medical", "ออมทรัพย์": "fa-piggy-bank" 
+        };
         const masterCategories = { Income: ["เงินเดือน", "apple music", "ยอดขายทะลุเป้าหมาย", "แชร์", "อื่นๆ"], Expense: ["3BB", "แชร์", "แม่", "ศรีสวัสดิ์", "สยามชัย", "AIS", "SEasy", "Spay later", "Tpay later"], Deduction: ["มาสาย", "ลืมรูดบัตร", "ออนไลน์ออกก่อนเกิน", "ออนไลน์ออกก่อน", "ไม่สแกนนิ้ว", "ผิดกฎระเบียบ", "ลาป่วย", "ออมทรัพย์"] };
         
         let entries = [], currentViewDate = new Date(), currentFilter = null, isModified = false, isEditMode = false, activeEditId = null;
@@ -177,8 +169,8 @@
             else { 
                 el.classList.remove('active'); 
                 if(id === 'viewAllModal') { isEditMode = false; document.getElementById('editIcon').className = "fa-solid fa-pen-to-square text-[16px] text-gray-400 mt-1"; }
-                const anyActive = Array.from(document.querySelectorAll('.modal-overlay')).some(m => m.classList.contains('active'));
-                if (!anyActive) { document.body.classList.remove('modal-open'); document.getElementById('main-fab').style.display = 'flex'; }
+                const anyActive = Array.from(document.querySelectorAll('.modal-overlay.active')).length > 0;
+                if (!anyActive) { document.body.classList.remove('modal-open'); if(document.getElementById('main-fab')) document.getElementById('main-fab').style.display = 'flex'; }
                 resetViewportScroll(); 
             } 
         }
@@ -188,40 +180,62 @@
             const icon = document.getElementById('refreshIcon'); icon.classList.add('spinning');
             try {
                 const res = await fetch(SCRIPT_URL + (isManual ? `?v=${Date.now()}` : ""));
-                entries = await res.json(); localStorage.setItem('finance_cache', JSON.stringify(entries));
+                const data = await res.json(); entries = data; localStorage.setItem('finance_cache', JSON.stringify(entries));
                 renderData();
             } catch (e) { console.error(e); } finally { icon.classList.remove('spinning'); }
+        }
+
+        function toggleEditMode() { isEditMode = !isEditMode; const icon = document.getElementById('editIcon'); icon.className = isEditMode ? "fa-solid fa-circle-check text-[18px] text-system animate-fade" : "fa-solid fa-pen-to-square text-[16px] text-gray-400 mt-1"; openViewAll(); }
+
+        // --- ระบบบันทึกและลบข้อมูลแบบ Optimistic (ลบทันที) ---
+        async function triggerDelete(id) {
+            activeEditId = id; toggleModal('confirmDeleteModal', true);
+            document.getElementById('confirmDeleteBtn').onclick = async () => {
+                const btn = document.getElementById('confirmDeleteBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-black !border-white"></span>`;
+                entries = entries.filter(item => item.id !== id);
+                localStorage.setItem('finance_cache', JSON.stringify(entries));
+                renderData(); openViewAll();
+                try { 
+                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'DELETE', id }) }); 
+                    toggleModal('confirmDeleteModal', false); 
+                } catch (e) { fetchData(true); } finally { btn.disabled = false; btn.innerText = "Delete"; }
+            };
+        }
+
+        async function saveEditedAmount() {
+            const v = parseFloat(document.getElementById('editAmountInput').value); if(isNaN(v)) return;
+            const btn = document.getElementById('saveEditBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-black"></span>`;
+            entries = entries.map(item => item.id === activeEditId ? {...item, amount: v} : item);
+            localStorage.setItem('finance_cache', JSON.stringify(entries));
+            renderData(); openViewAll();
+            try { 
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'UPDATE', id: activeEditId, amount: v }) }); 
+                toggleModal('editAmountModal', false); 
+            } catch (e) { fetchData(true); } finally { btn.disabled = false; btn.innerText = "Save"; }
         }
 
         async function saveEntry() {
             const t = document.getElementById('inputType').value, c = document.getElementById('inputCategory').value, a = parseFloat(document.getElementById('inputAmount').value);
             if (!a || a <= 0) return alert("Please enter amount");
-            const btn = document.getElementById('saveBtn'); 
-            btn.disabled = true; btn.innerHTML = `<span class="loader-black"></span> Saving...`; // FIXED: Show status
+            
+            const btn = document.getElementById('saveBtn'); btn.disabled = true; 
+            btn.innerHTML = `<span class="loader-black"></span> Saving...`; 
+            
             const saveDate = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), 1, 12, 0, 0);
             const newEntry = { id: Date.now(), date: saveDate.toISOString(), type: t, category: c, amount: a };
             try {
                 entries.push(newEntry); renderData();
                 toggleModal('entryModal', false); isModified = false;
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'ADD', ...newEntry }) });
-                setTimeout(() => fetchData(true), 1500);
-            } catch (e) { alert("Error"); } finally { btn.disabled = false; btn.innerText = "Save"; }
+                setTimeout(() => fetchData(true), 2000);
+            } catch (e) { alert("Save failed."); } finally { btn.disabled = false; btn.innerText = "Save"; }
         }
 
-        function toggleEditMode() { isEditMode = !isEditMode; const icon = document.getElementById('editIcon'); icon.className = isEditMode ? "fa-solid fa-circle-check text-[18px] text-system animate-fade" : "fa-solid fa-pen-to-square text-[16px] text-gray-400 mt-1"; openViewAll(); }
-        async function triggerDelete(id) { activeEditId = id; toggleModal('confirmDeleteModal', true); document.getElementById('confirmDeleteBtn').onclick = async () => { 
-            const btn = document.getElementById('confirmDeleteBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-white"></span>`;
-            entries = entries.filter(i => i.id !== id); renderData(); openViewAll();
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'DELETE', id }) });
-            localStorage.setItem('finance_cache', JSON.stringify(entries)); toggleModal('confirmDeleteModal', false); btn.disabled = false; btn.innerText = "Delete";
-        }; }
-        function triggerEditAmount(id, val) { activeEditId = id; document.getElementById('editAmountInput').value = val; toggleModal('editAmountModal', true); }
-        async function saveEditedAmount() {
-            const v = parseFloat(document.getElementById('editAmountInput').value); if(isNaN(v)) return;
-            const btn = document.getElementById('saveEditBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-black"></span> Saving...`;
-            entries = entries.map(item => item.id === activeEditId ? {...item, amount: v} : item); renderData(); openViewAll();
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'UPDATE', id: activeEditId, amount: v }) });
-            localStorage.setItem('finance_cache', JSON.stringify(entries)); toggleModal('editAmountModal', false); btn.disabled = false; btn.innerText = "Save";
+        async function saveProfile() {
+            const n = document.getElementById('inputUserName').value.trim(); if (!n) return;
+            const btn = document.getElementById('saveProfileBtn'); btn.disabled = true; btn.innerHTML = `<span class="loader-black"></span> Saving...`;
+            localStorage.setItem('userName', n); document.getElementById('userNameDisplay').innerText = n;
+            setTimeout(() => { btn.disabled = false; btn.innerText = "Save"; toggleModal('profileModal', false); resetViewportScroll(); }, 500);
         }
 
         function renderData() {
@@ -237,9 +251,9 @@
             document.getElementById('countExpense').innerText = `${t.cExp} items`;
             document.getElementById('countDeduction').innerText = `${t.cDed} items`;
             list.innerHTML = "";
-            let homeItems = currentFilter ? mData.filter(i => i.type === currentFilter).sort((a,b) => b.amount - a.amount).slice(0, 4) : [...mData.filter(i => i.type === 'Income').sort((a,b) => b.amount - a.amount).slice(0, 1), ...mData.filter(i => i.type === 'Expense' && !["แม่", "แชร์", "ศรีสวัสดิ์"].includes(i.category)).sort((a,b) => b.amount - a.amount).slice(0, 2), ...mData.filter(i => i.type === 'Deduction' && i.category !== "ออมทรัพย์").sort((a,b) => b.amount - a.amount).slice(0, 1)];
-            if (!homeItems.length) list.innerHTML = `<p class="text-center text-gray-400 py-10 text-sm font-medium">No entries yet</p>`;
-            else homeItems.forEach(i => list.innerHTML += createItemHTML(i, false));
+            let displayList = currentFilter ? mData.filter(i => i.type === currentFilter).sort((a,b) => b.amount - a.amount).slice(0, 4) : [...mData.filter(i => i.type === 'Income').sort((a,b) => b.amount - a.amount).slice(0, 1), ...mData.filter(i => i.type === 'Expense' && !["แม่", "แชร์", "ศรีสวัสดิ์"].includes(i.category)).sort((a,b) => b.amount - a.amount).slice(0, 2), ...mData.filter(i => i.type === 'Deduction' && i.category !== "ออมทรัพย์").sort((a,b) => b.amount - a.amount).slice(0, 1)];
+            if (!displayList.length) list.innerHTML = `<p class="text-center text-gray-400 py-10 text-sm font-medium">No entries yet</p>`;
+            else displayList.forEach(i => list.innerHTML += createItemHTML(i, false));
         }
 
         function createItemHTML(i, isViewAll) {
@@ -256,15 +270,6 @@
         function updateGreeting() { const h = new Date().getHours(); document.getElementById('greetingText').innerText = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : "GOOD EVENING"; }
         function loadUserProfile() { const n = localStorage.getItem('userName') || 'Phuwanat'; document.getElementById('userNameDisplay').innerText = n; document.getElementById('inputUserName').value = n; }
         function openProfileModal() { toggleModal('profileModal', true); }
-        function saveProfile() { 
-            const n = document.getElementById('inputUserName').value.trim(); 
-            if (!n) return;
-            const btn = document.getElementById('saveProfileBtn');
-            btn.disabled = true; btn.innerHTML = `<span class="loader-black"></span> Saving...`;
-            localStorage.setItem('userName', n); 
-            document.getElementById('userNameDisplay').innerText = n; 
-            setTimeout(() => { btn.disabled = false; btn.innerText = "Save"; toggleModal('profileModal', false); resetViewportScroll(); }, 500); 
-        }
         function markAsDirty() { isModified = true; }
         function openAddEntryModal() { isModified = false; document.getElementById('inputAmount').value = ""; document.getElementById('inputType').value = currentFilter || 'Income'; populateCategories(); toggleModal('entryModal', true); }
         function handleCloseEntryModal() { if (isModified && document.getElementById('inputAmount').value) toggleModal('discardModal', true); else { toggleModal('entryModal', false); } }
